@@ -1,0 +1,125 @@
+import React, { useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useTabContext } from "../hooks/useContext";
+import TabBarButton from './tabBarButton';
+const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,navigation:any}) => {
+
+  console.log("TabBar route States:", state.route)
+  const {isTabOpen} = useTabContext()
+    const primaryColor ='rgba(255, 255, 255, 1)'
+    const inactiveColor='#737373'
+    const [dimentions, setDimentions] = useState({height:20,width:100})
+    const buttonWidth = dimentions.width / 3 //btn with will be created based on the number of tabas
+    const onTabBarLayout = (e:LayoutChangeEvent) =>{
+        setDimentions({
+          height:e.nativeEvent.layout.height,
+          width:e.nativeEvent.layout.width
+        })
+    }
+    const tabPositionX = useSharedValue(0)
+    const animatedStyle = useAnimatedStyle(()=>{
+        return {
+          transform:[{translateX:tabPositionX.value}]
+        }
+    })
+  return (
+   isTabOpen && <View onLayout={onTabBarLayout}style={Style.container}>
+      <Animated.View style={[animatedStyle,{
+        position:'absolute',
+        backgroundColor:'black',
+        borderRadius:15,
+        margin:10,
+        height:dimentions.height-20,
+        width:buttonWidth-25
+      }]}/>
+        
+   
+    {state.routes.map((route:any, index:number) => {
+      const { options } = descriptors[route.key];
+      console.log("route map", route.name)
+      const label =
+        options.tabBarLabel !== undefined
+          ? options.tabBarLabel
+          : options.title !== undefined
+          ? options.title
+          : route.name;
+        
+      const isFocused = state.index === index;
+      if (['_sitemap','+not-found','articles','articleDetails','signup','(assignements)','assignementDetails','videoList','previousVideo'].includes(route.name)) return null
+      const onPress = () => {
+        tabPositionX.value =withSpring(buttonWidth* index+2, {duration:1500})
+        const event = navigation.emit({
+          type: 'tabPress',
+          target: route.key,
+          canPreventDefault: true,
+        });
+
+        if (!isFocused && !event.defaultPrevented) {
+
+          navigation.navigate(route.name, route.params);
+        }
+      };
+      isFocused && onPress()
+      const onLongPress = () => {
+        navigation.emit({
+          type: 'tabLongPress',
+          target: route.key,
+        });
+      };
+
+      return (
+        <TabBarButton key={route.name}
+          onPress={onPress}
+          onLongPress={onLongPress}
+          isFoucused={isFocused}
+          routeName={route.name}
+          color={isFocused?primaryColor:inactiveColor}
+          label={label}
+     
+        />
+        // <TouchableOpacity
+        //     key={route.name}
+        //     style={Style.item}
+        //   accessibilityRole="button"
+        //   accessibilityState={isFocused ? { selected: true } : {}}
+        //   accessibilityLabel={options.tabBarAccessibilityLabel}
+        //   testID={options.tabBarTestID}
+        //   onPress={onPress}
+        //   onLongPress={onLongPress}
+       
+        // >
+        //    {icons[route.name]({color:isFocused?primaryColor:inactiveColor})}
+
+        //   <Text style={{ color: isFocused ? primaryColor : inactiveColor }}>
+        //     {label}
+        //   </Text>
+        // </TouchableOpacity>
+      );
+    })}
+  </View>
+  )
+}
+
+const Style = StyleSheet.create({
+    container:{
+      alignSelf:'center',
+        position:'absolute',
+        bottom:25,
+        flexDirection:'row',
+        alignItems:'center',
+        marginHorizontal:20,
+        backgroundColor:'#1A2050',
+        paddingVertical:15,
+        borderRadius:20,
+        borderCurve:'continuous',
+        shadowColor:'green',
+        shadowOffset:{width:0,height:10},
+        shadowRadius:10,
+        shadowOpacity:0.1,
+        width:400,
+    },
+   
+
+})
+export default TabBar
