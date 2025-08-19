@@ -7,10 +7,10 @@ SplashScreen.preventAutoHideAsync();
 const _layout = () => {
 
   const [loaded, error] = useFonts({
-    // 'Protest': require('../assets/fonts/Protest.ttf'),
-    // 'playwrite': require('../assets/fonts/Playwrite.ttf'),
-    // 'Marmeled': require('../assets/fonts/Marmeled.ttf'),
-    // 'Pw': require('../assets/fonts/Pw.ttf'),
+    'Protest': require('../assets/fonts/Protest.ttf'),
+    'playwrite': require('../assets/fonts/Playwrite.ttf'),
+    'Marmeled': require('../assets/fonts/Marmeled.ttf'),
+    'Pw': require('../assets/fonts/Pw.ttf'),
   });
 
   useEffect(() => {

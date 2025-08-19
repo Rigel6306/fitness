@@ -5,6 +5,7 @@ import { Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 const SafeScreenWrapper = ({children}:{children:any}) => {
   return (
     <SafeAreaView style={[styles.container]}>
+      <StatusBar backgroundColor="red" />
         {children}
     </SafeAreaView>
   )

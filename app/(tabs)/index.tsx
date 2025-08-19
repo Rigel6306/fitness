@@ -1,12 +1,16 @@
 import Carousel from '@/components/carousel'
 import Header from '@/components/header'
+import Progress from '@/components/Progress'
 import SafeScreenWrapper from '@/components/SafeScreenWrapper'
+import Schedule from '@/components/Schedule'
 import React from 'react'
 import { ImageBackground, StyleSheet } from 'react-native'
 const Home = () => {
   return (
-
-
+<> 
+   
+     
+       
     <ImageBackground
     style={styles.image}
     source={require('../../assets/images/cardsImg/card11.jpg')}
@@ -15,15 +19,19 @@ const Home = () => {
     <SafeScreenWrapper>
     <Header/>
     <Carousel/>
+    <Schedule/>
+    <Progress/>
     </SafeScreenWrapper>
     </ImageBackground>
+
+    </>
   )
 }
 
 
 const styles = StyleSheet.create({
   image:{
-   
+  
     height:"100%",
     width:"100%",
     flex:1,
