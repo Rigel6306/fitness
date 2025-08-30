@@ -6,11 +6,13 @@ const Header = () => {
     <View style={styles.container}>
       <View>
         <Text style={{
-          fontFamily:'Marmeled',
+          fontFamily:'bebas',
+          color:'white'
         }}>Welcome</Text>
         <Text style={{
-          fontFamily:'Marmeled',
+          fontFamily:'bebas',
           fontSize:18,
+          color:'white'
         }}>Charitha Iravana</Text>
       </View>
       <View style={{flexDirection:'row',gap:10}}>
@@ -18,7 +20,7 @@ const Header = () => {
        
        </TouchableOpacity>
       <TouchableOpacity>
-          <Ionicons name="notifications" size={24} color="black" />
+          <Ionicons name="notifications" size={24} color="white" />
        </TouchableOpacity>
       </View>
     </View>
@@ -28,7 +30,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 1)',
+    backgroundColor: '#1d1824ff',
     maxHeight: 70,
     padding: 10,
     margin:10,

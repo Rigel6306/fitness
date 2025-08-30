@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useTabContext } from "../hooks/useContext";
 import TabBarButton from './tabBarButton';
+const {width,height} = Dimensions.get('screen')
 const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,navigation:any}) => {
 
+  
   console.log("TabBar route States:", state.route)
   const {isTabOpen} = useTabContext()
     const primaryColor ='rgba(255, 255, 255, 1)'
@@ -109,7 +111,7 @@ const Style = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         marginHorizontal:20,
-        backgroundColor:'#1A2050',
+        backgroundColor:'#1d1824ff',
         paddingVertical:15,
         borderRadius:20,
         borderCurve:'continuous',
@@ -117,7 +119,7 @@ const Style = StyleSheet.create({
         shadowOffset:{width:0,height:10},
         shadowRadius:10,
         shadowOpacity:0.1,
-        width:400,
+        width:width-10,
     },
    
 

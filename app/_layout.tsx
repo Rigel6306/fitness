@@ -11,6 +11,8 @@ const _layout = () => {
     'playwrite': require('../assets/fonts/Playwrite.ttf'),
     'Marmeled': require('../assets/fonts/Marmeled.ttf'),
     'Pw': require('../assets/fonts/Pw.ttf'),
+    'FiraSansRegular':require('../assets/fonts/FiraSansRegular.ttf'),
+    'Bebas':require('../assets/fonts/Bebas.ttf')
   });
 
   useEffect(() => {
