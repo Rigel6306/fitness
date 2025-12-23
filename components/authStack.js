@@ -15,27 +15,27 @@ const navigationState = useRootNavigationState()
     return subscriber;
   }, [initializing]);
 
-useEffect(() => {
-    if (!initializing && navigationState?.key) {
-      user
-        ? router.replace("/(tabs)")
-        : router.replace("/");
-    }
-  }, [initializing, navigationState?.key, user]);
+// useEffect(() => {
+//     if (!initializing && navigationState?.key) {
+//       user
+//         ? router.replace("/(tabs)")
+//         : router.replace("/");
+//     }
+//   }, [initializing, navigationState?.key, user]);
 
   return (
  
     <Stack screenOptions={{headerShown:false}}> 
         {
-           user ? (
+          //  user ? (
            
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           
-          ) : (
+          // ) : (
            
-              <Stack.Screen name="index" options={{ headerShown: false }} />
+          //     <Stack.Screen name="index" options={{ headerShown: false }} />
            
-          )
+          // )
        }
     </Stack>
    

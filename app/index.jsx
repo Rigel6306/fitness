@@ -1,12 +1,7 @@
-import {
-  useFocusEffect
-} from "@react-navigation/native";
 import { Link, useNavigation } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import {
-  Alert,
-  BackHandler,
   Dimensions,
   ImageBackground,
   StyleSheet,
@@ -37,29 +32,29 @@ const Login = () => {
 
   // if(!initializing&&user) navigator.navigate('(tabs)')
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        Alert.alert(
-          'About to Exit',
-          'Are you sure you want to exit?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            { text: 'YES', onPress: () =>BackHandler.exitApp()},
-          ]
-        );
-        return true;
-      };
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const onBackPress = () => {
+  //       Alert.alert(
+  //         'About to Exit',
+  //         'Are you sure you want to exit?',
+  //         [
+  //           {
+  //             text: 'Cancel',
+  //             onPress: () => null,
+  //             style: 'cancel',
+  //           },
+  //           { text: 'YES', onPress: () =>BackHandler.exitApp()},
+  //         ]
+  //       );
+  //       return true;
+  //     };
   
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
   
       
-    }, [])
-  );
+  //   }, [])
+  // );
   
 
 

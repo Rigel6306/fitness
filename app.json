@@ -9,14 +9,18 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "package":"com.fitness.fitness",
       "supportsTablet": true
     },
     "android": {
+    "package":"com.fitness.fitness",
+    "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
+      
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +41,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f70f3600-6ec5-4053-a783-7fe948e83c6f"
+      }
     }
   }
 }

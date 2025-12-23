@@ -1,251 +1,161 @@
+import challenges from '@/data/challengeData';
+import React from 'react';
+import CustomLink from './customLink';
 
-import React, { useRef, useState,useEffect } from 'react';
-import { Dimensions, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import Animated, { interpolate, SharedValue, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import {
+    Dimensions,
+    ImageBackground,
+    StyleSheet,
+    Text,
+    View
+} from 'react-native';
+import Animated, {
+    interpolate,
+    SharedValue,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
+} from 'react-native-reanimated';
 
+const { width } = Dimensions.get('screen');
+// Subtract 10px on each side so there's a 10px gap to the screen edges
+const _imgWidth = width - 20;
+const _imgHeight = _imgWidth * 0.4;
 
-const { width, height } = Dimensions.get('screen');
+const Photo = ({
+  item,
+  index,
+  scrollX
+}: {
+  item: any;
+  index: number;
+  scrollX: SharedValue<number>;
+}) => {
+  const styleZ = useAnimatedStyle(() => ({
+    transform: [
+      {
+        // scale card up/down as it comes into center
+        scale: interpolate(
+          scrollX.value,
+          [index - 1, index, index + 1],
+          [0.95, 1,0.95]
+        )
+      },
+      {
+        // slight rotate
+        rotate: `${interpolate(
+          scrollX.value,
+          [index - 1, index, index + 1],
+          [1, 0, -0]
+        )}deg`
+      }
+    ]
+  }));
 
-
-
-
-const challenges = [
-    {
-        bckImg: require('../assets/images/cardsImg/card9.jpg'),
-        title: "Mission Slimpossible",
-        schedule: [
-            {
-                day: 'Day One',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Two',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Three',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Four',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            }
-
-        ]
-
-    },
-    {
-        bckImg: require('../assets/images/cardsImg/card10.jpg'),
-        title: "Endurence",
-        schedule: [
-            {
-                day: 'Day One',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Two',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Three',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Four',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            }
-
-        ]
-
-    },
-    {
-        bckImg: require('../assets/images/cardsImg/card11.jpg'),
-        title: "Fit and Gain",
-        schedule: [
-            {
-                day: 'Day One',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Two',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Three',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Four',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            }
-
-        ]
-
-    },
-    {
-        bckImg: require('../assets/images/cardsImg/card12.jpg'),
-        title: "Worrior",
-        schedule: [
-            {
-                day: 'Day One',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Two',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Three',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            },
-            {
-                day: 'Day Four',
-                workouts: ['10 burpees', '10 Crunches', '12 Situps', '1 Min Plank', '10 mins endurence Walk']
-            }
-
-        ]
-
-    },
-    
-]
-
-const bckImages = [
-    require('../assets/images/cardsImg/card9.jpg'),
-    require('../assets/images/cardsImg/card10.jpg'),
-    require('../assets/images/cardsImg/card11.jpg'),
-    require('../assets/images/cardsImg/card12.jpg'),
-    require('../assets/images/cardsImg/card13.jpg'),
-]
-const _imgWidth = width * 0.8
-const _imgHeight = width * 0.4
-const Photo = ({ item, index, scrollX }: { item: any, index: number, scrollX: SharedValue<number> }) => {
-
-    const styleZ = useAnimatedStyle(() => {
-        return {
-            transform: [{
-                scale: interpolate(scrollX.value,
-                    [index - 1, index, index + 1],
-                    [2, 1.5, 2]
-                )
-            },
-            {
-                rotate: `${interpolate(scrollX.value,
-                    [index - 1, index, index + 1],
-                    [10, 0, -10]
-                )}deg`
-            }
-
-
-            ]
-        }
-    })
-
-    return (
-        <View style={{
-            borderRadius: 15,
-            width: _imgWidth + 25,
-
-            overflow: 'hidden',
-        }}>
-            <Animated.View
-                style={[{
-                    borderRadius: 15,
-                    width: _imgWidth + 25,
-                    height: _imgHeight,
-                    overflow: 'hidden',
-                    elevation: 15
-                }, styleZ]}
-            >
-                <ImageBackground
-                    source={item.bckImg}
-                    resizeMode="contain"
-                    style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 15,
-
-                    }}
-                >
-                    <Text style={{
-                        fontFamily:'bebas',
-                        fontWeight:'bold',
-                        fontSize:20,
-                        color:'rgba(0, 0, 0, 1)'
-                    }}> {item.title} </Text>
-
-
-                </ImageBackground>
-
-
-            </Animated.View>
-
-        </View>
-    )
-
-}
-
+  return (
+    <CustomLink href={'ChallengeDetails' } data={item}>
+      <Animated.View style={[styles.card, styleZ]}>
+        <ImageBackground
+          source={item.bckImg}
+          resizeMode="cover"
+          style={styles.imageBg}
+        >
+          <View style={styles.overlay} />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.subtitle}>{item.discription}</Text>
+          </View>
+        </ImageBackground>
+      </Animated.View>
+    </CustomLink>
+  );
+};
 
 const Carousel = () => {
-    const scrollRef = useRef(null)
+  const scrollX = useSharedValue(0);
+  const onScroll = useAnimatedScrollHandler((e) => {
+    // Divide by screen width since snap interval = screen width
+    scrollX.value = e.contentOffset.x / width;
+  });
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-        useEffect(() => {
-      const interval = setInterval(() => {
-        const nextIndex = (currentIndex + 1) % bckImages.length;
-        setCurrentIndex(nextIndex);
-
-        if (scrollRef.current) {
-          scrollRef.current.scrollToOffset({
-            offset: nextIndex * (_imgWidth + 35),
-            animated: true,
-          });
-        }
-      }, 3000); 
-
-      return () => clearInterval(interval);
-    }, [currentIndex]);
-    const scrollX = useSharedValue(0)
-    const onScroll = useAnimatedScrollHandler((e) => {
-        scrollX.value = e.contentOffset.x / (_imgWidth + 10)
-    })
-    return (
-        <View style={styles.container}>
-            <Animated.FlatList
-                data={challenges}
-                horizontal
-                snapToInterval={_imgWidth + 35}
-                decelerationRate={"fast"}
-                ref={scrollRef}
-
-                contentContainerStyle={{
-
-                    gap: 10,
-                    borderRadius: 15,
-                    overflow: 'hidden'
-
-                }}
-                renderItem={({ item, index }) => {
-                    return <Photo item={item} index={index} scrollX={scrollX} />
-                }}
-                onScroll={onScroll}
-                scrollEventThrottle={1000 / 60}
-                showsHorizontalScrollIndicator={false}
-            />
-        </View>
-    )
-}
+  return (
+    <View style={styles.container}>
+      <Animated.FlatList
+        data={challenges}
+        horizontal
+        // snap every full screen width
+        snapToInterval={width-20}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        bounces={false}
+        showsHorizontalScrollIndicator={false}
+        // gives each card a 10px inset on left/right
+        contentContainerStyle={styles.listContent}
+        renderItem={({ item, index }) => (
+          <Photo item={item} index={index} scrollX={scrollX} />
+        )}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        maxHeight: _imgHeight + 10,
-        margin: 10,
-        borderRadius: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
+  container: {
+    height: _imgHeight + 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 
-    }
-})
+  listContent: {
+    paddingHorizontal: 10
+  },
 
-export default Carousel
+  cardWrapper: {
+    // exact width for centering
+    width: _imgWidth
+  },
+
+  card: {
+    width: _imgWidth,
+    height: _imgHeight,
+    borderRadius: 15,
+    overflow: 'hidden',
+    elevation: 6
+  },
+
+  imageBg: {
+    flex: 1,
+    justifyContent: 'flex-end'
+  },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+
+  textContainer: {
+    width: '100%',
+    padding: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15
+  },
+
+  title: {
+    fontFamily: 'bebas',
+    fontWeight: '700',
+    fontSize: 22,
+    color: '#fff',
+    marginBottom: 6
+  },
+
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 18,
+    color: '#fff'
+  }
+});
+
+export default Carousel;

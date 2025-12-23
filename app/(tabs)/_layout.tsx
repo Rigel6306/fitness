@@ -26,6 +26,7 @@ export default function TabLayout() {
         name="payments"
         options={{
           title: 'Payments',
+          headerShown:false,
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
@@ -39,7 +40,14 @@ export default function TabLayout() {
         }}
       />
     
-    
+       <Tabs.Screen
+        name="ChallengeDetails"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+        
+      />
 
       
     </Tabs>

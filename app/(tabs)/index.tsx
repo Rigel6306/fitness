@@ -14,25 +14,19 @@ const Home = () => {
 
 
       <LinearGradient
-        colors={['#192f57ff', '#909935ff', '#435a92ff']} // Array of colors for the gradient
+        colors={['#84868bff', '#887cb9ff', '#82a7d8ff']} // Array of colors for the gradient
         style={styles.image}
         start={{ x: 0.5, y: 1 }} // Start point of the gradient (top-left)
         end={{ x: 1.5, y: 0.2 }} // End point of the gradient (bottom-right)
       >
-
-
-
-        <SafeScreenWrapper>
+   <SafeScreenWrapper>
           <Header />
            <Carousel />
           <Schedule />
           <Progress />
         </SafeScreenWrapper>
-      </LinearGradient>
-
-
-
-    </>
+    </LinearGradient>
+ </>
   )
 }
 
