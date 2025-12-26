@@ -46,12 +46,12 @@ const style = StyleSheet.create({
         margin:10,
         marginBottom:120,
         borderRadius:15,
-        backgroundColor:'rgba(28, 35, 38, 1)',
+        backgroundColor:'rgba(64, 96, 109, 0.52)',
         padding:10,
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'space-around',
-        elevation:50,
+        
 
     },
     progressContainer:{

@@ -27,15 +27,15 @@ const navigationState = useRootNavigationState()
  
     <Stack screenOptions={{headerShown:false}}> 
         {
-          //  user ? (
+           user ? (
            
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           
-          // ) : (
+          ) : (
            
-          //     <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
            
-          // )
+          )
        }
     </Stack>
    

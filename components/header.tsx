@@ -2,6 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const Header = () => {
+
+
   return (
     <View style={styles.container}>
       <View>

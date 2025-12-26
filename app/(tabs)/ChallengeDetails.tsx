@@ -5,6 +5,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
+
 import {
   Animated,
   Dimensions,
@@ -125,7 +126,13 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
   );
 
   return (
-    <View style={styles.container}>
+   
+    <LinearGradient
+      colors={['#b2939337', '#bbff3d7b', '#6bcb786b','#4d96ff']} // Array of colors for the gradient
+        start={{ x: 0, y: 0 }} // Start point of the gradient (top-left)
+        end={{ x: 1, y:1 }}
+    style={styles.container}>
+      
       <Animated.View style={[styles.header, { height: headerHeight }]}>
         <Animated.Image
           source={data.bckImg}
@@ -287,8 +294,8 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
   }}
 />
 
-</View>
 
+</LinearGradient>
 
 
   );

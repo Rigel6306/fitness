@@ -48,7 +48,7 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
           : route.name;
         
       const isFocused = state.index === index;
-      if (['_sitemap','+not-found','articles','ChallengeDetails','signup','(assignements)','assignementDetails','videoList','previousVideo'].includes(route.name)) return null
+      if (['_sitemap','+not-found','articles','MainWorkoutSchedule','ChallengeDetails','MealPlan','signup','(assignements)','assignementDetails','videoList','previousVideo'].includes(route.name)) return null
       const onPress = () => {
         tabPositionX.value =withSpring(buttonWidth* index+2, {duration:1500})
         const event = navigation.emit({
@@ -111,7 +111,7 @@ const Style = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         marginHorizontal:20,
-        backgroundColor:'#1d1824ff',
+        backgroundColor:'#08252ae7',
         paddingVertical:15,
         borderRadius:20,
         borderCurve:'continuous',
@@ -119,7 +119,8 @@ const Style = StyleSheet.create({
         shadowOffset:{width:0,height:10},
         shadowRadius:10,
         shadowOpacity:0.1,
-        width:width-10,
+        width:width-20,
+        
     },
    
 

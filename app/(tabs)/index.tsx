@@ -9,15 +9,11 @@ import { StyleSheet } from 'react-native'
 const Home = () => {
   return (
     <>
-
-
-
-
       <LinearGradient
-        colors={['#84868bff', '#887cb9ff', '#82a7d8ff']} // Array of colors for the gradient
+        colors={['#b2939337', '#ffd83d8a', '#6bcb77','#4d96ff']} 
         style={styles.image}
-        start={{ x: 0.5, y: 1 }} // Start point of the gradient (top-left)
-        end={{ x: 1.5, y: 0.2 }} // End point of the gradient (bottom-right)
+        start={{ x:-0.2 , y: 0.5 }}
+        end={{ x: 1, y:1 }} 
       >
    <SafeScreenWrapper>
           <Header />

@@ -1,17 +1,23 @@
 
+import { useNavigation } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import CustomLink from './customLink'
 const Schedule = () => {
+
+  const navigator = useNavigation()
   return (
     <View style={style.container}>
 
      <View style={style.schedule}>
-  <TouchableOpacity style={{ flex: 1 }}>
+
     <View style={{ flex: 1,justifyContent:'center'}}>
+       
       <ImageBackground
         style={{ flex: 1,elevation:15,justifyContent:'center' }}
         source={require('../assets/images/cardsImg/card2.jpg')}
       >
+        <CustomLink href={'MainWorkoutSchedule'} data={''}>
         {/* Overlay with opacity */}
         <View style={{
           ...StyleSheet.absoluteFillObject,
@@ -23,15 +29,16 @@ const Schedule = () => {
       
           <Text style={style.scheduleTextHeading}>Your Schedule</Text>      
           <Text style={style.scheduleText}>Basic</Text>
-      
+          </CustomLink>
       </ImageBackground>
+       
     </View>
-  </TouchableOpacity>
+
 </View>
 
       <View style={{ flex: 1, gap: 10 }}>
         <View style={{ flex: 1, flexDirection: 'row', gap: 10 }} >
-          <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }}>
+          <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={()=>{navigator.navigate('MealPlan')}}>
             <View style={{ flex:1, borderRadius: 15, overflow: 'hidden' }}>
               <LottieView
                 autoPlay

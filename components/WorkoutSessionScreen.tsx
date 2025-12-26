@@ -1,15 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Modal,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Animated,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -26,6 +26,7 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
   const [isCompleted, setIsCompleted] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   
+  console.log(dayData)
   const progressAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,7 +42,7 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: NodeJS.Timeout| number | null = null;
     
     if (isActive) {
       interval = setInterval(() => {
