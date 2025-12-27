@@ -3,18 +3,18 @@ import React from 'react';
 import CustomLink from './customLink';
 
 import {
-    Dimensions,
-    ImageBackground,
-    StyleSheet,
-    Text,
-    View
+  Dimensions,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import Animated, {
-    interpolate,
-    SharedValue,
-    useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useSharedValue,
+  interpolate,
+  SharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
 } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('screen');
@@ -38,7 +38,7 @@ const Photo = ({
         scale: interpolate(
           scrollX.value,
           [index - 1, index, index + 1],
-          [0.95, 1,0.95]
+          [0.95, 1, 0.95]
         )
       },
       {
@@ -52,8 +52,14 @@ const Photo = ({
     ]
   }));
 
+  const levelColor = {
+    Beginner:'rgba(44, 101, 157, 0.64)',
+    Intermediate:'rgba(144, 151, 50, 1)',
+    Advanced:'rgba(145, 38, 49, 1)'
+  }
+  
   return (
-    <CustomLink href={'ChallengeDetails' } data={item}>
+    <CustomLink href={'ChallengeDetails'} data={item}>
       <Animated.View style={[styles.card, styleZ]}>
         <ImageBackground
           source={item.bckImg}
@@ -61,7 +67,15 @@ const Photo = ({
           style={styles.imageBg}
         >
           <View style={styles.overlay} />
+
           <View style={styles.textContainer}>
+            <View style={styles.cardIconContainer}>
+              <Text style={[styles.cardIconText,{
+                color:levelColor[item.level]
+              }]}> {item.level} </Text>
+               
+            </View>
+
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.subtitle}>{item.discription}</Text>
           </View>
@@ -84,7 +98,7 @@ const Carousel = () => {
         data={challenges}
         horizontal
         // snap every full screen width
-        snapToInterval={width-20}
+        snapToInterval={width - 20}
         snapToAlignment="start"
         decelerationRate="fast"
         bounces={false}
@@ -138,23 +152,38 @@ const styles = StyleSheet.create({
   textContainer: {
     width: '100%',
     padding: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15
+   
+   
+    
   },
-
+  cardIconContainer: {
+  
+   maxWidth:'30%',
+   padding:5,
+   borderRadius:21,
+   textAlign:'center',
+  backgroundColor:'rgba(184, 184, 184, 0.82)'
+  },
+  cardIconText:{
+    textAlign:'center',
+    fontWeight:'bold',
+ 
+  },
   title: {
     fontFamily: 'bebas',
-    fontWeight: '700',
-    fontSize: 22,
+    fontWeight: 'bold',
+    fontSize: 20,
     color: '#fff',
-    marginBottom: 6
+    marginBottom: 6,
+
   },
 
   subtitle: {
+    
     fontSize: 14,
     lineHeight: 18,
-    color: '#fff'
+    fontWeight: 'bold',
+    color: '#d4c2c2ff'
   }
 });
 

@@ -9,12 +9,13 @@ const Header = () => {
       <View>
         <Text style={{
           fontFamily:'bebas',
-          color:'white'
-        }}>Welcome</Text>
+          color:'gray'
+        }}>Hey There</Text>
         <Text style={{
           fontFamily:'bebas',
           fontSize:18,
-          color:'white'
+          color:'white',
+          fontWeight:'bold'
         }}>Charitha Iravana</Text>
       </View>
       <View style={{flexDirection:'row',gap:10}}>
@@ -32,7 +33,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1d1824ff',
+    backgroundColor: 'rgba(249, 249, 249, 0.56)',
     maxHeight: 70,
     padding: 10,
     margin:10,
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     justifyContent:"space-between",
     alignItems:'center',
-    elevation: 6    
+   
   },
 
 })

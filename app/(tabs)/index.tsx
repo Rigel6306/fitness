@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <>
       <LinearGradient
-        colors={['#7c498b7d', '#3d5aff8a', '#6b6dcb5d','#4d97ff5e']} 
+        colors={['#2146b49f', '#813dff9e', '#373c9c8a','#087143aa']} 
         style={styles.image}
         start={{ x:-0.2 , y: 0.5 }}
         end={{ x: 1, y:1 }} 

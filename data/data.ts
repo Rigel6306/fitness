@@ -1,3 +1,4 @@
+import Schedule from "@/components/Schedule"
 
 interface schedule {
     day: string,
@@ -247,132 +248,220 @@ const challenges: challenges = [
 ]
 
 export const workoutSchedule = {
-  title: "Master Build Program",
-  subtitle: "12-Week Transformational Journey",
-  duration: 84,
-  progress: 42,
-  level: "Advanced",
-  bckImg: require('../assets/images/workouts/schedule-bg.jpg'),
-  weeklyStructure: [
-    {
-      week: 1,
-      theme: "Foundation Building",
-      focus: "Strength Base",
-      intensity: "Low",
-      workouts: [
-        { day: "Day 1", type: "Strength", focus: "Upper Body", duration: "60 min", completed: true },
-        { day: "Day 2", type: "Cardio", focus: "HIIT", duration: "45 min", completed: true },
-        { day: "Day 3", type: "Strength", focus: "Lower Body", duration: "60 min", completed: true },
-        { day: "Day 4", type: "Active Recovery", focus: "Yoga", duration: "30 min", completed: false },
-        { day: "Day 5", type: "Strength", focus: "Full Body", duration: "75 min", completed: false },
-        { day: "Day 6", type: "Cardio", focus: "Steady State", duration: "50 min", completed: false },
-        { day: "Day 7", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
-      ]
-    },
-    {
-      week: 2,
-      theme: "Progressive Overload",
-      focus: "Muscle Hypertrophy",
-      intensity: "Medium",
-      workouts: [
-        { day: "Day 8", type: "Strength", focus: "Chest & Back", duration: "70 min", completed: false },
-        { day: "Day 9", type: "Cardio", focus: "Intervals", duration: "50 min", completed: false },
-        { day: "Day 10", type: "Strength", focus: "Legs & Glutes", duration: "75 min", completed: false },
-        { day: "Day 11", type: "Mobility", focus: "Flexibility", duration: "40 min", completed: false },
-        { day: "Day 12", type: "Strength", focus: "Arms & Shoulders", duration: "65 min", completed: false },
-        { day: "Day 13", type: "Cardio", focus: "Endurance", duration: "60 min", completed: false },
-        { day: "Day 14", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
-      ]
-    },
-    {
-      week: 3,
-      theme: "Intensity Peak",
-      focus: "Strength Max",
-      intensity: "High",
-      workouts: [
-        { day: "Day 15", type: "Strength", focus: "Push Day", duration: "80 min", completed: false },
-        { day: "Day 16", type: "Cardio", focus: "Sprints", duration: "45 min", completed: false },
-        { day: "Day 17", type: "Strength", focus: "Pull Day", duration: "80 min", completed: false },
-        { day: "Day 18", type: "Active Recovery", focus: "Pilates", duration: "35 min", completed: false },
-        { day: "Day 19", type: "Strength", focus: "Legs", duration: "85 min", completed: false },
-        { day: "Day 20", type: "Cardio", focus: "Circuit", duration: "55 min", completed: false },
-        { day: "Day 21", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
-      ]
+    title: "Master Build Program",
+    subtitle: "12-Week Transformational Journey",
+    duration: 84,
+    progress: 42,
+    level: "Advanced",
+    bckImg: require('../assets/images/workouts/schedule-bg.jpg'),
+    weeklyStructure: [
+        {
+            week: 1,
+            theme: "Foundation Building",
+            focus: "Strength Base",
+            intensity: "Low",
+            workouts: [
+                { day: "Day 1", type: "Strength", focus: "Upper Body", duration: "60 min", completed: true },
+                { day: "Day 2", type: "Cardio", focus: "HIIT", duration: "45 min", completed: true },
+                { day: "Day 3", type: "Strength", focus: "Lower Body", duration: "60 min", completed: true },
+                { day: "Day 4", type: "Active Recovery", focus: "Yoga", duration: "30 min", completed: false },
+                { day: "Day 5", type: "Strength", focus: "Full Body", duration: "75 min", completed: false },
+                { day: "Day 6", type: "Cardio", focus: "Steady State", duration: "50 min", completed: false },
+                { day: "Day 7", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
+            ]
+        },
+        {
+            week: 2,
+            theme: "Progressive Overload",
+            focus: "Muscle Hypertrophy",
+            intensity: "Medium",
+            workouts: [
+                { day: "Day 8", type: "Strength", focus: "Chest & Back", duration: "70 min", completed: false },
+                { day: "Day 9", type: "Cardio", focus: "Intervals", duration: "50 min", completed: false },
+                { day: "Day 10", type: "Strength", focus: "Legs & Glutes", duration: "75 min", completed: false },
+                { day: "Day 11", type: "Mobility", focus: "Flexibility", duration: "40 min", completed: false },
+                { day: "Day 12", type: "Strength", focus: "Arms & Shoulders", duration: "65 min", completed: false },
+                { day: "Day 13", type: "Cardio", focus: "Endurance", duration: "60 min", completed: false },
+                { day: "Day 14", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
+            ]
+        },
+        {
+            week: 3,
+            theme: "Intensity Peak",
+            focus: "Strength Max",
+            intensity: "High",
+            workouts: [
+                { day: "Day 15", type: "Strength", focus: "Push Day", duration: "80 min", completed: false },
+                { day: "Day 16", type: "Cardio", focus: "Sprints", duration: "45 min", completed: false },
+                { day: "Day 17", type: "Strength", focus: "Pull Day", duration: "80 min", completed: false },
+                { day: "Day 18", type: "Active Recovery", focus: "Pilates", duration: "35 min", completed: false },
+                { day: "Day 19", type: "Strength", focus: "Legs", duration: "85 min", completed: false },
+                { day: "Day 20", type: "Cardio", focus: "Circuit", duration: "55 min", completed: false },
+                { day: "Day 21", type: "Rest", focus: "Recovery", duration: "0 min", completed: false },
+            ]
+        }
+    ],
+    stats: {
+        totalWorkouts: 84,
+        completed: 42,
+        caloriesBurned: 12500,
+        avgDuration: "55 min"
     }
-  ],
-  stats: {
-    totalWorkouts: 84,
-    completed: 42,
-    caloriesBurned: 12500,
-    avgDuration: "55 min"
-  }
 };
 
 export const mealPlanData = {
-  title: "Lean Muscle Meal Plan",
-  subtitle: "10-Day High Protein Nutrition Program",
-  duration: 10,
-  level: "Intermediate",
-  description: "Optimized for muscle growth and fat loss with balanced macronutrients. Perfect for your fitness journey.",
-  bckImg: require('../assets/images/meals/breakfast1.jpg'),
-  stats: {
-    calories: 2500,
-    protein: 180,
-    carbs: 220,
-    fat: 70,
-  },
-  schedule: [
-    {
-      day: "Day 1",
-      focus: "High Protein Kickstart",
-      meals: [
-        { type: "Breakfast", name: "Protein Pancakes", calories: 420, time: "8:00 AM" },
-        { type: "Lunch", name: "Grilled Chicken Bowl", calories: 520, time: "1:00 PM" },
-        { type: "Dinner", name: "Salmon & Asparagus", calories: 480, time: "7:00 PM" },
-        { type: "Snack", name: "Greek Yogurt & Nuts", calories: 220, time: "4:00 PM" },
-      ],
+    title: "Lean Muscle Meal Plan",
+    subtitle: "10-Day High Protein Nutrition Program",
+    duration: 10,
+    level: "Intermediate",
+    description: "Optimized for muscle growth and fat loss with balanced macronutrients. Perfect for your fitness journey.",
+    bckImg: require('../assets/images/meals/breakfast1.jpg'),
+    stats: {
+        calories: 2500,
+        protein: 180,
+        carbs: 220,
+        fat: 70,
     },
-    {
-      day: "Day 2",
-      focus: "Carb Cycling",
-      meals: [
-        { type: "Breakfast", name: "Avocado Toast & Eggs", calories: 380, time: "8:00 AM" },
-        { type: "Lunch", name: "Turkey & Quinoa Salad", calories: 450, time: "1:00 PM" },
-        { type: "Dinner", name: "Lean Beef Stir Fry", calories: 520, time: "7:00 PM" },
-        { type: "Snack", name: "Protein Shake", calories: 180, time: "4:00 PM" },
-      ],
+    schedule: [
+        {
+            day: "Day 1",
+            focus: "High Protein Kickstart",
+            meals: [
+                { type: "Breakfast", name: "Protein Pancakes", calories: 420, time: "8:00 AM" },
+                { type: "Lunch", name: "Grilled Chicken Bowl", calories: 520, time: "1:00 PM" },
+                { type: "Dinner", name: "Salmon & Asparagus", calories: 480, time: "7:00 PM" },
+                { type: "Snack", name: "Greek Yogurt & Nuts", calories: 220, time: "4:00 PM" },
+            ],
+        },
+        {
+            day: "Day 2",
+            focus: "Carb Cycling",
+            meals: [
+                { type: "Breakfast", name: "Avocado Toast & Eggs", calories: 380, time: "8:00 AM" },
+                { type: "Lunch", name: "Turkey & Quinoa Salad", calories: 450, time: "1:00 PM" },
+                { type: "Dinner", name: "Lean Beef Stir Fry", calories: 520, time: "7:00 PM" },
+                { type: "Snack", name: "Protein Shake", calories: 180, time: "4:00 PM" },
+            ],
+        },
+        {
+            day: "Day 3",
+            focus: "High Energy Day",
+            meals: [
+                { type: "Breakfast", name: "Oatmeal & Berries", calories: 350, time: "8:00 AM" },
+                { type: "Lunch", name: "Tuna Salad Wrap", calories: 400, time: "1:00 PM" },
+                { type: "Dinner", name: "Chicken & Sweet Potato", calories: 460, time: "7:00 PM" },
+                { type: "Snack", name: "Rice Cakes & Almond Butter", calories: 240, time: "4:00 PM" },
+            ],
+        },
+        {
+            day: "Day 4",
+            focus: "Lean Protein Focus",
+            meals: [
+                { type: "Breakfast", name: "Egg White Scramble", calories: 320, time: "8:00 AM" },
+                { type: "Lunch", name: "Shrimp & Veggie Bowl", calories: 380, time: "1:00 PM" },
+                { type: "Dinner", name: "Turkey Meatballs", calories: 420, time: "7:00 PM" },
+                { type: "Snack", name: "Cottage Cheese", calories: 160, time: "4:00 PM" },
+            ],
+        },
+        {
+            day: "Day 5",
+            focus: "Recovery Day",
+            meals: [
+                { type: "Breakfast", name: "Smoothie Bowl", calories: 360, time: "8:00 AM" },
+                { type: "Lunch", name: "Chicken Caesar Salad", calories: 420, time: "1:00 PM" },
+                { type: "Dinner", name: "Baked Cod & Veggies", calories: 400, time: "7:00 PM" },
+                { type: "Snack", name: "Protein Bar", calories: 200, time: "4:00 PM" },
+            ],
+        },
+    ],
+};
+
+export const mainSchedules =
+{
+    basic: {
+        title: 'Basic',
+        frequency: 'day after day',
+        workouts: [
+            {
+                day: 1,
+                schedule:
+                    [{ id: 1, name: "Leg Extension", reps: [10, 8, 6] },
+                    { id: 2, name: "Barbell Shoulder Press", reps: [10, 8, 6] },
+                    { id: 3, name: "Dumbbell Side Lateral", reps: [10, 8, 6] },
+                    { id: 4, name: "Bent-Over Side Lateral", reps: ["10-12", "10-12", "10-12"] },
+                    { id: 5, name: "Flat Bench Press", reps: [10, 8, 6] },
+                    { id: 6, name: "Straight-Arm Pullover", reps: [12, 12, 12] },
+                    { id: 7, name: "Lat Pulldown", reps: [12, 10, 8] },
+                    { id: 8, name: "Barbell Curl", reps: [10, 8, 6] },
+                    { id: 9, name: "Triceps Extension", reps: [10, 8, 6] },
+                    { id: 10, name: "Forearm Exercise", reps: [15, 15, 15] }]
+            }
+
+        ],
+        duration: 3,
+        focus: ["Balanced full-body workout with emphasis on chest", "Shoulders", "Arms", "Basic strength"]
     },
-    {
-      day: "Day 3",
-      focus: "High Energy Day",
-      meals: [
-        { type: "Breakfast", name: "Oatmeal & Berries", calories: 350, time: "8:00 AM" },
-        { type: "Lunch", name: "Tuna Salad Wrap", calories: 400, time: "1:00 PM" },
-        { type: "Dinner", name: "Chicken & Sweet Potato", calories: 460, time: "7:00 PM" },
-        { type: "Snack", name: "Rice Cakes & Almond Butter", calories: 240, time: "4:00 PM" },
-      ],
+
+    secondSchedule: {
+        title: '2nd Schedule',
+        frequency: 'day after day',
+        workouts: [
+            {
+                day: 1,
+                schedule: [{ id: 1, name: "Low Back Extension", reps: [10, 8, 6] },
+                { id: 2, name: "Lat Pulldown", reps: [12, 10, 8] },
+                { id: 3, name: "Barbell Pullover", reps: [12, 12, 12] },
+                { id: 4, name: "Dumbbell Shoulder Press", reps: [12, 10, 8] },
+                { id: 5, name: "Cable Side Lateral", reps: ["12-15", "12-15", "12-15"] },
+                { id: 6, name: "Rear Bent-Over Side Lateral", reps: ["12-15", "12-15", "12-15"] },
+                { id: 7, name: "Flat Bench Press", reps: [12, 10, 8] },
+                { id: 8, name: "Super 7 Curl", reps: ["21", "21", "21", "21"] },
+                { id: 9, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
+                { id: 10, name: "Goblet Squat", reps: [10, 8, 6] },
+                { id: 11, name: "Dumbbell Wrist Twist (Forearm)", reps: [15, 15, 15] }]
+            }
+        ]
+        ,
+        duration: 3,
+        focus: ["Upper-body dominant routine targeting back", "Shoulders", "Arms", "Legs and forearms"]
     },
-    {
-      day: "Day 4",
-      focus: "Lean Protein Focus",
-      meals: [
-        { type: "Breakfast", name: "Egg White Scramble", calories: 320, time: "8:00 AM" },
-        { type: "Lunch", name: "Shrimp & Veggie Bowl", calories: 380, time: "1:00 PM" },
-        { type: "Dinner", name: "Turkey Meatballs", calories: 420, time: "7:00 PM" },
-        { type: "Snack", name: "Cottage Cheese", calories: 160, time: "4:00 PM" },
-      ],
-    },
-    {
-      day: "Day 5",
-      focus: "Recovery Day",
-      meals: [
-        { type: "Breakfast", name: "Smoothie Bowl", calories: 360, time: "8:00 AM" },
-        { type: "Lunch", name: "Chicken Caesar Salad", calories: 420, time: "1:00 PM" },
-        { type: "Dinner", name: "Baked Cod & Veggies", calories: 400, time: "7:00 PM" },
-        { type: "Snack", name: "Protein Bar", calories: 200, time: "4:00 PM" },
-      ],
-    },
-  ],
+
+    thirdSchedule: {
+        title: '3rd Schedule',
+        frequency: '2 Days',
+        workouts: [
+            {
+                day: 1,
+                Schedule: [{ id: 1, name: "Standing Shoulder Press", reps: [12, 10, 8, 6] },
+                { id: 2, name: "One-Arm Dumbbell Side Lateral Raise", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                { id: 3, name: "Incline Dumbbell Press", reps: [12, 10, 8, 6] },
+                { id: 4, name: "Incline Dumbbell Flyes", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                { id: 5, name: "Flat Dumbbell Press", reps: [12, 10, 8, 6] },
+                { id: 6, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
+                { id: 7, name: "Skull Crusher", reps: [12, 10, 8, 6] },
+                { id: 8, name: "Weighted Triceps Dips", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                { id: 9, name: "Full Squat", reps: [10, 8, 6, 6] },
+                { id: 10, name: "Dumbbell Lunges", reps: [10, 9, 8, 7] }]
+            },
+            {
+                day: 2,
+                Schedule: [{ id: 1, name: "Wide-Grip Upright Row", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                { id: 2, name: "Bent-Over Side Lateral (Chest Supported)", reps: ["12-15", "12-15", "12-15", "12-15"] },
+                { id: 3, name: "Pull-Up", reps: [10, 4] },
+                { id: 4, name: "One-Arm Dumbbell Row", reps: [12, 10, 8, 6] },
+                { id: 5, name: "Wide-Grip T-Bar Row", reps: [12, 10, 8, 6] },
+                { id: 6, name: "Wall Curl (Biceps)", reps: [12, 10, 8, 6] },
+                { id: 7, name: "Preacher Curl", reps: [10, 8, 6, 6] },
+                { id: 8, name: "Hammer Curl", reps: ["8-10", "8-10", "8-10", "8-10"] },
+                { id: 9, name: "Deadlift", reps: [10, 8, 6, 4] },
+                { id: 10, name: "Leg Curl", reps: [8, 4] }]
+            }
+        ],
+        duration:3,
+        focus:["Shoulders","Chest","Triceps","Compound leg work","Back", "Biceps", "Forearms", "Posterior chain"]
+
+    }
+
 };
 
 export default challenges
