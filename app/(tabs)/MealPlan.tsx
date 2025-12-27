@@ -15,76 +15,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-
+import { mealPlanData } from '@/data/data';
 const { width, height } = Dimensions.get('window');
-
-
-const mealPlanData = {
-  title: "Lean Muscle Meal Plan",
-  subtitle: "10-Day High Protein Nutrition Program",
-  duration: 10,
-  level: "Intermediate",
-  description: "Optimized for muscle growth and fat loss with balanced macronutrients. Perfect for your fitness journey.",
-  bckImg: require('../../assets/images/meals/breakfast1.jpg'),
-  stats: {
-    calories: 2500,
-    protein: 180,
-    carbs: 220,
-    fat: 70,
-  },
-  schedule: [
-    {
-      day: "Day 1",
-      focus: "High Protein Kickstart",
-      meals: [
-        { type: "Breakfast", name: "Protein Pancakes", calories: 420, time: "8:00 AM" },
-        { type: "Lunch", name: "Grilled Chicken Bowl", calories: 520, time: "1:00 PM" },
-        { type: "Dinner", name: "Salmon & Asparagus", calories: 480, time: "7:00 PM" },
-        { type: "Snack", name: "Greek Yogurt & Nuts", calories: 220, time: "4:00 PM" },
-      ],
-    },
-    {
-      day: "Day 2",
-      focus: "Carb Cycling",
-      meals: [
-        { type: "Breakfast", name: "Avocado Toast & Eggs", calories: 380, time: "8:00 AM" },
-        { type: "Lunch", name: "Turkey & Quinoa Salad", calories: 450, time: "1:00 PM" },
-        { type: "Dinner", name: "Lean Beef Stir Fry", calories: 520, time: "7:00 PM" },
-        { type: "Snack", name: "Protein Shake", calories: 180, time: "4:00 PM" },
-      ],
-    },
-    {
-      day: "Day 3",
-      focus: "High Energy Day",
-      meals: [
-        { type: "Breakfast", name: "Oatmeal & Berries", calories: 350, time: "8:00 AM" },
-        { type: "Lunch", name: "Tuna Salad Wrap", calories: 400, time: "1:00 PM" },
-        { type: "Dinner", name: "Chicken & Sweet Potato", calories: 460, time: "7:00 PM" },
-        { type: "Snack", name: "Rice Cakes & Almond Butter", calories: 240, time: "4:00 PM" },
-      ],
-    },
-    {
-      day: "Day 4",
-      focus: "Lean Protein Focus",
-      meals: [
-        { type: "Breakfast", name: "Egg White Scramble", calories: 320, time: "8:00 AM" },
-        { type: "Lunch", name: "Shrimp & Veggie Bowl", calories: 380, time: "1:00 PM" },
-        { type: "Dinner", name: "Turkey Meatballs", calories: 420, time: "7:00 PM" },
-        { type: "Snack", name: "Cottage Cheese", calories: 160, time: "4:00 PM" },
-      ],
-    },
-    {
-      day: "Day 5",
-      focus: "Recovery Day",
-      meals: [
-        { type: "Breakfast", name: "Smoothie Bowl", calories: 360, time: "8:00 AM" },
-        { type: "Lunch", name: "Chicken Caesar Salad", calories: 420, time: "1:00 PM" },
-        { type: "Dinner", name: "Baked Cod & Veggies", calories: 400, time: "7:00 PM" },
-        { type: "Snack", name: "Protein Bar", calories: 200, time: "4:00 PM" },
-      ],
-    },
-  ],
-};
 
 const MealPlanScreen = () => {
   const navigation = useNavigation();

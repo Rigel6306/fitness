@@ -1,4 +1,4 @@
-import challenges from '@/data/challengeData';
+import challenges from '@/data/data';
 import React from 'react';
 import CustomLink from './customLink';
 

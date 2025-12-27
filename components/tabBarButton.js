@@ -1,9 +1,7 @@
-import { Pressable } from "react-native";
-import { icons } from "../constants/icon";
-import {StyleSheet } from "react-native";
-import { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import Animated from "react-native-reanimated";
 import { useEffect } from "react";
+import { Pressable, StyleSheet } from "react-native";
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { icons } from "../constants/icon";
 const TabBarButton = ({
   onPress,
   onLongPress,
@@ -45,6 +43,7 @@ const TabBarButton = ({
 
 const styles = StyleSheet.create({
   item: {
+    
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

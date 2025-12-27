@@ -15,13 +15,13 @@ const navigationState = useRootNavigationState()
     return subscriber;
   }, [initializing]);
 
-// useEffect(() => {
-//     if (!initializing && navigationState?.key) {
-//       user
-//         ? router.replace("/(tabs)")
-//         : router.replace("/");
-//     }
-//   }, [initializing, navigationState?.key, user]);
+useEffect(() => {
+    if (!initializing && navigationState?.key) {
+      user
+        ? router.replace("/(tabs)")
+        : router.replace("/");
+    }
+  }, [initializing, navigationState?.key, user]);
 
   return (
  

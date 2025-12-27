@@ -29,8 +29,8 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
    isTabOpen && <View onLayout={onTabBarLayout}style={Style.container}>
       <Animated.View style={[animatedStyle,{
         position:'absolute',
-        backgroundColor:'black',
-        borderRadius:15,
+        backgroundColor:'rgba(167, 177, 179, 0.73)',
+        borderRadius:15,  
         margin:10,
         height:dimentions.height-20,
         width:buttonWidth-25
@@ -111,7 +111,7 @@ const Style = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         marginHorizontal:20,
-        backgroundColor:'#08252ae7',
+        backgroundColor:'#120722ff',
         paddingVertical:15,
         borderRadius:20,
         borderCurve:'continuous',

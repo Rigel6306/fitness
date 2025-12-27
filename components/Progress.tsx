@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import CircularProgress from "react-native-circular-progress-indicator";
+import ProgressIndicator from './ui/progressIndicator';
 const Progress = () => {
   return (
     <View style={style.container}>
-      
-         
-      
 
-            <View style={style.progressContainer}>
+
+
+
+      {/* <View style={style.progressContainer}>
               <Text style={style.progressText}>Target Progress</Text>
                   <CircularProgress
                     value={100}
@@ -33,41 +33,70 @@ const Progress = () => {
                     titleColor={'rgba(233, 125, 53, 1)'}
                     titleStyle={{fontWeight: 'bold'}}
                   />
+            </View> */}
 
-            </View>
+      <Text style={style.progressText}>Performence Metrics</Text>
+
+      <View style={style.progressItemsContainer}>
+        <ProgressIndicator
+          title={'Target'}
+          icon={'flag'}
+          value={75}
+          mainText={"100 KG"}
+          subText={"Of 100 KG"}
+          actionColor={'#667eea'}
+          gradientArray={['rgba(102, 126, 234, 0.2)', 'rgba(102, 126, 234, 0.1)']}
+          />
+          
+        <ProgressIndicator
+          title={'Challenge'}
+          icon={'barbell'}
+          value={90}
+          mainText={"9 Exercices"}
+          subText={"Of 10 Exercices"}
+          actionColor={'#894cafff'}
+          gradientArray={['rgba(76, 175, 80, 0.2)', 'rgba(76, 175, 80, 0.1)']}
+          />
+      </View>
+
     </View>
 
-  
+
   )
 }
 const style = StyleSheet.create({
-    container:{
-        flex:1,
-        margin:10,
-        marginBottom:120,
-        borderRadius:15,
-        backgroundColor:'rgba(64, 96, 109, 0.52)',
-        padding:10,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-around',
-        
+  container: {
+    flex: 1,
+    margin: 10,
+    marginBottom: 120,
+    borderRadius: 15,
+    backgroundColor:'rgba(249, 249, 249, 0.56)',
+    padding: 10,
 
-    },
-    progressContainer:{
-      flex:1,
-      alignItems:'center',
-      justifyContent:'center',
-      gap:20,
-    },
 
-    progressText:{
-       textAlign: 'center',
-    fontFamily: 'Bebas',
-    fontSize: 15,
-    fontWeight:'100',
-    color:'white'
-    }
+
+
+  },
+  progressContainer: {
+    flex: 1,
+    gap: 20,
+    backgroundColor: 'rgba(81, 111, 142, 1)'
+  },
+
+  progressText: {
+    textAlign: 'left',
+    marginBottom: 10,
+    marginLeft: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black'
+  },
+  progressItemsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 10,
+  }
+
 
 })
 export default Progress

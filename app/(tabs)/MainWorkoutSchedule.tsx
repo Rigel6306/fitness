@@ -1,4 +1,4 @@
-import { workoutSchedule } from '@/data/challengeData';
+import { workoutSchedule } from '@/data/data';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
