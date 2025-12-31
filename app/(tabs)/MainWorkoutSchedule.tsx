@@ -171,7 +171,24 @@ const WorkoutsListModal = ({ modalVisible, setModalVisible, selectedDaySchedule 
   )
 }
 
+type Exercise={
+  id:number,
+  name:string,
+  reps:(number|string)[]
+}
+type Workouts = {
+  day:number,
+  schedule:Exercise[]
+}
 
+type ScheduleType = {
+  title:string;
+  frequency:string,
+  workoutsCount:number,
+  workouts:Workouts[],
+  duration:number,
+  focus:string[]
+}
 
 const MainWorkoutSchedule = () => {
   const [modelVisible, setModelVisible] = useState(false)
