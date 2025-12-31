@@ -3,33 +3,29 @@ import Header from '@/components/header'
 import Progress from '@/components/Progress'
 import SafeScreenWrapper from '@/components/SafeScreenWrapper'
 import Schedule from '@/components/Schedule'
-import { LinearGradient } from 'expo-linear-gradient'
+import { Colors } from '@/constants/Colors'
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+const {background,primaryBackground} = Colors
 const Home = () => {
   return (
     <>
-      <LinearGradient
-        colors={['#2146b49f', '#813dff9e', '#373c9c8a','#087143aa']} 
-        style={styles.image}
-        start={{ x:-0.2 , y: 0.5 }}
-        end={{ x: 1, y:1 }} 
-      >
+      <View style={styles.container}>
    <SafeScreenWrapper>
           <Header />
            <Carousel />
           <Schedule />
           <Progress />
         </SafeScreenWrapper>
-    </LinearGradient>
+    </View>
  </>
   )
 }
 
 
 const styles = StyleSheet.create({
-  image: {
-
+  container: {
+    backgroundColor:'#000000',
     height: "100%",
     width: "100%",
     flex: 1,

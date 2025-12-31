@@ -1,45 +1,45 @@
 
-import { useNavigation } from 'expo-router'
+import { useNavigation, useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import CustomLink from './customLink'
 const Schedule = () => {
 
+  const router = useRouter()
   const navigator = useNavigation()
   return (
     <View style={style.container}>
 
-     <View style={style.schedule}>
+      <View style={style.schedule}>
 
-    <View style={{ flex: 1,justifyContent:'center'}}>
-       
-      <ImageBackground
-        style={{ flex: 1,elevation:15,justifyContent:'center' }}
-        source={require('../assets/images/cardsImg/card2.jpg')}
-      >
-        <CustomLink href={'MainWorkoutSchedule'} data={''}>
-        {/* Overlay with opacity */}
-        <View style={{
-          ...StyleSheet.absoluteFillObject,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-     
-        }} />
+        <View style={{ flex: 1, justifyContent: 'center' }}>
 
-        {/* Text content stays fully visible */}
-      
-          <Text style={style.scheduleTextHeading}>Your Schedule</Text>      
-          <Text style={style.scheduleText}>Basic</Text>
-          </CustomLink>
-      </ImageBackground>
-       
-    </View>
+          <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={() => { router.navigate('/(tabs)/MainWorkoutSchedule') }}>
+            <ImageBackground
+              style={{ flex: 1, elevation: 15, justifyContent: 'center' }}
+              source={require('../assets/images/cardsImg/card2.jpg')}
+            >
 
-</View>
+              {/* Overlay with opacity */}
+              <View style={{
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
 
+              }} />
+
+              {/* Text content stays fully visible */}
+
+              <Text style={style.scheduleTextHeading}>Your Schedule</Text>
+              <Text style={style.scheduleText}>Basic</Text>
+
+            </ImageBackground>
+          </TouchableOpacity>
+        </View>
+
+      </View>
       <View style={{ flex: 1, gap: 10 }}>
         <View style={{ flex: 1, flexDirection: 'row', gap: 10 }} >
-          <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={()=>{navigator.navigate('MealPlan')}}>
-            <View style={{ flex:1, borderRadius: 15, overflow: 'hidden' }}>
+          <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={() => { router.navigate('/(tabs)/MealPlan') }}>
+            <View style={{ flex: 1, borderRadius: 15, overflow: 'hidden' }}>
               <LottieView
                 autoPlay
                 source={require('../assets/lottie/diet.json')}
@@ -54,20 +54,22 @@ const Schedule = () => {
 
 
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(163, 24, 61, 1)', elevation: 15, borderRadius: 15,alignItems:'center',justifyContent:'center',}}>
-                  <Text style={style.yourWeight}>
-                    110
-                  </Text>
-                  <Text style={{fontWeight:'bold'}}>
-                   Kg
-                  </Text>
+          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(163, 24, 61, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
+            <Text style={style.yourWeight}>
+              110
+            </Text>
+            <Text style={{ fontWeight: 'bold' }}>
+              Kg
+            </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={{ flex: 1, backgroundColor: 'hsla(73, 15%, 50%, 1.00)',
-          alignItems:'center',justifyContent:'center',
-          elevation: 15, borderRadius: 15}}>
+        <TouchableOpacity style={{
+          flex: 1, backgroundColor: 'hsla(73, 15%, 50%, 1.00)',
+          alignItems: 'center', justifyContent: 'center',
+          elevation: 15, borderRadius: 15
+        }}>
 
-                  <Text style={style.payment}>3000</Text>
+          <Text style={style.payment}>3000</Text>
 
         </TouchableOpacity>
       </View>
@@ -93,22 +95,22 @@ const style = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Bebas',
     fontSize: 60,
-    fontWeight:'400',
-    color:'rgba(233, 125, 53, 1)'
+    fontWeight: '400',
+    color: 'rgba(233, 125, 53, 1)'
   },
-   scheduleTextHeading: {
+  scheduleTextHeading: {
     textAlign: 'center',
     fontFamily: 'Bebas',
     fontSize: 20,
-    color:'white',
+    color: 'white',
   },
-  yourWeight:{
-     textAlign: 'center',
+  yourWeight: {
+    textAlign: 'center',
     fontFamily: 'Bebas',
     fontSize: 40,
-    color:'rgba(233, 125, 53, 1)'
+    color: 'rgba(233, 125, 53, 1)'
   },
-  payment:{
+  payment: {
     textAlign: 'center',
     fontFamily: 'Bebas',
     fontSize: 40,

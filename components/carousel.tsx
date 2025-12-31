@@ -1,7 +1,6 @@
+import { Colors } from '@/constants/Colors';
 import challenges from '@/data/data';
 import React from 'react';
-import CustomLink from './customLink';
-
 import {
   Dimensions,
   ImageBackground,
@@ -16,6 +15,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import CustomLink from './customLink';
+const {textPimary,textSecondary} = Colors
 
 const { width } = Dimensions.get('screen');
 // Subtract 10px on each side so there's a 10px gap to the screen edges
@@ -153,8 +154,6 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 16,
    
-   
-    
   },
   cardIconContainer: {
   
@@ -173,17 +172,17 @@ const styles = StyleSheet.create({
     fontFamily: 'bebas',
     fontWeight: 'bold',
     fontSize: 20,
-    color: '#fff',
+    color: textPimary,
     marginBottom: 6,
 
   },
 
   subtitle: {
     
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 18,
     fontWeight: 'bold',
-    color: '#d4c2c2ff'
+    color: textSecondary
   }
 });
 

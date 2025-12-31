@@ -1,18 +1,18 @@
+import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Easing,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Animated,
+  Dimensions,
+  Easing,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+const {primaryBackground,secondaryBackground,cardBackground,cardBackgroundSecondary,textPimary,textSecondary}= Colors
 
 const { width, height } = Dimensions.get('window');
 
@@ -100,7 +100,7 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
         onPress={() => setSelectedDayIndex(index)}
       >
         <Animated.View style={[
-          styles.dayOptionGlow,
+          
           {
             opacity: isSelected ? fadeAnim : 0,
           }
@@ -132,7 +132,7 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
           </View>
           
           {isSelected ? (
-            <Ionicons name="checkmark-circle" size={24} color="#667eea" />
+            <Ionicons name="checkmark-circle" size={24} color="#66eabeff" />
           ) : (
             <Ionicons name="chevron-forward" size={20} color="#999" />
           )}
@@ -160,7 +160,6 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
       onRequestClose={onClose}
     >
       <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-        <BlurView intensity={80} style={StyleSheet.absoluteFill} tint="dark" />
         
         <TouchableOpacity
           style={styles.closeArea}
@@ -179,13 +178,13 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
             },
           ]}
         >
-          <LinearGradient
-            colors={['#667eea', '#764ba2']}
+          <View
+           
             style={styles.modalGradient}
           >
             {/* Close Button */}
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={28} color="#FFF" />
+              <Ionicons name="close" size={28} color={textPimary} />
             </TouchableOpacity>
             
             {/* Modal Header */}
@@ -223,19 +222,19 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                   
                   <View style={styles.statsGrid}>
                     <View style={styles.statBox}>
-                      <Ionicons name="calendar-outline" size={20} color="#667eea" />
+                      <Ionicons name="calendar-outline" size={20} color={'rgba(68, 132, 196, 1)'} />
                       <Text style={styles.statValue}>{challengeData.duration} days</Text>
                       <Text style={styles.statLabel}>Duration</Text>
                     </View>
                     
                     <View style={styles.statBox}>
-                      <Ionicons name="fitness-outline" size={20} color="#667eea" />
+                      <Ionicons name="fitness-outline" size={20}  color={'rgba(43, 161, 78, 1)'} />
                       <Text style={styles.statValue}>{challengeData.schedule.length}</Text>
                       <Text style={styles.statLabel}>Workouts</Text>
                     </View>
                     
                     <View style={styles.statBox}>
-                      <Ionicons name="flash-outline" size={20} color="#667eea" />
+                      <Ionicons name="flash-outline" size={20}  color={"rgba(177, 174, 43, 1)"}  />
                       <Text style={styles.statValue}>{challengeData.level}</Text>
                       <Text style={styles.statLabel}>Level</Text>
                     </View>
@@ -245,7 +244,7 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                 {/* Days Selection */}
                 <View style={styles.daysSection}>
                   <View style={styles.sectionHeader}>
-                    <Ionicons name="list-outline" size={20} color="#333" />
+                    <Ionicons name="list-outline" size={20}  color={textPimary} />
                     <Text style={styles.sectionTitle}>Select Starting Day</Text>
                   </View>
                   
@@ -266,19 +265,19 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                   </View>
                   
                   <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground} />
                     <Text style={styles.tipText}>Wear comfortable workout clothes</Text>
                   </View>
                   <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
                     <Text style={styles.tipText}>Have water ready for hydration</Text>
                   </View>
                   <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
                     <Text style={styles.tipText}>Clear enough space for movement</Text>
                   </View>
                   <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
                     <Text style={styles.tipText}>Warm up for 5-10 minutes</Text>
                   </View>
                 </View>
@@ -298,19 +297,14 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                 style={styles.primaryAction}
                 onPress={handleStartChallenge}
               >
-                <LinearGradient
-                  colors={['#667eea', '#764ba2']}
-                  style={StyleSheet.absoluteFill}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                />
+               
                 <Ionicons name="play-circle" size={24} color="#FFF" />
                 <Text style={styles.primaryActionText}>
                   Start Day {selectedDayIndex + 1}
                 </Text>
               </TouchableOpacity>
             </View>
-          </LinearGradient>
+          </View>
         </Animated.View>
       </Animated.View>
     </Modal>
@@ -326,8 +320,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalContainer: {
-    height: height * 0.85,
-    backgroundColor: '#FFF',
+    height: height * 0.95,
+    backgroundColor: 'black',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     overflow: 'hidden',
@@ -400,12 +394,12 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: secondaryBackground,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   challengeInfoCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: cardBackgroundSecondary,
     borderRadius: 20,
     padding: 20,
     margin: 20,
@@ -419,7 +413,7 @@ const styles = StyleSheet.create({
   challengeName: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: textPimary,
     marginBottom: 8,
   },
   challengeDescription: {
@@ -460,32 +454,26 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color:textPimary,
     marginLeft: 8,
   },
   sectionDescription: {
     fontSize: 14,
-    color: '#666',
+    color: textSecondary,
     marginBottom: 20,
   },
   dayOption: {
-    backgroundColor: '#FFF',
+    backgroundColor:'#1b2220',
     borderRadius: 15,
     padding: 16,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+   
+ 
   },
   dayOptionSelected: {
-    borderColor: '#667eea',
-    borderWidth: 2,
-    backgroundColor: '#f8f9ff',
+    backgroundColor: '#13141fa6',
   },
-  dayOptionGlow: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 15,
-    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-  },
+
   dayOptionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -495,13 +483,13 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#f1f1f1',
+    backgroundColor:primaryBackground,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   dayOptionNumberSelected: {
-    backgroundColor: '#667eea',
+    backgroundColor: '#66ea66ff',
   },
   dayOptionNumberText: {
     fontSize: 14,
@@ -521,14 +509,14 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   dayOptionTitleSelected: {
-    color: '#667eea',
+    color: textPimary,
   },
   dayOptionFocus: {
     fontSize: 14,
-    color: '#666',
+    color: textSecondary,
   },
   dayOptionFocusSelected: {
-    color: '#667eea',
+    color: textPimary,
   },
   workoutPreview: {
     marginLeft: 48,
@@ -540,7 +528,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   tipsCard: {
-    backgroundColor: '#FFF8E1',
+    backgroundColor: '#222a2eff',
     borderRadius: 15,
     padding: 20,
     margin: 20,
@@ -572,9 +560,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 20,
     paddingTop: 10,
-    backgroundColor: '#F8F9FA',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    backgroundColor: secondaryBackground,
+ 
   },
   primaryAction: {
     flex: 1,
@@ -585,6 +572,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: 'hidden',
     marginLeft: 12,
+    backgroundColor:cardBackground
   },
   primaryActionText: {
     color: '#FFF',
@@ -597,15 +585,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    backgroundColor: '#FFF',
+    backgroundColor: '#c2c0c0ff',
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+   
   },
   secondaryActionText: {
     color: '#666',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
 });
 

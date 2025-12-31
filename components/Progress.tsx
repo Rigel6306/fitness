@@ -1,6 +1,8 @@
+import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ProgressIndicator from './ui/progressIndicator';
+const {cardBackgroundSecondary,textPimary} = Colors
 const Progress = () => {
   return (
     <View style={style.container}>
@@ -70,12 +72,8 @@ const style = StyleSheet.create({
     margin: 10,
     marginBottom: 120,
     borderRadius: 15,
-    backgroundColor:'rgba(249, 249, 249, 0.56)',
+    backgroundColor:'rgba(11, 14, 17, 1)',
     padding: 10,
-
-
-
-
   },
   progressContainer: {
     flex: 1,
@@ -89,7 +87,7 @@ const style = StyleSheet.create({
     marginLeft: 10,
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black'
+    color: textPimary
   },
   progressItemsContainer: {
     flex: 1,

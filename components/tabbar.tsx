@@ -9,8 +9,8 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
   
   console.log("TabBar route States:", state.route)
   const {isTabOpen} = useTabContext()
-    const primaryColor ='rgba(255, 255, 255, 1)'
-    const inactiveColor='#737373'
+    const primaryColor ='#0b121'
+    const inactiveColor='#606565'
     const [dimentions, setDimentions] = useState({height:20,width:100})
     const buttonWidth = dimentions.width / 3 //btn with will be created based on the number of tabas
     const onTabBarLayout = (e:LayoutChangeEvent) =>{
@@ -29,7 +29,7 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
    isTabOpen && <View onLayout={onTabBarLayout}style={Style.container}>
       <Animated.View style={[animatedStyle,{
         position:'absolute',
-        backgroundColor:'rgba(167, 177, 179, 0.73)',
+        backgroundColor:'#cccad1',
         borderRadius:15,  
         margin:10,
         height:dimentions.height-20,
@@ -111,7 +111,7 @@ const Style = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         marginHorizontal:20,
-        backgroundColor:'#120722ff',
+        backgroundColor:'#0b1212',
         paddingVertical:15,
         borderRadius:20,
         borderCurve:'continuous',

@@ -1,11 +1,11 @@
 import ChallengeStartModal from '@/components/ChallengeStartModal';
 import WorkoutSessionScreen from '@/components/WorkoutSessionScreen';
+import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-
 import {
   Animated,
   Dimensions,
@@ -16,8 +16,10 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+const {background,cardBackground,cardBackgroundSecondary,textPimary,textSecondary,primaryBackground,secondaryBackground} = Colors
 
 const { width, height } = Dimensions.get('window');
+
 
 type RootStackParamList = {
   ChallengeDetails: { data: any };
@@ -128,8 +130,8 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
   return (
    
     <LinearGradient
-      colors={['#b2939337', '#bbff3d7b', '#6bcb786b','#4d96ff']} // Array of colors for the gradient
-        start={{ x: 0, y: 0 }} // Start point of the gradient (top-left)
+      colors={['#00000037', '#000000f6', '#000000ff','#000000ff']} // Array of colors for the gradient
+        start={{ x: 0, y: 0 }} 
         end={{ x: 1, y:1 }}
     style={styles.container}>
       
@@ -224,26 +226,20 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
             <TouchableOpacity style={styles.primaryButton}
             onPress={() => setShowChallengeStartModal(true)}
             >
-              <LinearGradient
-                colors={['#667eea', '#764ba2']}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              />
               <Ionicons name="play-circle" size={20} color="#FFF" />
               <Text style={styles.primaryButtonText}>Start Challenge</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.secondaryButton}>
+            {/* <TouchableOpacity style={styles.secondaryButton}>
               <Ionicons name="bookmark-outline" size={20} color="#666" />
               <Text style={styles.secondaryButtonText}>Save</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Schedule Section */}
           <View style={styles.scheduleSection}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Workout Schedule</Text>
+              <Text style={styles.sectionTitle}>Challenge Workout Schedule</Text>
               <Text style={styles.sectionSubtitle}>
                 {data.duration}-day program • {data.level}
               </Text>
@@ -345,7 +341,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   overviewCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: cardBackground,
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
@@ -357,7 +353,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#666',
+    color: textPimary,
     lineHeight: 24,
     marginBottom: 24,
   },
@@ -372,12 +368,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: textPimary,
     marginTop: 8,
   },
   statLabel: {
     fontSize: 12,
-    color: '#999',
+    color: textSecondary,
     marginTop: 4,
   },
   difficultyBadge: {
@@ -391,6 +387,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   actionButtons: {
+   
     flexDirection: 'row',
     gap: 12,
     marginBottom: 30,
@@ -404,9 +401,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 15,
     overflow: 'hidden',
+     backgroundColor:primaryBackground,
   },
   primaryButtonText: {
-    color: '#FFF',
+    color:textPimary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -436,7 +434,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color:textPimary,
     marginBottom: 4,
   },
   sectionSubtitle: {
@@ -444,7 +442,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   dayCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#2a302e75',
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
@@ -452,7 +450,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.05,
     shadowRadius: 15,
-    elevation: 5,
+    
   },
   dayCardHeader: {
     flexDirection: 'row',
@@ -463,13 +461,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#667eea',
+    backgroundColor: textSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   dayNumberText: {
-    color: '#FFF',
+    color: textPimary,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -479,12 +477,12 @@ const styles = StyleSheet.create({
   dayTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: textPimary,
     marginBottom: 2,
   },
   dayFocus: {
     fontSize: 14,
-    color: '#666',
+    color: textSecondary,
   },
   workoutsContainer: {
     marginBottom: 20,
@@ -498,14 +496,14 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#667eea',
+    backgroundColor: secondaryBackground,
     marginTop: 8,
     marginRight: 12,
   },
   workoutText: {
     flex: 1,
     fontSize: 14,
-    color: '#555',
+    color: textPimary,
     lineHeight: 20,
   },
   dayCardFooter: {
@@ -520,12 +518,12 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 12,
-    color: '#666',
+    color:textSecondary,
   },
   startButton: {
     paddingHorizontal: 20,
     paddingVertical: 8,
-    backgroundColor: '#667eea',
+    backgroundColor: secondaryBackground,
     borderRadius: 20,
   },
   startButtonText: {
@@ -535,7 +533,7 @@ const styles = StyleSheet.create({
   },
   tipsCard: {
     flexDirection: 'row',
-    backgroundColor: '#FFF8E1',
+    backgroundColor: cardBackgroundSecondary,
     borderRadius: 20,
     padding: 20,
     alignItems: 'flex-start',

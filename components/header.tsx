@@ -1,6 +1,8 @@
+import { Colors } from '@/constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+const {cardBackground,textPimary,textSecondary} = Colors
 const Header = () => {
 
 
@@ -9,12 +11,12 @@ const Header = () => {
       <View>
         <Text style={{
           fontFamily:'bebas',
-          color:'gray'
+          color:textSecondary
         }}>Hey There</Text>
         <Text style={{
           fontFamily:'bebas',
           fontSize:18,
-          color:'white',
+          color:textPimary,
           fontWeight:'bold'
         }}>Charitha Iravana</Text>
       </View>
@@ -33,7 +35,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(249, 249, 249, 0.56)',
+    backgroundColor: '#1b2220',
     maxHeight: 70,
     padding: 10,
     margin:10,

@@ -1,4 +1,3 @@
-import Schedule from "@/components/Schedule"
 
 interface schedule {
     day: string,
@@ -377,10 +376,11 @@ export const mealPlanData = {
 };
 
 export const mainSchedules =
-{
-    basic: {
-        title: 'Basic',
+[
+   {
+        title: 'Basic Schedule',
         frequency: 'day after day',
+        workoutsCount:10,
         workouts: [
             {
                 day: 1,
@@ -402,9 +402,10 @@ export const mainSchedules =
         focus: ["Balanced full-body workout with emphasis on chest", "Shoulders", "Arms", "Basic strength"]
     },
 
-    secondSchedule: {
+   {
         title: '2nd Schedule',
         frequency: 'day after day',
+        workoutsCount:11,
         workouts: [
             {
                 day: 1,
@@ -426,13 +427,14 @@ export const mainSchedules =
         focus: ["Upper-body dominant routine targeting back", "Shoulders", "Arms", "Legs and forearms"]
     },
 
-    thirdSchedule: {
+     {
         title: '3rd Schedule',
         frequency: '2 Days',
+        workoutsCount:20,
         workouts: [
             {
                 day: 1,
-                Schedule: [{ id: 1, name: "Standing Shoulder Press", reps: [12, 10, 8, 6] },
+                schedule: [{ id: 1, name: "Standing Shoulder Press", reps: [12, 10, 8, 6] },
                 { id: 2, name: "One-Arm Dumbbell Side Lateral Raise", reps: ["10-12", "10-12", "10-12", "10-12"] },
                 { id: 3, name: "Incline Dumbbell Press", reps: [12, 10, 8, 6] },
                 { id: 4, name: "Incline Dumbbell Flyes", reps: ["10-12", "10-12", "10-12", "10-12"] },
@@ -445,9 +447,9 @@ export const mainSchedules =
             },
             {
                 day: 2,
-                Schedule: [{ id: 1, name: "Wide-Grip Upright Row", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                schedule: [{ id: 1, name: "Wide-Grip Upright Row", reps: ["10-12", "10-12", "10-12", "10-12"] },
                 { id: 2, name: "Bent-Over Side Lateral (Chest Supported)", reps: ["12-15", "12-15", "12-15", "12-15"] },
-                { id: 3, name: "Pull-Up", reps: [10, 4] },
+                { id: 3, name: "Pull-Up", reps: [10, 10,10,10] },
                 { id: 4, name: "One-Arm Dumbbell Row", reps: [12, 10, 8, 6] },
                 { id: 5, name: "Wide-Grip T-Bar Row", reps: [12, 10, 8, 6] },
                 { id: 6, name: "Wall Curl (Biceps)", reps: [12, 10, 8, 6] },
@@ -462,6 +464,6 @@ export const mainSchedules =
 
     }
 
-};
+];
 
 export default challenges

@@ -1,10 +1,11 @@
 
 
+import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
+const {textPimary,textSecondary} = Colors
 const ProgressIndicator = ({title,mainText,subText,icon,value,actionColor,gradientArray}) => {
     const progressValue =90
   return (
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
 
     },
     headingText:{
-        color:'#fff',
+        color:textPimary,
         fontSize:17,
         fontWeight:'bold',
     },
@@ -81,12 +82,12 @@ const styles = StyleSheet.create({
     mainContentText:{
         fontSize:28,
         fontWeight:'bold',
-        color:"#fff",
+        color:textPimary,
         marginBottom:2
     },
     mainContentSubText:{
        fontSize: 12,
-        color: 'rgba(255, 255, 255, 0.6)',
+        color: textSecondary,
         marginBottom: 12,
     },
     progressBarContainer:{
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
         
     }, 
     progressBarText:{
-        color:'#fff',
+        color:textPimary,
         fontWeight:'bold',
     }
 
