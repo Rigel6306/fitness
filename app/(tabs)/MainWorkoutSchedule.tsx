@@ -1,30 +1,19 @@
+import CurentScheduleCard from '@/components/mainWorkouts/CurentScheduleCard';
+import ScheduleCard from '@/components/mainWorkouts/ScheduleCard';
+import WorkoutsListModal from '@/components/mainWorkouts/WorkoutListModal';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
-import ExercisesCard from '@/components/ui/ExercisesCard';
 import TipsCard from '@/components/ui/TipsCard';
 import { Colors } from '@/constants/Colors';
 import { mainSchedules } from '@/data/data';
 import { getAsyncStorageData, setAsyncStorageData } from '@/services/asynchStorageService';
 import { getSchedule } from '@/services/workoutService';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const { primaryBackground,
-  secondaryBackground,
-  textPimary,
-  textSecondary,
-  cardBackground,
-  cardBackgroundSecondary,
-  background } = Colors
-
-
-
-
+const { textPimary, textSecondary } = Colors
 const HeadingProgress = () => (
   <View style={styles.headingProgressContainer}>
     <View style={styles.progressItem}>
@@ -36,184 +25,79 @@ const HeadingProgress = () => (
       <Text style={{ fontWeight: 'bold', color: '#ffffff9a' }}  >Days Completed</Text>
       <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>0/30</Text>
     </View>
-
   </View>
 )
-//displays Each Schedule overview
-const ScheduleCard = ({ title, frequency, duration, index, dayCount, workoutsCount }) => {
 
-  return (
-    <Pressable
-      style={({ pressed }) => [pressed && { opacity: 0.5 }]}
-    >
-      <LinearGradient
-        style={styles.scheduleCardContainer}
-        colors={['#2d3231de', '#1b222091']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View >
-          <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 40, width: 40, backgroundColor: '#ffffff3a', borderRadius: 100 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{index + 1}</Text>
-          </View>
-        </View>
-        <View style={{ display: 'flex', marginLeft: 10, }}>
-          <Text style={{ fontSize: 15, color: textPimary, marginBottom: 2, marginLeft: 2 }}>{title}</Text>
-          <Text style={{ fontSize: 13, color: textSecondary, marginLeft: 3 }}>{frequency}</Text>
-          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 20 }}>
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-              <MaterialIcons name="calendar-month" size={24} color="rgba(73, 193, 143, 1)" />
-              <Text style={{ color: textSecondary }}>{duration} Months</Text>
-            </View>
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 5, alignItems: 'center' }} >
-              <MaterialCommunityIcons name="sine-wave" size={24} color="rgba(103, 47, 201, 0.88)" />
-              <Text style={{ color: textSecondary }}>{dayCount} Day</Text>
-            </View>
-          </View>
-        </View>
-        <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <FontAwesome6 name="dumbbell" size={20} color="rgba(141, 187, 47, 0.72)" />
-          <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#fff3f398' }}>{workoutsCount}</Text>
-          <Text style={{ fontSize: 13, color: '#ffffff3e', fontWeight: 'bold' }}>Workouts</Text>
-        </View>
-      </LinearGradient>
-    </Pressable>
-  )
-}
-//Displays Curent Schedule Day Card
-const CurentScheduleCard = ({ workout, setModalVisible, selectedDaySchedule }) => {
-  const maxItems = 3
-  const itemList = workout.schedule.slice(0, maxItems)
-  const remainingCount = workout.schedule.length - maxItems
-  return (
-
-    <LinearGradient
-      colors={['#1d201fff', '#2d302f35']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.dayCardContainer}>
-      <Pressable onPress={() => {
-        selectedDaySchedule(workout)
-        setModalVisible(true)
-      }}
-        style={({ pressed }) => [pressed && { opacity: 0.5 }]}
-      >
-        <View style={styles.dayCardHeading}>
-          <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 60, width: 60, backgroundColor: '#ffffff3a', borderRadius: 100 }}>
-            <FontAwesome6 name="person-running" size={24} color="black" />
-          </View>
-          <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 20, color: textPimary, fontWeight: 'bold' }}>Day - {workout.day}</Text>
-            <Text style={{ color: textSecondary }}>10 Exercices</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={24} color="black" />
-        </View>
-        <LinearGradient
-          style={{ height: 1, marginTop: 10, }}
-          colors={['rgba(4, 4, 4, 0)', 'rgba(49, 100, 115, 0.68)', 'rgba(156, 161, 156, 0)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
-        <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', marginLeft: 60, marginTop: 20, }}>
-          {
-            itemList.map((item, index) => (
-              <Text key={index} style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 5, color: '#ffffff92' }}>
-                • {item.name}
-              </Text>
-            ))
-          }
-          {
-            remainingCount > 0 && <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 5, color: '#ffffff92' }} >
-              • +{remainingCount} More
-            </Text>
-          }
-        </View>
-      </Pressable>
-    </LinearGradient>
-
-  )
-}
-
-const WorkoutsListModal = ({ modalVisible, setModalVisible, selectedDaySchedule }) => {
-
-  return (
-    <Modal
-      transparent={true}
-      visible={modalVisible}
-      animationType='slide'
-      onRequestClose={() => setModalVisible(false)}
-      style={{}}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalHeading}>
-          <Text style={{ fontSize: 25, fontWeight: 'bold', color: textPimary }}>Basic Schedule</Text>
-          <Text style={{ fontSize: 15, fontWeight: 'bold', color: textSecondary }}>Day {selectedDaySchedule.day} - 10 Exercises</Text>
-
-        </View>
-        <View style={styles.modalBody}>
-
-          {
-            // mainSchedules[1].workouts[0].schedule.map((item,index)=>(
-            //   <ExercisesCard key={index}/>
-            // ))
-
-            <FlatList
-              data={selectedDaySchedule.schedule}
-              renderItem={({ item }) => <ExercisesCard id={item.id} name={item.name} reps={item.reps} />}
-              keyExtractor={({ id }) => id.toString()}
-            />
-          }
-
-        </View>
-
-      </View>
-
-    </Modal>
-  )
-}
-
-type Exercise={
-  id:number,
-  name:string,
-  reps:(number|string)[]
+type Exercise = {
+  id: number,
+  name: string,
+  reps: (number | string)[]
 }
 type Workouts = {
-  day:number,
-  schedule:Exercise[]
+  day: number,
+  schedule: Exercise[]
 }
-
 type ScheduleType = {
-  title:string;
-  frequency:string,
-  workoutsCount:number,
-  workouts:Workouts[],
-  duration:number,
-  focus:string[]
+  id: string,
+  title: string,
+  frequency: string,
+  workoutsCount: number,
+  workouts: Workouts[],
+  duration: number,
+  focus: string[]
 }
 
 const MainWorkoutSchedule = () => {
   const [modelVisible, setModelVisible] = useState(false)
   const [selectedDaySchedule, setSelectedDaySchedule] = useState([])
   const [schedule, setSchedule] = useState<ScheduleType | null>();
+  const [workoutList, setWorkoutList] = useState<any>()
+  const today = new Date().toISOString().split('T')[0]
   useEffect(() => {
 
     const loadData = async () => {
-      const parse = await getAsyncStorageData('schedule', setSchedule)
-      if (!parse) {
-        getSchedule(setSchedule)
 
+      const storedSchedule = await getAsyncStorageData('schedule')
+      if (storedSchedule) {
+        setSchedule(storedSchedule)
+        const storedWorkouts = await getAsyncStorageData('workoutsList')
+        console.log(storedWorkouts.date === today)
+        //same day-> keep stored data
+        if (storedWorkouts.date === today) {
+          setWorkoutList(storedWorkouts)
+        }
+        else {//new day-> create a fresh list
+          const newWorkoutsList = { date: today, list: storedWorkouts.list.map(item => ({ ...item, ['isComplete']: false })) }
+          setWorkoutList(newWorkoutsList)
+          await setAsyncStorageData('workoutsList', newWorkoutsList)
+        }
+      } else {
+        const dbSchedule = await getSchedule()
+        setSchedule(dbSchedule)
       }
-
     }
     loadData()
   }, [])
-
   useEffect(() => {
-    if (schedule) {
-      setAsyncStorageData('schedule', schedule)
+    const initData = async () => {
+      if (schedule?.workouts?.[0]?.schedule) {
+        const storedWorkouts = await getAsyncStorageData('workoutsList')
+        if (storedWorkouts) {
+          setWorkoutList(storedWorkouts)
+        } else {
+          const currentWorkoutList = { list: schedule.workouts[0].schedule.map(item => ({ ...item, ['isComplete']: false })), date: today }
+
+          setWorkoutList(currentWorkoutList)
+          setAsyncStorageData('workoutsList', currentWorkoutList)
+        }
+        setAsyncStorageData('schedule', schedule)
+      }
     }
+
+    initData()
+
   }, [schedule])
 
-  console.log('state after useState', schedule)
   return (
     <>
       <LinearGradient
@@ -271,7 +155,6 @@ const MainWorkoutSchedule = () => {
                 }
               </View>
               {/*Curent Schedule Day Card, */}
-
               {
                 schedule && schedule.workouts.map((workout, index: React.Key) => (
                   <CurentScheduleCard
@@ -286,12 +169,13 @@ const MainWorkoutSchedule = () => {
         </View>
 
       </LinearGradient>
-      <WorkoutsListModal
+      {workoutList && <WorkoutsListModal
+        setWorkoutsList={setWorkoutList}
+        workoutsList={workoutList}
         modalVisible={modelVisible}
         setModalVisible={setModelVisible}
         selectedDaySchedule={selectedDaySchedule}
-      />
-
+      />}
     </>
   )
 }
@@ -362,22 +246,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   //ScheduleCard
-  scheduleCardContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: 10,
-    gap: 10,
-    alignItems: 'center',
-    borderRadius: 20,
-    height: 130,
-    padding: 10
-
-  },
   // Curent Schedule
   currentScheduleContainer: {
     margin: 10,
     marginTop: 20
-
   },
 
   curentScheduleHeading: {
@@ -401,42 +273,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#1b2220dc'
   },
-  dayCardContainer: {
-    height: 200,
-
-    borderRadius: 15,
-    padding: 10,
-    marginBottom: 10,
-  },
-  dayCardHeading: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    justifyContent: 'space-between'
-  },
   // WORKOUT Modal 
-  modalContainer: {
-    flex: 1,
-    padding: 10,
-    borderTopStartRadius: 20,
-    borderTopEndRadius: 20,
-    backgroundColor: "#000000ff",
-  },
-  modalHeading: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
 
-  },
-  modalBody: {
-    display: 'flex',
-    flex: 5,
-
-
-
-  },
 })
 
 export default MainWorkoutSchedule

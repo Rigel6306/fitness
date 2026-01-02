@@ -7,7 +7,7 @@ const {width,height} = Dimensions.get('screen')
 const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,navigation:any}) => {
 
   
-  console.log("TabBar route States:", state.route)
+
   const {isTabOpen} = useTabContext()
     const primaryColor ='#0b121'
     const inactiveColor='#606565'
@@ -35,11 +35,9 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
         height:dimentions.height-20,
         width:buttonWidth-25
       }]}/>
-        
-   
+  
     {state.routes.map((route:any, index:number) => {
       const { options } = descriptors[route.key];
-      console.log("route map", route.name)
       const label =
         options.tabBarLabel !== undefined
           ? options.tabBarLabel

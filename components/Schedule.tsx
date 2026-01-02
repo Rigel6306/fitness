@@ -22,7 +22,7 @@ const Schedule = () => {
               {/* Overlay with opacity */}
               <View style={{
                 ...StyleSheet.absoluteFillObject,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                backgroundColor: 'rgba(59, 57, 57, 0.5)',
 
               }} />
 
@@ -47,14 +47,14 @@ const Schedule = () => {
 
                   height: '100%',
                   width: '100%',
-                  backgroundColor: '#4d79bbdf',
+                  backgroundColor: '#313f55df',
                 }}
               />
             </View>
 
 
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(163, 24, 61, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
+          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(67, 48, 95, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
             <Text style={style.yourWeight}>
               110
             </Text>
@@ -64,7 +64,7 @@ const Schedule = () => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={{
-          flex: 1, backgroundColor: 'hsla(73, 15%, 50%, 1.00)',
+          flex: 1, backgroundColor: 'hsla(60, 1%, 29%, 1.00)',
           alignItems: 'center', justifyContent: 'center',
           elevation: 15, borderRadius: 15
         }}>
