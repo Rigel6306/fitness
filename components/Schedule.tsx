@@ -1,9 +1,12 @@
 
 import { useNavigation, useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
+import { useState } from 'react'
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import WeightTargetModal from './weightTarget/WeightTargetModal'
 const Schedule = () => {
 
+  const [isModalOpen,setIsModalOpen] = useState(false)
   const router = useRouter()
   const navigator = useNavigation()
   return (
@@ -54,7 +57,9 @@ const Schedule = () => {
 
 
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(67, 48, 95, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
+          <TouchableOpacity
+          onPress={()=>{setIsModalOpen(!isModalOpen)}}
+          style={{ flex: 1, backgroundColor: 'rgba(67, 48, 95, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
             <Text style={style.yourWeight}>
               110
             </Text>
@@ -73,7 +78,10 @@ const Schedule = () => {
 
         </TouchableOpacity>
       </View>
-
+        <WeightTargetModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        />
     </View>
   )
 }

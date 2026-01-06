@@ -1,6 +1,7 @@
 import TabBar from '@/components/tabbar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { TabContextComp } from '@/context/tabContext';
+import UserDataContextWrapper from '@/context/userDataContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Tabs } from 'expo-router';
 import React from 'react';
@@ -10,7 +11,9 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <TabContextComp>
+
+      <UserDataContextWrapper>
+            <TabContextComp>
       <Tabs tabBar={(props) => <TabBar {...props} />}>
 
         <Tabs.Screen
@@ -66,6 +69,8 @@ export default function TabLayout() {
 
 
       </Tabs>
-    </TabContextComp>
+       </TabContextComp>
+      </UserDataContextWrapper>
+   
   );
 }

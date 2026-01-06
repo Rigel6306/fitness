@@ -28,8 +28,9 @@ useEffect(() => {
     <Stack screenOptions={{headerShown:false}}> 
         {
            user ? (
-           
+          
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+           
           
           ) : (
            

@@ -9,7 +9,7 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
   
 
   const {isTabOpen} = useTabContext()
-    const primaryColor ='#0b121'
+    const primaryColor ='rgba(16, 17, 16, 0.96)'
     const inactiveColor='#606565'
     const [dimentions, setDimentions] = useState({height:20,width:100})
     const buttonWidth = dimentions.width / 3 //btn with will be created based on the number of tabas
@@ -35,6 +35,8 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
         height:dimentions.height-20,
         width:buttonWidth-25
       }]}/>
+
+   
   
     {state.routes.map((route:any, index:number) => {
       const { options } = descriptors[route.key];
@@ -48,7 +50,14 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
       const isFocused = state.index === index;
       if (['_sitemap','+not-found','articles','MainWorkoutSchedule','ChallengeDetails','MealPlan','signup','(assignements)','assignementDetails','videoList','previousVideo'].includes(route.name)) return null
       const onPress = () => {
-        tabPositionX.value =withSpring(buttonWidth* index+2, {duration:1500})
+        tabPositionX.value =withSpring(buttonWidth* index+2, {
+              damping:15,
+              mass:1,
+              stiffness:180,
+              overshootClamping:false,
+              
+          
+              })
         const event = navigation.emit({
           type: 'tabPress',
           target: route.key,

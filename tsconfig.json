@@ -1,9 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-     "typeRoots": ["./node_modules/@types", "./types"],
-      "jsx": "react-native",
-    "strict": false,
+    "strict": true,
     "paths": {
       "@/*": [
         "./*"
@@ -15,10 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/index.jsx"  ]
-,
-"rules": {
-  "react/jsx-uses-react": "off",
-  "react/react-in-jsx-scope": "off"
-}
+  ]
 }

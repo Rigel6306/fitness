@@ -59,11 +59,12 @@ const MainWorkoutSchedule = () => {
 
       const storedSchedule = await getAsyncStorageData('schedule')
       if (storedSchedule) {
-        setSchedule(storedSchedule)
+        
         const storedWorkouts = await getAsyncStorageData('workoutsList')
-        console.log(storedWorkouts.date === today)
+        setSchedule(storedSchedule)
+        console.log('Stored Workouts at useEffectS',storedWorkouts)
         //same day-> keep stored data
-        if (storedWorkouts.date === today) {
+        if (storedWorkouts&&storedWorkouts.date === today) {
           setWorkoutList(storedWorkouts)
         }
         else {//new day-> create a fresh list
