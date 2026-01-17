@@ -1,3 +1,5 @@
+import { Colors } from '@/constants/Colors';
+import { mealPlanData } from '@/data/data';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
@@ -15,7 +17,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { mealPlanData } from '@/data/data';
+const {textPimary,textSecondary,secondaryBackground,primaryBackground,cardBackground,cardBackgroundSecondary,background}=Colors
 const { width, height } = Dimensions.get('window');
 
 const MealPlanScreen = () => {
@@ -162,10 +164,8 @@ const MealPlanScreen = () => {
   );
 
   return (
-    <LinearGradient
-      colors={['#b2939337', '#bbff3d7b', '#6bcb786b', '#4d96ff']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+    <View
+    
       style={styles.container}
     >
       <StatusBar barStyle="light-content" />
@@ -375,7 +375,7 @@ const MealPlanScreen = () => {
           />
         )}
       </Modal>
-    </LinearGradient>
+    </View>
   );
 };
 
@@ -479,6 +479,7 @@ const getMealTypeColor = (type: string) => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor:'rgb(0, 0, 0)',
     flex: 1,
   },
   header: {
@@ -520,7 +521,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   overviewCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: secondaryBackground,
     borderRadius: 20,
     padding: 24,
     marginBottom: 20,
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#666',
+    color: textPimary,
     lineHeight: 24,
     marginBottom: 24,
   },
@@ -547,7 +548,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: textSecondary,
     marginTop: 8,
   },
   statLabel: {
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   primaryButtonText: {
-    color: '#FFF',
+    color: textPimary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -582,7 +583,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    backgroundColor: '#FFF',
+    backgroundColor: '#8f4949',
     borderRadius: 15,
     borderWidth: 1,
     borderColor: '#E0E0E0',
@@ -602,14 +603,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 15,
     overflow: 'hidden',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 5,
   },
   dayButtonSelected: {
-    shadowColor: '#667eea',
+    shadowColor: '#4b516b',
     shadowOpacity: 0.2,
     shadowRadius: 15,
   },
@@ -645,15 +645,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: textPimary,
     marginBottom: 4,
   },
   sectionSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: textSecondary,
   },
   mealCard: {
-    backgroundColor: '#FFF',
+    backgroundColor: secondaryBackground,
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
   mealName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: textPimary,
     marginBottom: 8,
   },
   caloriesContainer: {
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
   },
   caloriesText: {
     fontSize: 14,
-    color: '#666',
+    color: textSecondary,
   },
   macroTags: {
     flexDirection: 'row',

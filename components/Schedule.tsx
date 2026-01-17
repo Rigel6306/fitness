@@ -4,9 +4,11 @@ import LottieView from 'lottie-react-native'
 import { useState } from 'react'
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import WeightTargetModal from './weightTarget/WeightTargetModal'
+import PackageSelectionModal from './PackageSelectionModal'
 const Schedule = () => {
 
   const [isModalOpen,setIsModalOpen] = useState(false)
+  const [isPackageModalOpen,setIsPackageModalOpen] = useState(false)
   const router = useRouter()
   const navigator = useNavigation()
   return (
@@ -68,7 +70,9 @@ const Schedule = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={{
+        <TouchableOpacity 
+        onPress={()=>{setIsPackageModalOpen(!isPackageModalOpen)}}
+        style={{
           flex: 1, backgroundColor: 'hsla(60, 1%, 29%, 1.00)',
           alignItems: 'center', justifyContent: 'center',
           elevation: 15, borderRadius: 15
@@ -81,6 +85,10 @@ const Schedule = () => {
         <WeightTargetModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        />
+        <PackageSelectionModal
+        isVisible={isPackageModalOpen}
+        onClose={()=>setIsPackageModalOpen(false)}
         />
     </View>
   )

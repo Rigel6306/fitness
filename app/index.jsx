@@ -1,6 +1,6 @@
 import { Link, useNavigation } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dimensions,
   ImageBackground,
@@ -10,9 +10,12 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { useUserDataContext } from '../hooks/useContext';
 import { auth } from "../services/firebase";
-const {width,height} = Dimensions.get('screen')
+const { width, height } = Dimensions.get('screen')
 const Login = () => {
+
+  const {userId,setUserId} = useUserDataContext()
   const navigator = useNavigation();
   // const [initializing, setInitializing] = useState(true);
   // const [user, setUser] = useState();
@@ -49,36 +52,42 @@ const Login = () => {
   //       );
   //       return true;
   //     };
-  
+
   //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  
-      
+
+
   //   }, [])
   // );
-  
+
 
 
   const [error, setError] = useState(null);
-  
+
   const signIn = async () => {
-    
+
     setError(null)
-    signInWithEmailAndPassword(
-      auth,
-      userCredentials.email,
-      userCredentials.password
-    )
-      .then((data) => {
-        setUserCredentials({
-          email: null,
-          password: null,
-        })
-        navigator.navigate("(tabs)");
+
+    try {
+
+      const userData = await signInWithEmailAndPassword(
+        auth,
+        userCredentials.email,
+        userCredentials.password
+      )
+      setUserCredentials({
+        email: null,
+        password: null,
       })
-      .catch((err) => {
-        console.log(err);
-        setError("Login Error, Please Check Your Email And Password and Retry");
-      });
+      const user = userData.user
+      setUserId(user.uid)
+      navigator.navigate("(tabs)");
+    } catch (err) {
+      console.log(err);
+      setError("Login Error, Please Check Your Email And Password and Retry");
+    }
+
+
+
   };
   const handlePress = () => {
     // navigator.navigate("(tabs)");
@@ -88,7 +97,6 @@ const Login = () => {
   const handelValues = (property, value) => {
     setError(null)
     setUserCredentials(() => ({ ...userCredentials, [property]: value }));
-    console.log(userCredentials);
   };
 
   return (
@@ -117,30 +125,30 @@ const Login = () => {
               handelValues("password", value);
             }}
           />
-          
-            <TouchableOpacity onPress={handlePress} style={style.submit}>
-              <Text>Log In</Text>
-            </TouchableOpacity>
 
-            {error && <Text style={style.errTxt}>Please check your Email or Password and try again</Text>}
+          <TouchableOpacity onPress={handlePress} style={style.submit}>
+            <Text>Log In</Text>
+          </TouchableOpacity>
+
+          {error && <Text style={style.errTxt}>Please check your Email or Password and try again</Text>}
           <View style={style.optionContaier}>
             <Link href={"forgetPassword"} asChild>
               <TouchableOpacity style={style.optionBtn}>
                 <Text>Forgot Password</Text>
               </TouchableOpacity>
             </Link>
-           
+
             <Link href={"signup"} asChild>
               <TouchableOpacity
-              style={style.optionBtn}
+                style={style.optionBtn}
               >
                 <Text>SignUp</Text>
               </TouchableOpacity>
             </Link>
           </View>
-        
+
         </View>
-      
+
       </View>
 
       {/* <Button title="Press" onPress={handlePress}> </Button> */}
@@ -167,8 +175,8 @@ const style = StyleSheet.create({
   loginContainer: {
     flex: 1,
     alignItems: "center",
-    width:width-10,
-    maxHeight:400,
+    width: width - 10,
+    maxHeight: 400,
     backgroundColor: "rgba(248, 245, 246, 0.69)",
     padding: 10,
     borderRadius: 25,
@@ -193,28 +201,28 @@ const style = StyleSheet.create({
     height: 40,
     backgroundColor: "rgba(136, 231, 162, 0.8)",
     borderRadius: 10,
-    margin:10,
+    margin: 10,
   },
   optionContaier: {
     flex: 1,
-    marginTop:30,
+    marginTop: 30,
     flexDirection: "row",
-    alignItems:'center',
-    justifyContent:'space-between',
-    gap:140,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 140,
   },
-  optionBtn:{
-    margin:10,
-    padding:10,
-    backgroundColor:'rgba(160, 173, 168, 0.33)',
-    borderRadius:15,
-    maxWidth:200,
-    alignItems:'center',
-    height:40,
+  optionBtn: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: 'rgba(160, 173, 168, 0.33)',
+    borderRadius: 15,
+    maxWidth: 200,
+    alignItems: 'center',
+    height: 40,
   },
-  errTxt:{
-    fontFamily:'Protest',
-    color:'crimson'
+  errTxt: {
+    fontFamily: 'Protest',
+    color: 'crimson'
   }
 });
 

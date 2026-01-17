@@ -12,9 +12,13 @@ const UserDataContextWrapper = ({children})=>{
         updatedOn:'2026-01-03'
     })
 
+    const [userData, setUserData] = useState('empty uid')
+
+   
+
     return(
 
-        <userDataContext.Provider value={{weightData,setWeightData}}>
+        <userDataContext.Provider value={{weightData,setWeightData,userData,setUserData}}>
                     {
                         children
                     }
