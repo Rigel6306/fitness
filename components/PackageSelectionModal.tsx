@@ -1,10 +1,12 @@
 
 import { Colors } from '@/constants/Colors';
-import { useUserDataContext } from '@/hooks/useContext';
-import { getAllDocs } from '@/services/userService';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useEffect, useState } from 'react';
 import { packageIcons } from '@/constants/icon';
+import { useUserDataContext } from '@/hooks/useContext';
+import { db } from '@/services/firebase';
+import { getAllDocs, updateDocument } from '@/services/userService';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { doc } from 'firebase/firestore';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -21,61 +23,84 @@ interface PackageSelectionModalProps {
 
 
 interface packageCardProps {
+  id: string,
   name: string,
   description: string,
   price: number,
-  icons:any[]
+  icons: any[],
+  isSelected: boolean,
+  handleSelect: (data: any) => void,
 }
 
 type IconKey = keyof typeof packageIcons;
-const PackageCard: React.FC<packageCardProps> = ({ name, description, price,icons }) => {
+const PackageCard: React.FC<packageCardProps> = React.memo(({ isSelected, handleSelect, name, description, price, icons, id }) => {
 
   return (
-    <Pressable style={({ pressed }) => [pressed && { opacity: 0.5 }]}>
-    <View style={styles.packageCardContainer}>
-      <View style={styles.pkgHeading}>
-        <Text style={{color:textPimary, fontSize:15,fontWeight:'bold'}}>{name}</Text>
-        <Text style={{color:'rgb(39, 132, 82)', fontSize:15,fontWeight:'bold'}}>Rs:{price}</Text>
-      </View>
-      <Text style={{marginTop:10, marginBottom:10,fontWeight:'bold',color:textSecondary}}>{description}</Text>
+    <Pressable
+      onPress={() => { handleSelect({ name, id }) }}
+      style={({ pressed }) => [pressed && { opacity: 0.5 }]}>
+      <View style={[styles.packageCardContainer, { backgroundColor: isSelected ? 'gray' : "rgb(38, 42, 46)" }]}>
+        <View style={styles.pkgHeading}>
+          <Text style={{ color: textPimary, fontSize: 15, fontWeight: 'bold' }}>{name}</Text>
+          <Text style={{ color: 'rgb(39, 132, 82)', fontSize: 15, fontWeight: 'bold' }}>Rs:{price}</Text>
+        </View>
+        <Text style={{ marginTop: 10, marginBottom: 10, fontWeight: 'bold', color: textSecondary }}>{description}</Text>
 
-      <View style={styles.iconsContainer}>
+        <View style={styles.iconsContainer}>
 
-        {
-          icons.map((Icon:any,i:number)=>(
-         React.cloneElement(packageIcons[Icon as IconKey](), { key: i })
-         
+          {
+            icons.map((Icon: any, i: number) => (
+              React.cloneElement(packageIcons[Icon as IconKey]({}), { key: i })
+
             )
-          
-          )
-        }
-       
+
+            )
+          }
+
+        </View>
+
       </View>
-      
-    </View>
     </Pressable>
   )
 
 }
-
+)
 const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible, onClose }) => {
 
-  const {userData} =useUserDataContext()
+  const { userData } = useUserDataContext()
+  const [selected, setSelected] = useState<{ id?: string; name?: string }>({})
+  const [gymPackages, setGymPackages] = useState<any[]>([])
 
-  const [gymPackages,setGymPackages] = useState<any[]>([])
+  const handleSelect = useCallback((data: any) => {
+    setSelected(data)
+  }, [])
 
-  useEffect(()=>{
-
-    const fetchPakacges = async ()=>{
-
-    const packageData = await  getAllDocs('package')
-    setGymPackages(packageData)
-
+  useEffect(() => {
+    const fetchPakacges = async () => {
+      const packageData = await getAllDocs('package')
+      setGymPackages(packageData)
     }
     fetchPakacges()
-    console.log(gymPackages)
-  },[])
-  
+  }, [])
+
+
+const handleSaveChanges = async () => {
+  try {
+    // Build a proper DocumentReference
+    const packageRef = doc(db, "package", selected.id);
+
+    const newData = {
+      ...userData,
+      packageRef, // <-- this is now a DocumentReference
+    };
+
+    await updateDocument(userData.id, newData, "users");
+    console.log("Successfully Updated");
+  } catch (err) {
+    console.log("Error updating user:", err);
+  }
+};
+
 
   return (
     <Modal
@@ -90,14 +115,14 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Text style={styles.headingText} >Packages</Text>
             <Pressable onPress={onClose}>
-              <Ionicons name="close-circle" size={34} color={textPimary}/>
+              <Ionicons name="close-circle" size={34} color={textPimary} />
             </Pressable>
           </View>
 
           <Text style={styles.curentPackageText}>Current Package</Text>
           <View style={styles.currentPackageContainer}>
-            <Text style={{ color: textPimary, fontSize: 17, fontWeight: 'bold' }}>Workouts Only</Text>
-            <Text style={{ color: "rgba(185, 91, 33, 1)", fontSize: 17, fontWeight: 'bold' }}>Rs. {userData.package.price}</Text>
+            <Text style={{ color: textPimary, fontSize: 17, fontWeight: 'bold' }}>{userData.package.name}</Text>
+            <Text style={{ color: "rgba(185, 91, 33, 1)", fontSize: 17, fontWeight: 'bold' }}>Rs. {userData.package.price} Per Month</Text>
           </View>
         </View>
 
@@ -105,11 +130,11 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
           <View>
           </View>
 
-        <Text style={{margin:10,padding:10,fontSize:22,fontWeight:'bold',color:textPimary}}>Available Packages</Text>
+          <Text style={{ margin: 10, padding: 10, fontSize: 22, fontWeight: 'bold', color: textPimary }}>Available Packages</Text>
           <ScrollView style={styles.scrollContainer}>
 
             {
-              gymPackages?.map((pkg) => (<PackageCard key={pkg.id} name={pkg.name} description={pkg.description} price={pkg.price} icons={pkg.icons} />))
+              gymPackages?.map((pkg) => (<PackageCard id={pkg.id} isSelected={selected.name === pkg.name} handleSelect={handleSelect} key={pkg.id} name={pkg.name} description={pkg.description} price={pkg.price} icons={pkg.icons} />))
             }
 
           </ScrollView>
@@ -118,7 +143,7 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
             <Pressable onPress={onClose} style={styles.cancleBtn}>
               <Text style={styles.actionBtnText}>Cancel</Text>
             </Pressable>
-            <Pressable style={styles.confirmBtn}>
+            <Pressable style={styles.confirmBtn} onPress={handleSaveChanges}>
               <Text style={styles.actionBtnText}>Confirm Change</Text>
             </Pressable>
           </View>
@@ -156,7 +181,7 @@ const styles = StyleSheet.create({
   },
   currentPackageContainer: {
     margin: 10,
-    backgroundColor:'rgba(42, 44, 46, 0.52)',
+    backgroundColor: "rgb(36, 36, 49)",
     borderRadius: 10,
     padding: 10,
     alignItems: 'center',
@@ -165,12 +190,12 @@ const styles = StyleSheet.create({
   },
   contentBody: {
     flex: 4,
-    backgroundColor: "rgb(13, 13, 14)",
+    backgroundColor: "rgb(18, 14, 28)",
     borderRadius: 20,
   },
   scrollContainer: {
-    margin:10,
-    flex:1,
+    margin: 10,
+    flex: 1,
   },
   packageCardContainer: {
     backgroundColor: "rgb(38, 42, 46)",
@@ -178,26 +203,26 @@ const styles = StyleSheet.create({
     margin: 10,
     flex: 1,
     borderRadius: 10,
-  
-  },
-  pkgHeading:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
 
   },
-  iconsContainer:{
+  pkgHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
 
-    flexDirection:'row',
-    alignItems:'center',
-    gap:10,
-    
+  },
+  iconsContainer: {
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+
   },
 
 
   actionBtnsContainer: {
     margin: 10,
-    padding:10,
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',

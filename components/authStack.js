@@ -13,6 +13,8 @@ const AuthStack = () => {
     const onAuthChanged = async (user) => {
       setUser(user);
       if (user) {
+
+        console.log(user,"at auth")
         const userData = await getUser(user.uid)
         setUserData(userData)
       } else setUserData(null)
@@ -22,13 +24,13 @@ const AuthStack = () => {
     return subscriber;
   }, [initializing]);
 
-  useEffect(() => {
-    if (!initializing && navigationState?.key) {
-      user
-        ? router.replace("/(tabs)")
-        : router.replace("/");
-    }
-  }, [initializing, navigationState?.key, user]);
+  // useEffect(() => {
+  //   if (!initializing && navigationState?.key) {
+  //     user
+  //       ? router.replace("/(tabs)")
+  //       : router.replace("/");
+  //   }
+  // }, [initializing, navigationState?.key, user]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

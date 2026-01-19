@@ -14,15 +14,20 @@ const SignUp = () => {
     <View style={styles.container}>
 
       <View style={styles.heading}>
+
         <View style={styles.headingTextContainer}>
           <FontAwesome5 name="dumbbell" size={34} color={textPimary} />
           <Text style={styles.headingText}>Create Your Account</Text>
         </View>
         <Text style={styles.headingSubText}>Start Your Fitness Journey Today !</Text>
+
       </View>
-      
-   <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView style={styles.contentBody}>
+
+  <KeyboardAvoidingView style={styles.contentBody} 
+   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <View >
+ 
+      <ScrollView >
         {/* Input Form Section */}
        
         
@@ -31,8 +36,8 @@ const SignUp = () => {
          <View style={styles.itemContainer}>
           <Text style={styles.inputTextHeading}>Membership Number</Text>
           <View style={styles.inputContainer}>
-            <FontAwesome5 name="id-card" size={24} color={textPimary} />
-            <TextInput style={styles.inputFiled} placeholder='54321' />
+            <AntDesign name="user" size={24} color="white" />
+            <TextInput style={styles.inputFiled} placeholder='Full Name' />
           </View>
         </View>
      
@@ -40,7 +45,7 @@ const SignUp = () => {
           <Text style={styles.inputTextHeading}>Full Name</Text>
           <View style={styles.inputContainer}>
             <AntDesign name="user" size={24} color="white" />
-            <TextInput style={styles.inputFiled} placeholder='Albert Einstine' />
+            <TextInput style={styles.inputFiled} placeholder='Full Name' />
           </View>
         </View>
 
@@ -104,10 +109,7 @@ const SignUp = () => {
           </View>
         </View>
 
-
-
-        <View style={{flexDirection:'row'}}> 
-           <View style={[styles.itemContainer,{flex:1}]}>
+        <View style={styles.itemContainer}>
           <Text style={styles.inputTextHeading}>Password</Text>
           <View style={styles.inputContainer}>
             <FontAwesome5 name="lock" size={24} color={textPimary} />
@@ -115,27 +117,18 @@ const SignUp = () => {
           </View>
         </View>
 
-         <View style={[styles.itemContainer,{flex:1}]}>
-          <Text style={styles.inputTextHeading}>Confirm Password</Text>
-          <View style={styles.inputContainer}>
-            <FontAwesome5 name="lock" size={24} color={textPimary} />
-            <TextInput style={styles.inputFiled} placeholder='*********' />
-          </View>
-        </View>
-
-        </View>
-       
-
 
   
    
       </ScrollView>
- </KeyboardAvoidingView>
+   
 
-      <View style={styles.signupBtnContianer}>
+  </View>
+   </KeyboardAvoidingView>
+       <View style={styles.signupBtnContianer}>
         <Pressable style={({pressed})=>[pressed&&{opacity:0.5},styles.signupBtn]} >
           
-            <Text style={styles.signUpBtntext}>Create Account</Text>
+            <Text>Hello</Text>
         </Pressable>
       </View>
 
@@ -146,12 +139,15 @@ const SignUp = () => {
 const styles = StyleSheet.create({
 
   container: {
+    flex:1,
     paddingTop: 20,
     backgroundColor: 'rgb(0, 0, 0)',
-    flex: 1,
+ 
   },
   heading: {
-    padding: 10,
+    flex:1,
+    backgroundColor:'green',
+    padding: 10,  
 
   },
   headingTextContainer: {
@@ -173,15 +169,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   contentBody: {
-    margin:10,
-    borderRadius:15,
+    flex:7,
     padding: 10,
-    backgroundColor:'rgb(23, 24, 37)'
+    backgroundColor: 'yellow'
 
   },
   itemContainer: {
   
-   
+    padding: 10,
 
   },
 
@@ -201,7 +196,7 @@ const styles = StyleSheet.create({
   },
   inputFiled: {
     color: textPimary,
-    flex: 1,
+    flex:1,
   },
   genderBtn: {
     backgroundColor: textSecondary,
@@ -215,14 +210,13 @@ const styles = StyleSheet.create({
   },
 
   signupBtnContianer: {
-    flex:1,
+    backgroundColor:'gray',
+    
     margin:10,
-   
-    justifyContent:'center',
+    padding:10,
   },
   signupBtn:{
-    backgroundColor:"rgb(43, 22, 32)",
-    flex:1,
+    backgroundColor:'green',
     padding:10,
     margin:10,
     alignItems:'center',
@@ -233,7 +227,6 @@ const styles = StyleSheet.create({
   signUpBtntext:{
     color:textPimary,
     fontWeight:'bold',
-    fontSize:20,
   },
 
 

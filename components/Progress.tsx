@@ -2,42 +2,29 @@ import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ProgressIndicator from './ui/progressIndicator';
-const {cardBackgroundSecondary,textPimary} = Colors
+
+const { cardBackgroundSecondary, textPimary } = Colors;
+
 const Progress = () => {
+  const targetDetails = [
+    { label: 'Daily Goal', value: '20 KG' },
+    { label: 'Weekly Progress', value: '65%' },
+    { label: 'Monthly Target', value: '400 KG' },
+    { label: 'Achievement Rate', value: '85%' },
+    { label: 'Best Day', value: '30 KG' },
+  ];
+
+  const challengeDetails = [
+    { label: 'Exercises Completed', value: '9/10' },
+    { label: 'Streak', value: '15 days' },
+    { label: 'Calories Burned', value: '2,450' },
+    { label: 'Workout Time', value: '5h 30m' },
+    { label: 'Difficulty Level', value: 'Advanced' },
+  ];
+
   return (
     <View style={style.container}>
-
-
-
-
-      {/* <View style={style.progressContainer}>
-              <Text style={style.progressText}>Target Progress</Text>
-                  <CircularProgress
-                    value={100}
-                    duration={2000}
-                    progressValueColor={'#ecf0f1'}
-                    maxValue={200}
-                    title={'KG'}
-                    titleColor={'rgba(233, 125, 53, 1)'}
-                    titleStyle={{fontWeight: 'bold'}}
-                  />
-
-            </View>
-
-            <View style={style.progressContainer}>
-              <Text style={style.progressText}>Challenge Progress</Text>
-                  <CircularProgress
-                    value={60}
-                    duration={2000}
-                    progressValueColor={'#ecf0f1'}
-                    maxValue={200}
-                    title={'KG'}
-                    titleColor={'rgba(233, 125, 53, 1)'}
-                    titleStyle={{fontWeight: 'bold'}}
-                  />
-            </View> */}
-
-      <Text style={style.progressText}>Performence Metrics</Text>
+      <Text style={style.progressText}>Performance Metrics</Text>
 
       <View style={style.progressItemsContainer}>
         <ProgressIndicator
@@ -48,31 +35,31 @@ const Progress = () => {
           subText={"Of 100 KG"}
           actionColor={'#667eea'}
           gradientArray={['rgba(102, 126, 234, 0.2)', 'rgba(102, 126, 234, 0.1)']}
-          />
+          details={targetDetails}
+        />
           
         <ProgressIndicator
           title={'Challenge'}
           icon={'barbell'}
           value={90}
-          mainText={"9 Exercices"}
-          subText={"Of 10 Exercices"}
+          mainText={"9 Exercises"}
+          subText={"Of 10 Exercises"}
           actionColor={'#894cafff'}
           gradientArray={['rgba(76, 175, 80, 0.2)', 'rgba(76, 175, 80, 0.1)']}
-          />
+          details={challengeDetails}
+        />
       </View>
-
     </View>
+  );
+};
 
-
-  )
-}
 const style = StyleSheet.create({
   container: {
     flex: 1,
     margin: 10,
     marginBottom: 120,
     borderRadius: 15,
-    backgroundColor:'rgba(11, 14, 17, 1)',
+    backgroundColor: 'rgba(11, 14, 17, 1)',
     padding: 10,
   },
   progressContainer: {
@@ -80,7 +67,6 @@ const style = StyleSheet.create({
     gap: 20,
     backgroundColor: 'rgba(81, 111, 142, 1)'
   },
-
   progressText: {
     textAlign: 'left',
     marginBottom: 10,
@@ -94,7 +80,6 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   }
+});
 
-
-})
-export default Progress
+export default Progress;

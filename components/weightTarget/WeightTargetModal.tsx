@@ -267,7 +267,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
 
               <View style={styles.targetButtonContainer}>
                 <Pressable
-                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: localWeightData.weightLoss ? "rgb(57, 112, 212)" : secondaryBackground }]}
+                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: localWeightData.weightLoss ? "rgb(38, 69, 62)" : secondaryBackground }]}
                   onPress={() => setLocalWeightData((prev) => ({ ...prev, weightLoss: true }))}
                 >
                   <Ionicons name="trending-down-outline" size={24} color="green" />
@@ -275,7 +275,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                 </Pressable>
 
                 <Pressable
-                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: !localWeightData.weightLoss ? "rgb(57, 112, 212)" : secondaryBackground }]}
+                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: !localWeightData.weightLoss ? "rgb(38, 69, 62)" : secondaryBackground }]}
                   onPress={() => setLocalWeightData((prev) => ({ ...prev, weightLoss: false }))}
                 >
                   <Ionicons name="trending-up-outline" size={24} color="crimson" />
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     borderRadius: 20,
-    backgroundColor: "rgb(13, 13, 14)",
+    backgroundColor: "rgb(36, 36, 49)",
   },
   progressHeading: {
     padding: 10,
@@ -390,13 +390,13 @@ const styles = StyleSheet.create({
   progressTrack: {
     height: '100%',
     borderRadius: 10,
-    backgroundColor: "rgb(40, 111, 152)",
+    backgroundColor: "rgb(38, 69, 62)",
   },
   weightGoalFormContainer: {
     padding: 10,
     marginTop: 10,
     borderRadius: 20,
-    backgroundColor: "rgb(13, 13, 14)"
+    backgroundColor: "rgb(36, 36, 49)"
   },
   goalHeadingText: {
     padding: 10,
