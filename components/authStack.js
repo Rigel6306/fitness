@@ -13,8 +13,6 @@ const AuthStack = () => {
     const onAuthChanged = async (user) => {
       setUser(user);
       if (user) {
-
-        console.log(user,"at auth")
         const userData = await getUser(user.uid)
         setUserData(userData)
       } else setUserData(null)

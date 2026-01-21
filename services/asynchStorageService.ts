@@ -15,7 +15,7 @@ export const getAsyncStorageData = async (key?: string) => {
 export const setAsyncStorageData = async (key: string, value) => {
     AsyncStorage.setItem(key, JSON.stringify(value))
 }
- let debounceTimer
+ let debounceTimer: number
 export const updateAsyncStorageOnDebounce = async (key:string, data) => {
     console.log("Debouncer Fired")
    

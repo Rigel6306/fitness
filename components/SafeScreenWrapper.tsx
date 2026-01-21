@@ -1,11 +1,11 @@
 
-import React from 'react'
-import { Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native'
-
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const SafeScreenWrapper = ({children}:{children:any}) => {
   return (
     <SafeAreaView style={[styles.container]}>
-      <StatusBar backgroundColor="red" />
+      {/* <StatusBar backgroundColor="black" /> */}
         {children}
     </SafeAreaView>
   )
@@ -13,7 +13,7 @@ const SafeScreenWrapper = ({children}:{children:any}) => {
 const styles = StyleSheet.create({
 container:{
     flex:1,
-    paddingTop:Platform.OS==='android'?StatusBar.currentHeight:0,
+  
    
 }
 
