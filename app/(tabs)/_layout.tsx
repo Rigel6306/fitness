@@ -12,7 +12,7 @@ export default function TabLayout() {
   return (
 
  
-            <TabContextComp>
+    <TabContextComp>
       <Tabs tabBar={(props) => <TabBar {...props} />}>
 
         <Tabs.Screen

@@ -1,6 +1,5 @@
 
 import { Colors } from '@/constants/Colors';
-import { packageIcons } from '@/constants/icon';
 import { useUserDataContext } from '@/hooks/useContext';
 import { db } from '@/services/firebase';
 import { getAllDocs, updateDocument } from '@/services/userService';
@@ -21,50 +20,8 @@ interface PackageSelectionModalProps {
   onClose: () => void
 }
 
+import PackageCard from './ui/PackageCard';
 
-interface packageCardProps {
-  id: string,
-  name: string,
-  description: string,
-  price: number,
-  icons: any[],
-  isSelected: boolean,
-  handleSelect: (data: any) => void,
-}
-
-type IconKey = keyof typeof packageIcons;
-const PackageCard: React.FC<packageCardProps> = React.memo(({ isSelected, handleSelect, name, description, price, icons, id }) => {
-
-  return (
-    <Pressable
-      onPress={() => { handleSelect({ name, id }) }}
-      style={({ pressed }) => [pressed && { opacity: 0.5 }]}>
-      <View style={[styles.packageCardContainer, { backgroundColor: isSelected ? 'gray' : "rgb(38, 42, 46)" }]}>
-        <View style={styles.pkgHeading}>
-          <Text style={{ color: textPimary, fontSize: 15, fontWeight: 'bold' }}>{name}</Text>
-          <Text style={{ color: 'rgb(39, 132, 82)', fontSize: 15, fontWeight: 'bold' }}>Rs:{price}</Text>
-        </View>
-        <Text style={{ marginTop: 10, marginBottom: 10, fontWeight: 'bold', color: textSecondary }}>{description}</Text>
-
-        <View style={styles.iconsContainer}>
-
-          {
-            icons.map((Icon: any, i: number) => (
-              React.cloneElement(packageIcons[Icon as IconKey]({}), { key: i })
-
-            )
-
-            )
-          }
-
-        </View>
-
-      </View>
-    </Pressable>
-  )
-
-}
-)
 const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible, onClose }) => {
 
   const { userData } = useUserDataContext()
@@ -197,27 +154,7 @@ const styles = StyleSheet.create({
     margin: 10,
     flex: 1,
   },
-  packageCardContainer: {
-    backgroundColor: "rgb(38, 42, 46)",
-    padding: 10,
-    margin: 10,
-    flex: 1,
-    borderRadius: 10,
 
-  },
-  pkgHeading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-  },
-  iconsContainer: {
-
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-
-  },
 
 
   actionBtnsContainer: {
