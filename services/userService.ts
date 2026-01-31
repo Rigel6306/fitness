@@ -7,7 +7,7 @@ import { db } from "./firebase";
 export const getUser = async (uid: string) => {
 
     const userRef = doc(db, "users", uid)
-
+    await new Promise(res => setTimeout(res, 500))
     const userSnap = await getDoc(userRef)
 
     if (!userSnap.exists()) return

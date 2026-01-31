@@ -1,10 +1,13 @@
 import { Colors } from '@/constants/Colors';
+import { useUserDataContext } from '@/hooks/useContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 const {cardBackground,textPimary,textSecondary} = Colors
 const Header = () => {
 
+
+  const {userData} = useUserDataContext()
 
   return (
     <View style={styles.container}>
@@ -18,7 +21,7 @@ const Header = () => {
           fontSize:18,
           color:textPimary,
           fontWeight:'bold'
-        }}>Charitha Iravana</Text>
+        }}>{userData.name}</Text>
       </View>
       <View style={{flexDirection:'row',gap:10}}>
        <TouchableOpacity>
@@ -35,7 +38,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1b2220',
+    backgroundColor: '#131313',
     maxHeight: 70,
     padding: 10,
     margin:10,

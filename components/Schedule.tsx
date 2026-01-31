@@ -1,11 +1,17 @@
 
+import { useUserDataContext } from '@/hooks/useContext'
+import Octicons from '@expo/vector-icons/Octicons'
 import { useNavigation, useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { useState } from 'react'
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import WeightTargetModal from './weightTarget/WeightTargetModal'
 import PackageSelectionModal from './PackageSelectionModal'
+import WeightTargetModal from './weightTarget/WeightTargetModal'
+
 const Schedule = () => {
+
+const{userData} = useUserDataContext()
+  console.log("At Schedule",userData)
 
   const [isModalOpen,setIsModalOpen] = useState(false)
   const [isPackageModalOpen,setIsPackageModalOpen] = useState(false)
@@ -17,7 +23,7 @@ const Schedule = () => {
       <View style={style.schedule}>
 
         <View style={{ flex: 1, justifyContent: 'center' }}>
-
+        {/* Main workout schedule card section */}
           <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={() => { router.navigate('/(tabs)/MainWorkoutSchedule') }}>
             <ImageBackground
               style={{ flex: 1, elevation: 15, justifyContent: 'center' }}
@@ -27,7 +33,7 @@ const Schedule = () => {
               {/* Overlay with opacity */}
               <View style={{
                 ...StyleSheet.absoluteFillObject,
-                backgroundColor: 'rgba(59, 57, 57, 0.5)',
+                backgroundColor: 'rgba(50, 30, 73, 0.84)',
 
               }} />
 
@@ -41,6 +47,7 @@ const Schedule = () => {
         </View>
 
       </View>
+      {/* Meal plan card */}
       <View style={{ flex: 1, gap: 10 }}>
         <View style={{ flex: 1, flexDirection: 'row', gap: 10 }} >
           <TouchableOpacity style={{ flex: 1, elevation: 15, borderRadius: 15 }} onPress={() => { router.navigate('/(tabs)/MealPlan') }}>
@@ -52,40 +59,46 @@ const Schedule = () => {
 
                   height: '100%',
                   width: '100%',
-                  backgroundColor: '#313f55df',
+                  backgroundColor: '#328a84df',
                 }}
               />
             </View>
 
 
           </TouchableOpacity>
+          {/* Weigth management card */}
           <TouchableOpacity
           onPress={()=>{setIsModalOpen(!isModalOpen)}}
-          style={{ flex: 1, backgroundColor: 'rgba(67, 48, 95, 1)', elevation: 15, borderRadius: 15, alignItems: 'center', justifyContent: 'center', }}>
-            <Text style={style.yourWeight}>
-              110
+          style={{ flex: 1, backgroundColor: 'rgb(71, 67, 172)', elevation: 15, borderRadius: 15, alignItems: 'center', gap:10, justifyContent: 'center', }}>
+            <Text style={{ fontWeight: 'bold',color:'#000000', }}>
+            Set Target
             </Text>
-            <Text style={{ fontWeight: 'bold' }}>
-              Kg
-            </Text>
+            {/* <Text style={style.yourWeight}>
+              110 KG
+            </Text> */}
+            <Octicons name="goal"  size={30} color="gray" />
+         
           </TouchableOpacity>
         </View>
+        {/* Package selection card */}
         <TouchableOpacity 
         onPress={()=>{setIsPackageModalOpen(!isPackageModalOpen)}}
         style={{
-          flex: 1, backgroundColor: 'hsla(60, 1%, 29%, 1.00)',
+          flex: 1, backgroundColor: 'rgb(180, 180, 76)',
           alignItems: 'center', justifyContent: 'center',
           elevation: 15, borderRadius: 15
         }}>
 
-          <Text style={style.payment}>3000</Text>
+          <Text style={style.payment}>your package</Text>
 
         </TouchableOpacity>
       </View>
+      {/* Weight target modal */}
         <WeightTargetModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         />
+        {/* package selection modal */}
         <PackageSelectionModal
         isVisible={isPackageModalOpen}
         onClose={()=>setIsPackageModalOpen(false)}
@@ -123,13 +136,13 @@ const style = StyleSheet.create({
   yourWeight: {
     textAlign: 'center',
     fontFamily: 'Bebas',
-    fontSize: 40,
-    color: 'rgba(233, 125, 53, 1)'
+    fontSize: 20,
+    color: 'rgb(252, 252, 252)'
   },
   payment: {
     textAlign: 'center',
     fontFamily: 'Bebas',
-    fontSize: 40,
+    fontSize: 20,
   }
 
 

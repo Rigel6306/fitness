@@ -23,7 +23,7 @@ const PackageCard: React.FC<packageCardProps> = React.memo(({ isSelected, handle
     
       onPress={() => { 
         
-        handleSelect({ name, id })
+        handleSelect({ name, id ,price})
         onClose?onClose():null
       }}
       style={({ pressed }) => [pressed && { opacity: 0.5 },{flex:1,}]}>

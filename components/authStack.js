@@ -14,7 +14,7 @@ const AuthStack = () => {
       setUser(user);
       if (user) {
         const userData = await getUser(user.uid)
-        setUserData(userData)
+        setUserData({id:user.uid,...userData})
       } else setUserData(null)
       if (initializing) setInitializing(false);
     };
@@ -22,13 +22,13 @@ const AuthStack = () => {
     return subscriber;
   }, [initializing]);
 
-  // useEffect(() => {
-  //   if (!initializing && navigationState?.key) {
-  //     user
-  //       ? router.replace("/(tabs)")
-  //       : router.replace("/");
-  //   }
-  // }, [initializing, navigationState?.key, user]);
+  useEffect(() => {
+    if (!initializing && navigationState?.key) {
+      user
+        ? router.replace("/(tabs)")
+        : router.replace("/");
+    }
+  }, [initializing, navigationState?.key, userData]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

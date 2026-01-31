@@ -1,5 +1,6 @@
 import PackageCard from '@/components/ui/PackageCard';
 import { Colors } from '@/constants/Colors';
+import { registerUser } from '@/db/user';
 import { getAllDocs } from '@/services/userService';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
@@ -7,6 +8,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -17,7 +19,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Yup from 'yup';
@@ -26,7 +28,7 @@ const { textPimary, textSecondary } = Colors;
 
 interface userInfoInterface {
   membershipNumber: number | undefined;
-  package: string | undefined;
+  package: { id?: string; name?: string } | undefined;
   fullName: string | undefined;
   age: number | undefined;
   contactNumber: string | undefined;
@@ -46,12 +48,12 @@ interface PackageSelectionModalProps {
   handleSelect: (data: any) => void;
 }
 
-const PkgSelectionModal: React.FC<PackageSelectionModalProps> = ({ 
-  isVisible, 
-  onClose, 
-  packageList, 
-  selected, 
-  handleSelect 
+const PkgSelectionModal: React.FC<PackageSelectionModalProps> = ({
+  isVisible,
+  onClose,
+  packageList,
+  selected,
+  handleSelect
 }) => {
   return (
     <Modal
@@ -62,16 +64,16 @@ const PkgSelectionModal: React.FC<PackageSelectionModalProps> = ({
     >
       <View style={{ flex: 1, backgroundColor: 'black' }}>
         {packageList?.map((pkg) => (
-          <PackageCard 
-            id={pkg.id} 
+          <PackageCard
+            id={pkg.id}
             onClose={onClose}
-            isSelected={selected.name === pkg.name} 
-            handleSelect={handleSelect} 
-            key={pkg.id} 
-            name={pkg.name} 
-            description={pkg.description} 
-            price={pkg.price} 
-            icons={pkg.icons} 
+            isSelected={selected.name === pkg.name}
+            handleSelect={handleSelect}
+            key={pkg.id}
+            name={pkg.name}
+            description={pkg.description}
+            price={pkg.price}
+            icons={pkg.icons}
           />
         ))}
       </View>
@@ -96,7 +98,7 @@ const SignUp = () => {
 
   const [errList, setErrList] = useState({
     membershipNumber: false,
-    package:false,
+    package: false,
     fullName: false,
     age: false,
     contactNumber: false,
@@ -111,13 +113,15 @@ const SignUp = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [err, setErr] = useState<string | boolean>(false);
   const [gymPackages, setGymPackages] = useState<any[]>([]);
-  const [selected, setSelected] = useState<{ id?: string; name?: string }>({ 
-    id: undefined, 
-    name: undefined 
+  const [selected, setSelected] = useState<{ id?: string; name?: string }>({
+    id: undefined,
+    name: undefined
   });
 
   const handleSelect = useCallback((data: any) => {
     setSelected(data);
+    setUserInfo((prev) => ({ ...prev, ['package']: data }));
+    setErrList((prev) => ({ ...prev, ['package']: false }));
   }, []);
 
   useEffect(() => {
@@ -146,6 +150,19 @@ const SignUp = () => {
   const handleSubmit = async () => {
     try {
       const valiedSchema = await validationSchema.validate(userInfo, { abortEarly: false });
+      console.log('form is Valid,', userInfo)
+
+      try {
+        const registerdUser = await registerUser(userInfo)
+        console.log("Signup Success", registerUser)
+      }
+      catch(err){
+
+        console.log('User Registration Error at signup', err)
+
+      }
+      
+
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         setErr(err.inner[0].message);
@@ -162,8 +179,8 @@ const SignUp = () => {
       .max(4, "oops, you got an extra number, Check your membership card again")
       .required("Membership is Required"),
 
-    package: Yup.string()
-    .required("Please select a package"),
+    package: Yup.object()
+      .required("Please select a package"),
 
 
     fullName: Yup.string()
@@ -223,10 +240,10 @@ const SignUp = () => {
 
         <KeyboardAvoidingView
           style={styles.keybAvdView}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          behavior={Platform.OS === 'ios' ? "padding" : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -20}
         >
-          <ScrollView 
+          <ScrollView
             style={styles.contentBody}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
@@ -235,8 +252,8 @@ const SignUp = () => {
             <View style={styles.itemContainer}>
               <Text style={styles.inputTextHeading}>Membership Number</Text>
               <View style={[
-                styles.inputContainer, 
-                isFieldValid('membershipNumber') && styles.validInput, 
+                styles.inputContainer,
+                isFieldValid('membershipNumber') && styles.validInput,
                 errList.membershipNumber && styles.ivalidInput
               ]}>
                 <FontAwesome5 name="id-card" size={24} color={textPimary} />
@@ -244,46 +261,50 @@ const SignUp = () => {
                   keyboardType='numeric'
                   value={userInfo.membershipNumber?.toString()}
                   onChangeText={(value) => handleValues('membershipNumber', value)}
-                  style={styles.inputFiled} 
-                  placeholder='54321' 
+                  style={styles.inputFiled}
+                  placeholder='54321'
                 />
               </View>
             </View>
 
             <View style={styles.itemContainer}>
               <Text style={styles.inputTextHeading}>Select Package</Text>
-              <Pressable 
+              <Pressable
                 onPress={() => setIsModalOpen(true)}
                 style={
-                  ({pressed})=>
-                  [
-                  pressed&&{opacity:0.5},
-                  styles.inputContainer,
-                  { padding: 10 }, 
-                  isFieldValid('fullName') && styles.validInput, 
-                  errList.fullName && styles.ivalidInput
-                ]}
+                  ({ pressed }) =>
+                    [
+                      pressed && { opacity: 0.5 },
+                      styles.inputContainer,
+                      { padding: 10 },
+                      isFieldValid('package') && styles.validInput,
+                      errList.package && styles.ivalidInput
+                    ]}
               >
+
+
                 <MaterialCommunityIcons name="package" size={24} color={textPimary} />
                 <Text style={{ textAlign: 'center', fontWeight: 'bold', flex: 1 }}>
                   {selected.name || "Select Package"}
                 </Text>
+
+
               </Pressable>
             </View>
 
             <View style={styles.itemContainer}>
               <Text style={styles.inputTextHeading}>Full Name</Text>
               <View style={[
-                styles.inputContainer, 
-                isFieldValid('fullName') && styles.validInput, 
+                styles.inputContainer,
+                isFieldValid('fullName') && styles.validInput,
                 errList.fullName && styles.ivalidInput
               ]}>
                 <AntDesign name="user" size={24} color="white" />
                 <TextInput
                   value={userInfo.fullName}
                   onChangeText={(value) => handleValues('fullName', value)}
-                  style={styles.inputFiled} 
-                  placeholder='Albert Einstine' 
+                  style={styles.inputFiled}
+                  placeholder='Albert Einstine'
                 />
               </View>
             </View>
@@ -293,8 +314,8 @@ const SignUp = () => {
               <View style={[styles.itemContainer, { flex: 1 }]}>
                 <Text style={styles.inputTextHeading}>Age</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('age') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('age') && styles.validInput,
                   errList.age && styles.ivalidInput
                 ]}>
                   <Ionicons name="calendar-number" size={24} color={textPimary} />
@@ -302,16 +323,16 @@ const SignUp = () => {
                     keyboardType='numeric'
                     value={userInfo.age?.toString()}
                     onChangeText={(value) => handleValues('age', value)}
-                    style={styles.inputFiled} 
-                    placeholder='21' 
+                    style={styles.inputFiled}
+                    placeholder='21'
                   />
                 </View>
               </View>
               <View style={[styles.itemContainer, { flex: 3 }]}>
                 <Text style={styles.inputTextHeading}>Contact Number</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('contactNumber') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('contactNumber') && styles.validInput,
                   errList.contactNumber && styles.ivalidInput
                 ]}>
                   <Feather name="smartphone" size={24} color={textPimary} />
@@ -319,8 +340,8 @@ const SignUp = () => {
                     value={userInfo.contactNumber}
                     keyboardType='numeric'
                     onChangeText={(value) => handleValues('contactNumber', value)}
-                    style={styles.inputFiled} 
-                    placeholder='0771234567' 
+                    style={styles.inputFiled}
+                    placeholder='0771234567'
                   />
                 </View>
               </View>
@@ -331,8 +352,8 @@ const SignUp = () => {
               <View style={[styles.itemContainer, { flex: 1 }]}>
                 <Text style={styles.inputTextHeading}>Height (CM)</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('height') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('height') && styles.validInput,
                   errList.height && styles.ivalidInput
                 ]}>
                   <MaterialCommunityIcons name="human-male-height" size={24} color={textPimary} />
@@ -340,16 +361,16 @@ const SignUp = () => {
                     keyboardType='numeric'
                     value={userInfo.height?.toString()}
                     onChangeText={(value) => handleValues('height', value)}
-                    style={styles.inputFiled} 
-                    placeholder='160' 
+                    style={styles.inputFiled}
+                    placeholder='160'
                   />
                 </View>
               </View>
               <View style={[styles.itemContainer, { flex: 1 }]}>
                 <Text style={styles.inputTextHeading}>Weight (KG)</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('weight') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('weight') && styles.validInput,
                   errList.weight && styles.ivalidInput
                 ]}>
                   <MaterialCommunityIcons name="weight" size={24} color={textPimary} />
@@ -357,8 +378,8 @@ const SignUp = () => {
                     keyboardType='numeric'
                     value={userInfo.weight?.toString()}
                     onChangeText={(value) => handleValues('weight', value)}
-                    style={styles.inputFiled} 
-                    placeholder='75' 
+                    style={styles.inputFiled}
+                    placeholder='75'
                   />
                 </View>
               </View>
@@ -371,8 +392,8 @@ const SignUp = () => {
                 <Pressable
                   onPress={() => handleValues('gender', 'male')}
                   style={({ pressed }) => [
-                    pressed && { opacity: 0.5 }, 
-                    styles.genderBtn, 
+                    pressed && { opacity: 0.5 },
+                    styles.genderBtn,
                     userInfo.gender === 'male' && { backgroundColor: 'rgb(32, 74, 130)' }
                   ]}
                 >
@@ -382,8 +403,8 @@ const SignUp = () => {
                 <Pressable
                   onPress={() => handleValues('gender', 'female')}
                   style={({ pressed }) => [
-                    pressed && { opacity: 0.5 }, 
-                    styles.genderBtn, 
+                    pressed && { opacity: 0.5 },
+                    styles.genderBtn,
                     userInfo.gender === 'female' && { backgroundColor: 'rgb(111, 58, 155)' }
                   ]}
                 >
@@ -396,16 +417,16 @@ const SignUp = () => {
             <View style={styles.itemContainer}>
               <Text style={styles.inputTextHeading}>E-Mail </Text>
               <View style={[
-                styles.inputContainer, 
-                isFieldValid('email') && styles.validInput, 
+                styles.inputContainer,
+                isFieldValid('email') && styles.validInput,
                 errList.email && styles.ivalidInput
               ]}>
                 <MaterialCommunityIcons name="email-variant" size={24} color={textPimary} />
                 <TextInput
                   value={userInfo.email}
                   onChangeText={(value) => handleValues('email', value)}
-                  style={styles.inputFiled} 
-                  placeholder='someone@somewhere.com' 
+                  style={styles.inputFiled}
+                  placeholder='someone@somewhere.com'
                 />
               </View>
             </View>
@@ -414,8 +435,8 @@ const SignUp = () => {
               <View style={[styles.itemContainer, { flex: 1 }]}>
                 <Text style={styles.inputTextHeading}>Password</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('password') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('password') && styles.validInput,
                   errList.password && styles.ivalidInput
                 ]}>
                   <FontAwesome5 name="lock" size={24} color={textPimary} />
@@ -423,8 +444,8 @@ const SignUp = () => {
                     secureTextEntry
                     value={userInfo.password}
                     onChangeText={(value) => handleValues('password', value)}
-                    style={styles.inputFiled} 
-                    placeholder='*********' 
+                    style={styles.inputFiled}
+                    placeholder='*********'
                   />
                 </View>
               </View>
@@ -432,8 +453,8 @@ const SignUp = () => {
               <View style={[styles.itemContainer, { flex: 1 }]}>
                 <Text style={styles.inputTextHeading}>Confirm Password</Text>
                 <View style={[
-                  styles.inputContainer, 
-                  isFieldValid('confirmedPwd') && styles.validInput, 
+                  styles.inputContainer,
+                  isFieldValid('confirmedPwd') && styles.validInput,
                   errList.confirmedPwd && styles.ivalidInput
                 ]}>
                   <FontAwesome5 name="lock" size={24} color={textPimary} />
@@ -441,23 +462,26 @@ const SignUp = () => {
                     secureTextEntry
                     value={userInfo.confirmedPwd}
                     onChangeText={(value) => handleValues('confirmedPwd', value)}
-                    style={styles.inputFiled} 
-                    placeholder='*********' 
+                    style={styles.inputFiled}
+                    placeholder='*********'
                   />
                 </View>
               </View>
             </View>
-            
+
             <View style={styles.spacer} />
           </ScrollView>
         </KeyboardAvoidingView>
 
         {err && <Text style={styles.errorMsg}>{err}</Text>}
-        
-        <View style={styles.signupBtnContianer}>
+
+        <View style={styles.signupBtnContianer}
+
+        >
           <Pressable
+
             onPress={handleSubmit}
-            style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.signupBtn]} 
+            style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.signupBtn]}
           >
             <Text style={styles.signUpBtntext}>Create Account</Text>
           </Pressable>
@@ -543,11 +567,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 12,
   },
-  validInput: { 
-    backgroundColor: 'rgba(115, 240, 184, 0.46)' 
+  validInput: {
+    backgroundColor: 'rgba(115, 240, 184, 0.46)'
   },
-  ivalidInput: { 
-    backgroundColor: 'rgba(104, 98, 57, 0.93)' 
+  ivalidInput: {
+    backgroundColor: 'rgba(104, 98, 57, 0.93)'
   },
   genderBtn: {
     backgroundColor: textSecondary,
@@ -560,7 +584,7 @@ const styles = StyleSheet.create({
   },
   signupBtnContianer: {
     padding: 10,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 40,
     backgroundColor: 'rgb(0, 0, 0)',
   },
   signupBtn: {

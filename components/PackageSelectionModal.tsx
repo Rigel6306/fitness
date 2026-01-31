@@ -20,12 +20,13 @@ interface PackageSelectionModalProps {
   onClose: () => void
 }
 
+
 import PackageCard from './ui/PackageCard';
 
 const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible, onClose }) => {
-
+const [updatedPackage,setUpdatedPackageName] = useState <{name?:string,price?:string}>({});
   const { userData } = useUserDataContext()
-  const [selected, setSelected] = useState<{ id?: string; name?: string }>({})
+  const [selected, setSelected] = useState<{ id?: string; name?: string ,price?:string}>({})
   const [gymPackages, setGymPackages] = useState<any[]>([])
 
   const handleSelect = useCallback((data: any) => {
@@ -40,11 +41,14 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
     fetchPakacges()
   }, [])
 
+  console.log("at package Selection selected package:",selected)
 
 const handleSaveChanges = async () => {
+  setUpdatedPackageName({name:selected.name,price:selected.price})
+
   try {
     // Build a proper DocumentReference
-    const packageRef = doc(db, "package", selected.id);
+    const packageRef = doc(db, "package", selected.id||'');
 
     const newData = {
       ...userData,
@@ -59,55 +63,61 @@ const handleSaveChanges = async () => {
 };
 
 
-  return (
-    <Modal
-      visible={isVisible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+  return ( 
 
-      <View style={styles.container}>
-        <View style={styles.heading}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.headingText} >Packages</Text>
-            <Pressable onPress={onClose}>
-              <Ionicons name="close-circle" size={34} color={textPimary} />
-            </Pressable>
-          </View>
+  <Modal
+    visible={isVisible}
+    animationType="slide"
+    transparent={true}
+    onRequestClose={onClose}
+  >
 
-          <Text style={styles.curentPackageText}>Current Package</Text>
-          <View style={styles.currentPackageContainer}>
-            <Text style={{ color: textPimary, fontSize: 17, fontWeight: 'bold' }}>{userData.package.name}</Text>
-            <Text style={{ color: "rgba(185, 91, 33, 1)", fontSize: 17, fontWeight: 'bold' }}>Rs. {userData.package.price} Per Month</Text>
-          </View>
+  {
+    !userData.package?<View><Text>Loading</Text></View>:
+ 
+
+    <View style={styles.container}>
+      <View style={styles.heading}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={styles.headingText} >Packages</Text>
+          <Pressable onPress={onClose}>
+            <Ionicons name="close-circle" size={34} color={textPimary} />
+          </Pressable>
         </View>
 
-        <View style={styles.contentBody}>
-          <View>
-          </View>
-
-          <Text style={{ margin: 10, padding: 10, fontSize: 22, fontWeight: 'bold', color: textPimary }}>Available Packages</Text>
-          <ScrollView style={styles.scrollContainer}>
-
-            {
-              gymPackages?.map((pkg) => (<PackageCard id={pkg.id} isSelected={selected.name === pkg.name} handleSelect={handleSelect} key={pkg.id} name={pkg.name} description={pkg.description} price={pkg.price} icons={pkg.icons} />))
-            }
-
-          </ScrollView>
-
-          <View style={styles.actionBtnsContainer} >
-            <Pressable onPress={onClose} style={styles.cancleBtn}>
-              <Text style={styles.actionBtnText}>Cancel</Text>
-            </Pressable>
-            <Pressable style={styles.confirmBtn} onPress={handleSaveChanges}>
-              <Text style={styles.actionBtnText}>Confirm Change</Text>
-            </Pressable>
-          </View>
+        <Text style={styles.curentPackageText}>Current Package</Text>
+        <View style={styles.currentPackageContainer}>
+          <Text style={{ color: textPimary, fontSize: 17, fontWeight: 'bold' }}>{updatedPackage.name?updatedPackage.name:userData.package.name}</Text>
+          <Text style={{ color: "rgba(185, 91, 33, 1)", fontSize: 17, fontWeight: 'bold' }}>Rs. {updatedPackage.price?updatedPackage.price:userData.package.price} Per Month</Text>
         </View>
       </View>
 
-    </Modal>
+      <View style={styles.contentBody}>
+        <View>
+        </View>
+
+        <Text style={{ margin: 10, padding: 10, fontSize: 22, fontWeight: 'bold', color: textPimary }}>Available Packages</Text>
+        <ScrollView style={styles.scrollContainer}>
+
+          {
+            gymPackages?.map((pkg) => (<PackageCard id={pkg.id} isSelected={selected.name === pkg.name} handleSelect={handleSelect} key={pkg.id} name={pkg.name} description={pkg.description} price={pkg.price} icons={pkg.icons} />))
+          }
+
+        </ScrollView>
+
+        <View style={styles.actionBtnsContainer} >
+          <Pressable onPress={onClose} style={styles.cancleBtn}>
+            <Text style={styles.actionBtnText}>Cancel</Text>
+          </Pressable>
+          <Pressable style={styles.confirmBtn} onPress={handleSaveChanges}>
+            <Text style={styles.actionBtnText}>Confirm Change</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+     }
+
+  </Modal>
   )
 
 }
@@ -147,7 +157,7 @@ const styles = StyleSheet.create({
   },
   contentBody: {
     flex: 4,
-    backgroundColor: "rgb(18, 14, 28)",
+    backgroundColor: "rgb(0, 0, 0)",
     borderRadius: 20,
   },
   scrollContainer: {

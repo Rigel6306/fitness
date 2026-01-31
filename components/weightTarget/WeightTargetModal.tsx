@@ -6,20 +6,24 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
+  Dimensions,
   KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native';
 
 const { textPimary, textSecondary, secondaryBackground, primaryBackground, cardBackground } = Colors;
+const { width, height } = Dimensions.get('window');
 
 type LocalWeightData = {
+  startWeight: string;
   currentWeight: string;
   targetWeight: string;
   weightLoss: boolean;
@@ -29,8 +33,12 @@ type LocalWeightData = {
 const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boolean; setIsModalOpen: (v: boolean) => void }) => {
   const { weightData, setWeightData } = useUserDataContext();
 
-  // Progress calculation (handles both loss and gain and clamps 0-100)
-  const calProgress = (startWeight: number, currentWeight: number, targetWeight: number, weightLoss: boolean): number => {
+  const calProgress = (
+    startWeight: number,
+    currentWeight: number,
+    targetWeight: number,
+    weightLoss: boolean
+  ): number => {
     if (![startWeight, currentWeight, targetWeight].every((v) => Number.isFinite(v))) return 0;
 
     let totalChange: number;
@@ -44,54 +52,46 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
       achievedChange = currentWeight - startWeight;
     }
 
-    // If totalChange is zero or invalid, try to infer direction
-    if (totalChange === 0 || !isFinite(totalChange)) return 0;
+    if (totalChange <= 0 || !isFinite(totalChange)) return 0;
 
     const progress = (achievedChange / totalChange) * 100;
     return Math.min(Math.max(progress, 0), 100);
   };
 
-  // Use context startWeight (not editable here)
-  const startWeightFromContext = Number(weightData.startWeight);
-
-  // Progress shown in the original card uses context values (keeps original behavior)
-  const progress = calProgress(
-    startWeightFromContext,
-    Number(weightData.currentWeight),
-    Number(weightData.targetWeight),
-    Boolean(weightData.weightLoss)
-  );
-
   const [localWeightData, setLocalWeightData] = useState<LocalWeightData>({
+    startWeight: '',
     currentWeight: '',
     targetWeight: '',
     weightLoss: true,
-    updatedOn: ''
+    updatedOn: '',
   });
 
+  // Initialize from context when modal opens
   useEffect(() => {
-    // initialize local state from context (strings for TextInput)
-    setLocalWeightData({
-      currentWeight: String(weightData.currentWeight ?? ''),
-      targetWeight: String(weightData.targetWeight ?? ''),
-      weightLoss: Boolean(weightData.weightLoss),
-      updatedOn: weightData.updatedOn ?? ''
-    });
+    if (isModalOpen) {
+      setLocalWeightData({
+        startWeight: String(weightData.startWeight ?? ''),
+        currentWeight: String(weightData.currentWeight ?? ''),
+        targetWeight: String(weightData.targetWeight ?? ''),
+        weightLoss: Boolean(weightData.weightLoss),
+        updatedOn: weightData.updatedOn ?? '',
+      });
+    }
   }, [isModalOpen, weightData]);
 
   const resetLocalAndClose = () => {
     setLocalWeightData({
+      startWeight: String(weightData.startWeight ?? ''),
       currentWeight: String(weightData.currentWeight ?? ''),
       targetWeight: String(weightData.targetWeight ?? ''),
       weightLoss: Boolean(weightData.weightLoss),
-      updatedOn: weightData.updatedOn ?? ''
+      updatedOn: weightData.updatedOn ?? '',
     });
     setIsModalOpen(false);
   };
 
-  // Save helper that actually writes to context
   const doSave = (finalWeightLoss: boolean) => {
-    const start = startWeightFromContext;
+    const start = Number(localWeightData.startWeight);
     const current = Number(localWeightData.currentWeight);
     const target = Number(localWeightData.targetWeight);
 
@@ -100,109 +100,97 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
       currentWeight: current,
       targetWeight: target,
       weightLoss: finalWeightLoss,
-      updatedOn: new Date().toISOString().split('T')[0]
+      updatedOn: new Date().toISOString().split('T')[0],
     });
 
     setIsModalOpen(false);
   };
 
-  // Main save handler with validation and friendly alerts
   const handleSave = () => {
-    const start = startWeightFromContext; // not editable here
+    const start = Number(localWeightData.startWeight);
     const current = Number(localWeightData.currentWeight);
     const target = Number(localWeightData.targetWeight);
-    const weightLoss = Boolean(localWeightData.weightLoss);
+    const weightLoss = localWeightData.weightLoss;
 
-    // Basic numeric validation
-    if ([start, current, target].some((v) => Number.isNaN(v))) {
-      Alert.alert('Invalid input', 'Please enter numeric values for current and target weights.');
+    if ([start, current, target].some((v) => Number.isNaN(v) || v <= 0)) {
+      Alert.alert('Invalid input', 'All weights must be positive numbers.');
       return;
     }
 
-    if (start <= 0 || current <= 0 || target <= 0) {
-      Alert.alert('Invalid input', 'Weights must be greater than zero.');
-      return;
-    }
-
-    // If the user selected a mode that contradicts the numeric relation between start and target,
-    // we allow changing the goal anytime but present a clear choice:
-    // - Save Anyway (keep selected mode)
-    // - Switch Mode (flip weightLoss to match numeric relation)
-    // - Cancel
     const isNumericLoss = start > target;
     const isNumericGain = target > start;
 
     if (weightLoss && !isNumericLoss) {
-      // User chose "Lose" but target is not less than start
       Alert.alert(
-        'Inconsistent goal',
-        'You selected "Lose Weight" but the target weight is not less than your start weight. What would you like to do?',
+        'Goal mismatch',
+        'You chose "Lose Weight" but target is not below start weight. What do you want to do?',
         [
           { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Switch to Gain',
-            onPress: () => doSave(false)
-          },
-          {
-            text: 'Save Anyway',
-            onPress: () => doSave(true)
-          }
-        ],
-        { cancelable: true }
+          { text: 'Switch to Gain', onPress: () => doSave(false) },
+          { text: 'Save Anyway (Lose)', onPress: () => doSave(true) },
+        ]
       );
       return;
     }
 
     if (!weightLoss && !isNumericGain) {
-      // User chose "Gain" but target is not greater than start
       Alert.alert(
-        'Inconsistent goal',
-        'You selected "Gain Weight" but the target weight is not greater than your start weight. What would you like to do?',
+        'Goal mismatch',
+        'You chose "Gain Weight" but target is not above start weight. What do you want to do?',
         [
           { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Switch to Lose',
-            onPress: () => doSave(true)
-          },
-          {
-            text: 'Save Anyway',
-            onPress: () => doSave(false)
-          }
-        ],
-        { cancelable: true }
+          { text: 'Switch to Lose', onPress: () => doSave(true) },
+          { text: 'Save Anyway (Gain)', onPress: () => doSave(false) },
+        ]
       );
       return;
     }
 
-    // If current already beyond target, show an informational alert but allow save
+    // Goal already reached / overshot warnings
     if (weightLoss && current <= target) {
       Alert.alert(
-        'Note',
-        'Your current weight is already at or below the target. Do you still want to save?',
+        'Already reached',
+        'Current weight is already at or below target. Save anyway?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Save', onPress: () => doSave(weightLoss) }
-        ],
-        { cancelable: true }
+          { text: 'Save', onPress: () => doSave(weightLoss) },
+        ]
       );
       return;
     }
 
     if (!weightLoss && current >= target) {
       Alert.alert(
-        'Note',
-        'Your current weight is already at or above the target. Do you still want to save?',
+        'Already reached',
+        'Current weight is already at or above target. Save anyway?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Save', onPress: () => doSave(weightLoss) }
-        ],
-        { cancelable: true }
+          { text: 'Save', onPress: () => doSave(weightLoss) },
+        ]
       );
       return;
     }
 
-    // All validations passed — save normally
     doSave(weightLoss);
+  };
+
+  // Calculate current progress using local values (so user sees live preview while editing)
+  const progress = calProgress(
+    Number(localWeightData.startWeight),
+    Number(localWeightData.currentWeight),
+    Number(localWeightData.targetWeight),
+    localWeightData.weightLoss
+  );
+
+  // Responsive font sizes
+  const getResponsiveFontSize = (baseSize: number): number => {
+    const scale = width / 375; // Base width (iPhone 6/7/8)
+    return Math.round(baseSize * Math.min(scale, 1.2));
+  };
+
+  // Responsive padding/margin
+  const getResponsiveSpacing = (baseSpacing: number): number => {
+    return Math.round(baseSpacing * (width / 375));
   };
 
   return (
@@ -211,266 +199,451 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
       transparent={true}
       animationType="slide"
       onRequestClose={resetLocalAndClose}
+      statusBarTranslucent={true}
     >
-      <View style={styles.container}>
-        <View style={styles.headingContainer}>
-          <Pressable style={({ pressed }) => [pressed && { opacity: 0.5 }]} onPress={resetLocalAndClose}>
-            <Ionicons name="chevron-back" size={24} color={textPimary} />
-          </Pressable>
-          <Text style={{ textAlign: 'center', fontSize: 20, color: textPimary, fontWeight: 'bold' }}>Weight Goals</Text>
-          <Pressable style={({ pressed }) => [pressed && { opacity: 0.5 }]} onPress={resetLocalAndClose} >
-            <Ionicons name="close-circle-sharp" size={24} color={textPimary} />
-          </Pressable>
-        </View>
+      <View style={styles.backdrop}>
+        <SafeAreaView style={styles.container}>
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoider}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
+          >
+            <View style={styles.modalContent}>
+              {/* Header */}
+              <View style={styles.header}>
+                <Pressable 
+                  onPress={resetLocalAndClose} 
+                  style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Ionicons name="chevron-back" size={getResponsiveFontSize(28)} color={textPimary} />
+                </Pressable>
 
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <ScrollView style={styles.bodyContainer}>
-            {/* Current Progress Card */}
-            <View style={styles.curentProgress}>
-              <View style={styles.progressHeading}>
-                <Text style={{ color: textPimary, fontSize: 19, fontWeight: 'bold' }}>Current Progress</Text>
-                <Text style={{ color: textPimary, borderRadius: 20, padding: 7, backgroundColor: cardBackground, fontSize: 11, fontWeight: 'bold' }}>
-                  {weightData.weightLoss ? 'Losing Weight' : 'Gaining Weight'}
+                <Text style={[styles.heading, { fontSize: getResponsiveFontSize(22) }]}>
+                  Weight Goals
                 </Text>
-              </View>
 
-              <View style={styles.weightTargetContainer}>
-                <View style={styles.curentWeight}>
-                  <Text style={{ color: textSecondary, fontSize: 12, fontWeight: 'bold' }}>Current</Text>
-                  <Text style={{ color: textPimary, fontSize: 22, fontWeight: 'bold' }}>{weightData.currentWeight}Kg</Text>
-                </View>
-
-                <MaterialIcons name="keyboard-double-arrow-right" size={24} color="black" />
-
-                <View style={styles.targetWeight}>
-                  <Text style={{ color: textSecondary, fontSize: 12, fontWeight: 'bold' }}>Target</Text>
-                  <Text style={{ color: textPimary, fontSize: 22, fontWeight: 'bold' }}>{weightData.targetWeight}Kg</Text>
-                </View>
-              </View>
-
-              <View style={styles.progressBarContainer}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text style={{ color: textSecondary }}>0%</Text>
-                  <Text style={{ color: textSecondary }}>100%</Text>
-                </View>
-                <View style={styles.progressBar}>
-                  <View style={[styles.progressTrack, { width: `${progress}%` }]} />
-                </View>
-                <Text style={{ textAlign: 'center', color: textPimary, marginTop: 10, fontWeight: 'bold' }}>{progress.toFixed(1)}% Complete</Text>
-              </View>
-            </View>
-
-            {/* Weight Goal Update Section */}
-            <View style={styles.weightGoalFormContainer} >
-              <Text style={styles.goalHeadingText}>Set Your Weight Goal</Text>
-              <Text style={styles.goalSubText}>I Want to</Text>
-
-              <View style={styles.targetButtonContainer}>
-                <Pressable
-                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: localWeightData.weightLoss ? "rgb(38, 69, 62)" : secondaryBackground }]}
-                  onPress={() => setLocalWeightData((prev) => ({ ...prev, weightLoss: true }))}
+                <Pressable 
+                  onPress={resetLocalAndClose} 
+                  style={({ pressed }) => [styles.closeButton, pressed && { opacity: 0.6 }]}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Ionicons name="trending-down-outline" size={24} color="green" />
-                  <Text style={styles.targetButtonText}>Lose Weight</Text>
-                </Pressable>
-
-                <Pressable
-                  style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.targetButton, { backgroundColor: !localWeightData.weightLoss ? "rgb(38, 69, 62)" : secondaryBackground }]}
-                  onPress={() => setLocalWeightData((prev) => ({ ...prev, weightLoss: false }))}
-                >
-                  <Ionicons name="trending-up-outline" size={24} color="crimson" />
-                  <Text style={styles.targetButtonText}>Gain Weight</Text>
+                  <Ionicons name="close-circle-sharp" size={getResponsiveFontSize(28)} color={textPimary} />
                 </Pressable>
               </View>
 
-              {/* Current Weight */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLable}>Current Weight (KG)</Text>
-                <View style={styles.inputFieldContainer}>
-                  <MaterialCommunityIcons name="weight" size={24} color="black" />
-                  <TextInput
-                    value={String(localWeightData.currentWeight)}
-                    onChangeText={(value) => setLocalWeightData((prev) => ({ ...prev, currentWeight: value }))}
-                    placeholder="75"
-                    keyboardType="numeric"
-                    style={styles.inputField}
-                  />
+              <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+              >
+                {/* Current Progress Card */}
+                <View style={styles.card}>
+                  <View style={styles.progressHeader}>
+                    <Text style={[styles.cardTitle, { fontSize: getResponsiveFontSize(18) }]}>
+                      Current Progress
+                    </Text>
+                    <View style={styles.modeBadge}>
+                      <Text style={[styles.modeBadgeText, { fontSize: getResponsiveFontSize(12) }]}>
+                        {localWeightData.weightLoss ? 'Losing Weight' : 'Gaining Weight'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Weight Display Row - Responsive layout */}
+                  <View style={styles.weightRow}>
+                    <View style={styles.weightBox}>
+                      <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
+                        Start
+                      </Text>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                        {localWeightData.startWeight || '—'} kg
+                      </Text>
+                    </View>
+
+                    <MaterialIcons 
+                      name="keyboard-double-arrow-right" 
+                      size={getResponsiveFontSize(24)} 
+                      color={textSecondary} 
+                      style={styles.arrowIcon}
+                    />
+
+                    <View style={styles.weightBox}>
+                      <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
+                        Current
+                      </Text>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                        {localWeightData.currentWeight || '—'} kg
+                      </Text>
+                    </View>
+
+                    <MaterialIcons 
+                      name="keyboard-double-arrow-right" 
+                      size={getResponsiveFontSize(24)} 
+                      color={textSecondary} 
+                      style={styles.arrowIcon}
+                    />
+
+                    <View style={styles.weightBox}>
+                      <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
+                        Target
+                      </Text>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                        {localWeightData.targetWeight || '—'} kg
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Progress Bar */}
+                  <View style={styles.progressContainer}>
+                    <View style={styles.progressLabels}>
+                      <Text style={[styles.percentLabel, { fontSize: getResponsiveFontSize(12) }]}>
+                        0%
+                      </Text>
+                      <Text style={[styles.percentLabel, { fontSize: getResponsiveFontSize(12) }]}>
+                        100%
+                      </Text>
+                    </View>
+                    <View style={styles.progressBar}>
+                      <View style={[styles.progressTrack, { width: `${progress}%` }]} />
+                    </View>
+                    <Text style={[styles.progressText, { fontSize: getResponsiveFontSize(16) }]}>
+                      {progress.toFixed(1)}% Complete
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              {/* Target Weight */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLable}>Target Weight (KG)</Text>
-                <View style={styles.inputFieldContainer}>
-                  <Ionicons name="flag-sharp" size={24} color="black" />
-                  <TextInput
-                    value={String(localWeightData.targetWeight)}
-                    onChangeText={(value) => setLocalWeightData((prev) => ({ ...prev, targetWeight: value }))}
-                    placeholder="75"
-                    keyboardType="numeric"
-                    style={styles.inputField}
-                  />
+                {/* Form Section */}
+                <View style={styles.card}>
+                  <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(19) }]}>
+                    Set Your Weight Goal
+                  </Text>
+                  <Text style={[styles.sectionSubtitle, { fontSize: getResponsiveFontSize(15) }]}>
+                    I want to
+                  </Text>
+
+                  {/* Mode Selection Buttons */}
+                  <View style={styles.modeButtons}>
+                    <Pressable
+                      style={[
+                        styles.modeButton,
+                        localWeightData.weightLoss && styles.modeButtonActive,
+                      ]}
+                      onPress={() => setLocalWeightData((p) => ({ ...p, weightLoss: true }))}
+                    >
+                      <Ionicons 
+                        name="trending-down-outline" 
+                        size={getResponsiveFontSize(26)} 
+                        color="green" 
+                      />
+                      <Text style={[styles.modeButtonText, { fontSize: getResponsiveFontSize(15) }]}>
+                        Lose Weight
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      style={[
+                        styles.modeButton,
+                        !localWeightData.weightLoss && styles.modeButtonActive,
+                      ]}
+                      onPress={() => setLocalWeightData((p) => ({ ...p, weightLoss: false }))}
+                    >
+                      <Ionicons 
+                        name="trending-up-outline" 
+                        size={getResponsiveFontSize(26)} 
+                        color="crimson" 
+                      />
+                      <Text style={[styles.modeButtonText, { fontSize: getResponsiveFontSize(15) }]}>
+                        Gain Weight
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {/* Weight Inputs */}
+                  {['Start Weight (kg)', 'Current Weight (kg)', 'Target Weight (kg)'].map((label, index) => {
+                    const key = ['startWeight', 'currentWeight', 'targetWeight'][index];
+                    const icon = index === 0 ? 'weight' : index === 1 ? 'weight' : 'flag-sharp';
+                    const IconComponent = index < 2 ? MaterialCommunityIcons : Ionicons;
+                    const placeholder = ['e.g. 85', 'e.g. 78', 'e.g. 72'][index];
+
+                    return (
+                      <View key={key} style={styles.inputWrapper}>
+                        <Text style={[styles.inputLabel, { fontSize: getResponsiveFontSize(15) }]}>
+                          {label}
+                        </Text>
+                        <View style={styles.inputContainer}>
+                          <IconComponent 
+                            name={icon} 
+                            size={getResponsiveFontSize(24)} 
+                            color={textSecondary} 
+                          />
+                          <TextInput
+                            style={[styles.input, { fontSize: getResponsiveFontSize(17) }]}
+                            value={localWeightData[key as keyof LocalWeightData] as string}
+                            onChangeText={(v) => setLocalWeightData((p) => ({ ...p, [key]: v }))}
+                            placeholder={placeholder}
+                            keyboardType="numeric"
+                            placeholderTextColor={textSecondary}
+                          />
+                        </View>
+                      </View>
+                    );
+                  })}
+
+                  {/* Action Buttons */}
+                  <View style={styles.buttonRow}>
+                    <Pressable 
+                      style={styles.cancelButton} 
+                      onPress={resetLocalAndClose}
+                    >
+                      <Text style={[styles.buttonText, { fontSize: getResponsiveFontSize(16) }]}>
+                        Cancel
+                      </Text>
+                    </Pressable>
+
+                    <Pressable 
+                      style={styles.saveButton} 
+                      onPress={handleSave}
+                    >
+                      <Text style={[styles.buttonText, { fontSize: getResponsiveFontSize(16) }]}>
+                        Save Changes
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {/* Last Updated */}
+                  <Text style={[styles.lastUpdated, { fontSize: getResponsiveFontSize(13) }]}>
+                    Last Updated: {weightData.updatedOn || '—'}
+                  </Text>
                 </View>
-              </View>
-
-              <View style={styles.actionButtonsContainer}>
-                <Pressable style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.cancleBtn]} onPress={resetLocalAndClose}>
-                  <Text style={styles.targetButtonText}>Cancel</Text>
-                </Pressable>
-
-                <Pressable style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.saveBtn]} onPress={handleSave}>
-                  <Text style={styles.targetButtonText}>Save Changes</Text>
-                </Pressable>
-              </View>
-
-              <Text style={{ textAlign: 'center', color: textSecondary }}>Last Updated On: {weightData.updatedOn ?? '—'}</Text>
+              </ScrollView>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
   container: {
     flex: 1,
-    padding: 10,
-    borderTopStartRadius: 20,
-    borderTopEndRadius: 20,
-    backgroundColor: "#000000ff",
+    justifyContent: 'flex-end',
   },
-  headingContainer: {
+  keyboardAvoider: {
+    flex: 1,
+    maxHeight: '90%', // Prevent modal from covering entire screen
+  },
+  modalContent: {
+    backgroundColor: '#000000ff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    flex: 1,
+    maxHeight: '100%',
+  },
+  header: {
     flexDirection: 'row',
-    padding: 10,
-    alignItems: "center",
-    justifyContent: 'space-between'
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Math.max(16, width * 0.04),
+    paddingVertical: Math.max(16, height * 0.02),
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
-  bodyContainer: {
-    flex: 4,
-    marginBottom: 20,
+  backButton: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
-  curentProgress: {
-    padding: 10,
-    marginTop: 10,
+  closeButton: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+  },
+  heading: {
+    fontWeight: 'bold',
+    color: textPimary,
+    textAlign: 'center',
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: Math.max(12, width * 0.03),
+    paddingBottom: Math.max(40, height * 0.05),
+  },
+  card: {
+    backgroundColor: 'rgb(18,18,18)',
+    borderRadius: 16,
+    padding: Math.max(16, width * 0.04),
+    marginBottom: Math.max(16, height * 0.02),
+    marginTop: Math.max(8, height * 0.01),
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Math.max(16, height * 0.02),
+  },
+  cardTitle: {
+    color: textPimary,
+    fontWeight: 'bold',
+  },
+  modeBadge: {
+    backgroundColor: cardBackground,
     borderRadius: 20,
-    backgroundColor: "rgb(36, 36, 49)",
+    paddingVertical: Math.max(6, height * 0.007),
+    paddingHorizontal: Math.max(12, width * 0.03),
   },
-  progressHeading: {
-    padding: 10,
-    flexDirection: 'row',
+  modeBadgeText: {
+    color: textPimary,
+    fontWeight: 'bold',
+  },
+  weightRow: {
+    flexDirection: width < 350 ? 'column' : 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginVertical: Math.max(12, height * 0.015),
+    gap: width < 350 ? 12 : 0,
   },
-  weightTargetContainer: {
-    marginTop: 20,
-    margin: 10,
-    flexDirection: 'row',
+  weightBox: {
     alignItems: 'center',
-    justifyContent: 'space-between'
+    flex: width < 350 ? 0 : 1,
+    marginVertical: width < 350 ? 8 : 0,
+    minWidth: width < 350 ? '100%' : 0,
   },
-  curentWeight: {
-    alignItems: "center",
-    justifyContent: 'center'
+  arrowIcon: {
+    transform: [{ rotate: width < 350 ? '90deg' : '0deg' }],
+    marginVertical: width < 350 ? 4 : 0,
   },
-  targetWeight: {
-    alignItems: "center",
-    justifyContent: 'center'
+  labelSmall: {
+    color: textSecondary,
+    fontWeight: '600',
+    marginBottom: 4,
   },
-  progressBarContainer: {
-    margin: 10,
+  bigNumber: {
+    color: textPimary,
+    fontWeight: 'bold',
+  },
+  progressContainer: {
+    marginTop: Math.max(8, height * 0.01),
+  },
+  progressLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  percentLabel: {
+    color: textSecondary,
   },
   progressBar: {
-    backgroundColor: textSecondary,
     height: 10,
-    marginTop: 10,
-    borderRadius: 10,
-    overflow: 'hidden'
+    backgroundColor: 'rgba(100,100,100,0.4)',
+    borderRadius: 5,
+    overflow: 'hidden',
   },
   progressTrack: {
     height: '100%',
-    borderRadius: 10,
-    backgroundColor: "rgb(38, 69, 62)",
+    backgroundColor: 'rgb(38, 150, 92)',
+    borderRadius: 5,
   },
-  weightGoalFormContainer: {
-    padding: 10,
+  progressText: {
+    textAlign: 'center',
+    color: textPimary,
+    fontWeight: 'bold',
     marginTop: 10,
-    borderRadius: 20,
-    backgroundColor: "rgb(36, 36, 49)"
   },
-  goalHeadingText: {
-    padding: 10,
-    fontSize: 19,
+  sectionTitle: {
     color: textPimary,
     fontWeight: 'bold',
+    marginBottom: 4,
   },
-  goalSubText: {
-    padding: 10,
-    fontSize: 15,
+  sectionSubtitle: {
     color: textPimary,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    marginBottom: Math.max(12, height * 0.015),
   },
-  targetButtonContainer: {
+  modeButtons: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    margin: 10,
+    gap: Math.max(12, width * 0.03),
+    marginBottom: Math.max(20, height * 0.025),
   },
-  targetButton: {
-    flexDirection: 'row',
+  modeButton: {
     flex: 1,
-    backgroundColor: secondaryBackground,
-    padding: 20,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 10,
     justifyContent: 'center',
-    gap: 10,
+    gap: Math.max(10, width * 0.02),
+    backgroundColor: secondaryBackground,
+    paddingVertical: Math.max(16, height * 0.02),
+    borderRadius: 12,
+    minHeight: 60, // Ensure minimum touch target
   },
-  targetButtonText: {
+  modeButtonActive: {
+    backgroundColor: 'rgb(38, 69, 62)',
+  },
+  modeButtonText: {
     color: textPimary,
     fontWeight: 'bold',
+  },
+  inputWrapper: {
+    marginBottom: Math.max(16, height * 0.02),
+  },
+  inputLabel: {
+    color: textPimary,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   inputContainer: {
-    margin: 10,
-    gap: 10
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 12,
+    paddingHorizontal: Math.max(12, width * 0.03),
+    paddingVertical: Platform.OS === 'ios' ? 12 : 8,
   },
-  inputLable: {
-    fontSize: 15,
+  input: {
+    flex: 1,
+    color: textPimary,
+    paddingVertical: 10,
+    paddingLeft: 10,
+    minHeight: 44, // Better touch target
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: Math.max(12, width * 0.03),
+    marginTop: Math.max(24, height * 0.03),
+    marginBottom: Math.max(16, height * 0.02),
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: secondaryBackground,
+    paddingVertical: Math.max(16, height * 0.02),
+    borderRadius: 12,
+    alignItems: 'center',
+    minHeight: 56, // Better touch target
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: 'rgb(40, 111, 152)',
+    paddingVertical: Math.max(16, height * 0.02),
+    borderRadius: 12,
+    alignItems: 'center',
+    minHeight: 56, // Better touch target
+  },
+  buttonText: {
     color: textPimary,
     fontWeight: 'bold',
   },
-  inputFieldContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: textSecondary,
-    borderRadius: 15,
-    padding: 10,
-  },
-  inputField: {
-    flex: 1,
-    padding: 10,
-  },
-  actionButtonsContainer: {
-    flexDirection: 'row',
-    margin: 10,
-    marginTop: 20,
-    gap: 10,
-  },
-  cancleBtn: {
-    flex: 1,
-    backgroundColor: secondaryBackground,
-    padding: 20,
-    alignItems: 'center',
-    borderRadius: 10,
-    justifyContent: 'center',
-  },
-  saveBtn: {
-    flex: 1,
-    backgroundColor: "rgb(40, 111, 152)",
-    padding: 20,
-    alignItems: 'center',
-    borderRadius: 10,
-    justifyContent: 'center',
+  lastUpdated: {
+    textAlign: 'center',
+    color: textSecondary,
+    marginTop: 8,
   },
 });
 
