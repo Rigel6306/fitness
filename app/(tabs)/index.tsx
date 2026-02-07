@@ -5,7 +5,7 @@ import SafeScreenWrapper from '@/components/SafeScreenWrapper'
 import Schedule from '@/components/Schedule'
 import { Colors } from '@/constants/Colors'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 const {background,primaryBackground} = Colors
 const Home = () => {
   return (
@@ -13,10 +13,14 @@ const Home = () => {
     
       <View style={styles.container}>
     <SafeScreenWrapper>
+      <ScrollView>
+
+   
           <Header />
            <Carousel />
           <Schedule />
           <Progress />
+             </ScrollView>
       </SafeScreenWrapper>
     </View>
  </>

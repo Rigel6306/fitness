@@ -4,7 +4,7 @@ import { db } from "./firebase";
 
 export const getSchedule = async () => {
     const q = query(
-        collection(db, 'schedules'), where("title", "==", "Basic Schedule")
+        collection(db, 'schedules'), where("title", "==", "2nd Schedule")
     )
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
