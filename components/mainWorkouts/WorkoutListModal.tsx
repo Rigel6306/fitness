@@ -32,7 +32,8 @@ interface WorkoutsListModalProps {
   modalVisible: boolean;
   setModalVisible: (visible: boolean) => void;
   selectedDaySchedule: {
-    day: string;
+    day: number;
+    schedule: Array<any>;
   };
   workoutsList: WorkoutsList;
   setWorkoutsList: (list: WorkoutsList) => void;
@@ -57,7 +58,8 @@ const WorkoutsListModal = ({
     })
     
     const completedWorkoutsList = { date: today, list: updatedList }
-    updateAsyncStorageOnDebounce('workoutsList', completedWorkoutsList)
+    const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
+    updateAsyncStorageOnDebounce(dayKey, completedWorkoutsList)
     setWorkoutsList(completedWorkoutsList)
   }
 
@@ -92,7 +94,7 @@ const WorkoutsListModal = ({
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Basic Schedule</Text>
             <Text style={styles.modalSubtitle}>
-              Day {selectedDaySchedule.day} • {workoutsList?.list?.length || 0} Exercises
+              Day {selectedDaySchedule?.day || 0} • {workoutsList?.list?.length || 0} Exercises
             </Text>
           </View>
           

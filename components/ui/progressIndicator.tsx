@@ -52,6 +52,7 @@ const ProgressIndicator = ({title,mainText,subText,icon,value,actionColor,gradie
 const styles = StyleSheet.create({
 
     container:{
+        
         flex:1,
         padding:20,
         backgroundColor:"rgba(81, 85, 88, 0.3)",

@@ -49,7 +49,7 @@ type ScheduleType = {
 
 const MainWorkoutSchedule = () => {
   const [modelVisible, setModelVisible] = useState(false)
-  const [selectedDaySchedule, setSelectedDaySchedule] = useState<Workouts | null>(null)
+  const [selectedDaySchedule, setSelectedDaySchedule] = useState([])
   const [schedule, setSchedule] = useState<ScheduleType | null>();
   const [workoutList, setWorkoutList] = useState<any>()
   const today = new Date().toISOString().split('T')[0]
@@ -62,19 +62,13 @@ const MainWorkoutSchedule = () => {
         
         const storedWorkouts = await getAsyncStorageData('workoutsList')
         setSchedule(storedSchedule)
-        // console.log('Stored Workouts at useEffectS',storedWorkouts.list)
+        console.log('Stored Workouts at useEffectS',storedWorkouts.list)
         //same day-> keep stored data
         if (storedWorkouts&&storedWorkouts.date === today) {
           setWorkoutList(storedWorkouts)
         }
         else {//new day-> create a fresh list
-          const baseList = (storedWorkouts && storedWorkouts.list)
-            ? storedWorkouts.list
-            : (storedSchedule.workouts && storedSchedule.workouts.length > 0
-              ? // use first day's schedule as a fallback
-              storedSchedule.workouts[0].schedule
-              : [] )
-          const newWorkoutsList = { date: today, list: baseList.map((item: any) => ({ ...item, isComplete: false })) }
+          const newWorkoutsList = { date: today, list: storedWorkouts.list.map(item => ({ ...item, ['isComplete']: false })) }
           setWorkoutList(newWorkoutsList)
           await setAsyncStorageData('workoutsList', newWorkoutsList)
         }
@@ -86,45 +80,23 @@ const MainWorkoutSchedule = () => {
     loadData()
   }, [])
   useEffect(() => {
-    const loadSelectedDayWorkouts = async () => {
-      if (selectedDaySchedule && selectedDaySchedule.schedule) {
-        const today = new Date().toISOString().split('T')[0]
-        const dayKey = `workoutsList_day${selectedDaySchedule.day}`
-        
-        // Try to get the stored workouts for this specific day
-        const storedDayWorkouts = await getAsyncStorageData(dayKey)
-        
-        if (storedDayWorkouts && storedDayWorkouts.date === today) {
-          // Same day, use stored data
-          setWorkoutList(storedDayWorkouts)
+    const initData = async () => {
+      if (schedule?.workouts?.[0]?.schedule) {
+        const storedWorkouts = await getAsyncStorageData('workoutsList')
+        if (storedWorkouts) {
+          setWorkoutList(storedWorkouts)
         } else {
-          // New day or first time, create fresh list for this day
-          const newWorkoutsList = {
-            date: today,
-            list: selectedDaySchedule.schedule.map(item => ({
-              ...item,
-              isComplete: false
-            }))
-          }
-          setWorkoutList(newWorkoutsList)
-          await setAsyncStorageData(dayKey, newWorkoutsList)
+          const currentWorkoutList = { list: schedule.workouts[0].schedule.map(item => ({ ...item, ['isComplete']: false })), date: today }
+
+          setWorkoutList(currentWorkoutList)
+          setAsyncStorageData('workoutsList', currentWorkoutList)
         }
+        setAsyncStorageData('schedule', schedule)
       }
     }
 
-    loadSelectedDayWorkouts()
-  }, [selectedDaySchedule])
+    initData()
 
-  // Initialize first day on app startup
-  useEffect(() => {
-    const initializeFirstDay = async () => {
-      if (schedule && schedule.workouts && schedule.workouts.length > 0 && !selectedDaySchedule) {
-        setSelectedDaySchedule(schedule.workouts[0])
-        await setAsyncStorageData('schedule', schedule)
-      }
-    }
-
-    initializeFirstDay()
   }, [schedule])
   return (
     <>
@@ -197,7 +169,7 @@ const MainWorkoutSchedule = () => {
         </View>
 
       </LinearGradient>
-      {workoutList && selectedDaySchedule && <WorkoutsListModal
+      {workoutList && <WorkoutsListModal
         setWorkoutsList={setWorkoutList}
         workoutsList={workoutList}
         modalVisible={modelVisible}

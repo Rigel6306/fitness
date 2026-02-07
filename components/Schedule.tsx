@@ -4,10 +4,11 @@ import Octicons from '@expo/vector-icons/Octicons'
 import { useNavigation, useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { useState } from 'react'
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import PackageSelectionModal from './PackageSelectionModal'
 import WeightTargetModal from './weightTarget/WeightTargetModal'
 
+const {height} = Dimensions.get('screen')
 const Schedule = () => {
 
 const{userData} = useUserDataContext()
@@ -109,7 +110,10 @@ const{userData} = useUserDataContext()
 
 const style = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 2,
+    height:height*0.223,
+   maxHeight:height*0.3,
+   marginTop:0,
     margin: 10,
     flexDirection: 'row',
     gap: 10,

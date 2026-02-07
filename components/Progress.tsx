@@ -55,15 +55,15 @@ const Progress = () => {
 
 const style = StyleSheet.create({
   container: {
-    flex: 1,
+   
     margin: 10,
-   marginBottom:50,
+   marginBottom:70,
     borderRadius: 15,
-    backgroundColor: 'rgba(11, 14, 17, 1)',
-    padding: 10,
+    backgroundColor: 'rgb(0, 0, 0)',
+   
   },
   progressContainer: {
-    flex: 1,
+   
     gap: 20,
     backgroundColor: 'rgba(81, 111, 142, 1)'
   },
