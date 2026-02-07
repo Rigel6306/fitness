@@ -10,13 +10,14 @@ const {background,primaryBackground} = Colors
 const Home = () => {
   return (
     <>
+    
       <View style={styles.container}>
-   <SafeScreenWrapper>
+    <SafeScreenWrapper>
           <Header />
            <Carousel />
           <Schedule />
           <Progress />
-        </SafeScreenWrapper>
+      </SafeScreenWrapper>
     </View>
  </>
   )
@@ -26,16 +27,10 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor:'#000000',
-    height: "100%",
-    width: "100%",
     flex: 1,
     resizeMode: 'cover'
   },
-  welcome: {
-    margin: 10,
-    marginTop: 40,
-    backgroundColor: 'green'
-  }
+
 })
 
 export default Home

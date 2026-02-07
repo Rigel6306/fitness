@@ -2,29 +2,43 @@ import { app, db } from "@/services/firebase";
 
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+
 const auth = getAuth(app);
 
 
-export const registerUser = async (
-    email: string,
-    password: string,
-    name: string,
-    age: number,
-    height: number,
-    weight: number,
-    gender: string) => {
+interface registerUserParams {
+  membershipNumber: number ;
+  package: { id?: string; name?: string };
+  fullName: string ;
+  age: number ;
+  contactNumber: string ;
+  height: number ;
+  weight: number ;
+  gender: string ;
+  email: string ;
+  password: string ;
+  confirmedPwd: string ;
+}
+
+
+export const registerUser = async (data:registerUserParams) => {
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
+        const packageRef =  doc(db,'package',data.package.id )
+
         await setDoc(doc(db, "users", user.uid), {
-            name: name,
+            membershipNumber:data.membershipNumber,
+            packageRef:packageRef,
+            name: data.fullName,
+            age:data.age,
+            contactNumber:data.contactNumber,
+            height:data.height,
+            weight:data.weight,
+            gender:data.gender,
             email: user.email,
-            age,
-            height,
-            weight,
-            gender,
-            createdAt: new Date()
+            registerdAt: new Date()
         });
 
         console.log("User registered and saved to Firestore!");

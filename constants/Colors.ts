@@ -12,5 +12,4 @@ export const Colors = {
     cardBackground:'#251939ff',
     cardBackgroundSecondary:'#0b1212',
     error:'#5a1a47'
-
 }

@@ -1,13 +1,13 @@
 
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 
 
-export const getUser = async(uid:string)=>{
+export const getUser = async (uid: string) => {
 
-    const userRef = doc(db,"users",uid)
-
+    const userRef = doc(db, "users", uid)
+    await new Promise(res => setTimeout(res, 500))
     const userSnap = await getDoc(userRef)
 
     if (!userSnap.exists()) return
@@ -15,23 +15,40 @@ export const getUser = async(uid:string)=>{
     const packageRef = userData.packageRef
     const packageSnap = await getDoc(packageRef)
 
-    if (packageSnap.exists()){
+    if (packageSnap.exists()) {
         return {
+           
             ...userData,
-            package:packageSnap.data()
+            package: packageSnap.data()
         }
-    }else {
+    } else {
         console.log("Package not found")
         return userData;
     }
 
 }
 
-export const getAllDocs = async(col:string)=>{
+export const getAllDocs = async (col: string) => {
 
-    const colRef = collection(db,col)
+    const colRef = collection(db, col)
     const querySnapshot = await getDocs(colRef)
-    const data = querySnapshot.docs.map(doc=>({id:doc.id,...doc.data()}))
+    const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
     return data
+
+}
+
+export const updateDocument = async (docId: string, newData: any, collection: string) => {
+
+
+    try {
+        const docRef = doc(db, collection, docId)
+        await updateDoc(docRef, newData)
+        return 'success'
+    } catch (err) {
+        throw new Error(err.message)
+    }
+
+
+
 
 }

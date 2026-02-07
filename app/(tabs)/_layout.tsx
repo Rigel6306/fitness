@@ -12,7 +12,7 @@ export default function TabLayout() {
   return (
 
  
-            <TabContextComp>
+    <TabContextComp>
       <Tabs tabBar={(props) => <TabBar {...props} />}>
 
         <Tabs.Screen
@@ -34,10 +34,10 @@ export default function TabLayout() {
         />
 
         <Tabs.Screen
-          name="explore"
+          name="profile"
           options={{
-
-            title: 'Explore',
+              headerShown: false,
+            title: 'Profile',
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
           }}
         />
