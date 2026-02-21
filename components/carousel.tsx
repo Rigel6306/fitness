@@ -120,7 +120,8 @@ const styles = StyleSheet.create({
   container: {
     height: _imgHeight + 20,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop:10,
   },
 
   listContent: {

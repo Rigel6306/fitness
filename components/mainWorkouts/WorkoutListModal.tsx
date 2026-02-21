@@ -39,6 +39,12 @@ interface WorkoutsListModalProps {
   setWorkoutsList: (list: WorkoutsList) => void;
 }
 
+type CompletedDayRecord = {
+  date: string;
+  isComplete: boolean;
+}
+
+
 const WorkoutsListModal = ({ 
   modalVisible, 
   setModalVisible, 
@@ -49,7 +55,21 @@ const WorkoutsListModal = ({
 
   const today = new Date().toISOString().split('T')[0]
   
+  const checkDayCompletion = (workoutList:WorkoutsList)=>{
+
+    const allCompleted = workoutList.list.every(ex=>ex.isComplete)
+    const record:CompletedDayRecord = {
+      date:workoutList.date,
+      isComplete:allCompleted
+    }
+
+    
+    allCompleted?console.log("Updated The count"):''
+
+  }
+
   const updateWorkoutsList = (id: string) => {
+   
     const updatedList = workoutsList.list.map((item) => {
       if (item.id === id) {
         return { ...item, isComplete: !item.isComplete }
@@ -58,6 +78,7 @@ const WorkoutsListModal = ({
     })
     
     const completedWorkoutsList = { date: today, list: updatedList }
+     checkDayCompletion(completedWorkoutsList)
     const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
     updateAsyncStorageOnDebounce(dayKey, completedWorkoutsList)
     setWorkoutsList(completedWorkoutsList)

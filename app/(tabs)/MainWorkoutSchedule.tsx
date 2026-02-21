@@ -58,9 +58,12 @@ const MainWorkoutSchedule = () => {
     const loadData = async () => {
 
       const storedSchedule = await getAsyncStorageData('schedule')
+      console.log("Stored Schedule:",storedSchedule)
+
       if (storedSchedule) {
         
         const storedWorkouts = await getAsyncStorageData('workoutsList')
+        console.log("Stored Workouts:", storedWorkouts)
         setSchedule(storedSchedule)
         // console.log('Stored Workouts at useEffectS',storedWorkouts.list)
         //same day-> keep stored data
@@ -85,6 +88,7 @@ const MainWorkoutSchedule = () => {
     }
     loadData()
   }, [])
+  
   useEffect(() => {
     const loadSelectedDayWorkouts = async () => {
       if (selectedDaySchedule && selectedDaySchedule.schedule) {
@@ -96,6 +100,7 @@ const MainWorkoutSchedule = () => {
         
         if (storedDayWorkouts && storedDayWorkouts.date === today) {
           // Same day, use stored data
+          
           setWorkoutList(storedDayWorkouts)
         } else {
           // New day or first time, create fresh list for this day

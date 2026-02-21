@@ -376,105 +376,132 @@ export const mealPlanData = {
 };
 
 export const mainSchedules =
-[
-   {
-        title: 'Basic Schedule',
-        frequency: 'day after day',
-        workoutsCount:10,
-        workouts: [
-            {
-                day: 1,
-                schedule:
-                    [{ id: 1, name: "Leg Extension", reps: [10, 8, 6] },
-                    { id: 2, name: "Barbell Shoulder Press", reps: [10, 8, 6] },
-                    { id: 3, name: "Dumbbell Side Lateral", reps: [10, 8, 6] },
-                    { id: 4, name: "Bent-Over Side Lateral", reps: ["10-12", "10-12", "10-12"] },
-                    { id: 5, name: "Flat Bench Press", reps: [10, 8, 6] },
-                    { id: 6, name: "Straight-Arm Pullover", reps: [12, 12, 12] },
-                    { id: 7, name: "Lat Pulldown", reps: [12, 10, 8] },
-                    { id: 8, name: "Barbell Curl", reps: [10, 8, 6] },
-                    { id: 9, name: "Triceps Extension", reps: [10, 8, 6] },
-                    { id: 10, name: "Forearm Exercise", reps: [15, 15, 15] }]
-            }
+    [
+        {
+            title: 'Basic Schedule',
+            frequency: 'day after day',
+            workoutsCount: 10,
+            workouts: [
+                {
+                    day: 1,
+                    schedule:
+                        [{ id: 1, name: "Leg Extension", reps: [10, 8, 6] },
+                        { id: 2, name: "Barbell Shoulder Press", reps: [10, 8, 6] },
+                        { id: 3, name: "Dumbbell Side Lateral", reps: [10, 8, 6] },
+                        { id: 4, name: "Bent-Over Side Lateral", reps: ["10-12", "10-12", "10-12"] },
+                        { id: 5, name: "Flat Bench Press", reps: [10, 8, 6] },
+                        { id: 6, name: "Straight-Arm Pullover", reps: [12, 12, 12] },
+                        { id: 7, name: "Lat Pulldown", reps: [12, 10, 8] },
+                        { id: 8, name: "Barbell Curl", reps: [10, 8, 6] },
+                        { id: 9, name: "Triceps Extension", reps: [10, 8, 6] },
+                        { id: 10, name: "Forearm Exercise", reps: [15, 15, 15] }]
+                }
 
-        ],
-        duration: 3,
-        focus: ["Balanced full-body workout with emphasis on chest", "Shoulders", "Arms", "Basic strength"]
-    },
+            ],
+            duration: 3,
+            focus: ["Balanced full-body workout with emphasis on chest", "Shoulders", "Arms", "Basic strength"]
+        },
 
-   {
-        title: '2nd Schedule',
-        frequency: 'day after day',
-        workoutsCount:11,
-        workouts: [
-            {
-                day: 1,
-                schedule: [{ id: 1, name: "Low Back Extension", reps: [10, 8, 6] },
-                { id: 2, name: "Lat Pulldown", reps: [12, 10, 8] },
-                { id: 3, name: "Barbell Pullover", reps: [12, 12, 12] },
-                { id: 4, name: "Dumbbell Shoulder Press", reps: [12, 10, 8] },
-                { id: 5, name: "Cable Side Lateral", reps: ["12-15", "12-15", "12-15"] },
-                { id: 6, name: "Rear Bent-Over Side Lateral", reps: ["12-15", "12-15", "12-15"] },
-                { id: 7, name: "Flat Bench Press", reps: [12, 10, 8] },
-                { id: 8, name: "Super 7 Curl", reps: ["21", "21", "21", "21"] },
-                { id: 9, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
-                { id: 10, name: "Goblet Squat", reps: [10, 8, 6] },
-                { id: 11, name: "Dumbbell Wrist Twist (Forearm)", reps: [15, 15, 15] }]
-            }
-        ]
-        ,
-        duration: 3,
-        focus: ["Upper-body dominant routine targeting back", "Shoulders", "Arms", "Legs and forearms"]
-    },
+        {
+            title: '2nd Schedule',
+            frequency: 'day after day',
+            workoutsCount: 11,
+            workouts: [
+                {
+                    day: 1,
+                    schedule: [{ id: 1, name: "Low Back Extension", reps: [10, 8, 6] },
+                    { id: 2, name: "Lat Pulldown", reps: [12, 10, 8] },
+                    { id: 3, name: "Barbell Pullover", reps: [12, 12, 12] },
+                    { id: 4, name: "Dumbbell Shoulder Press", reps: [12, 10, 8] },
+                    { id: 5, name: "Cable Side Lateral", reps: ["12-15", "12-15", "12-15"] },
+                    { id: 6, name: "Rear Bent-Over Side Lateral", reps: ["12-15", "12-15", "12-15"] },
+                    { id: 7, name: "Flat Bench Press", reps: [12, 10, 8] },
+                    { id: 8, name: "Super 7 Curl", reps: ["21", "21", "21", "21"] },
+                    { id: 9, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
+                    { id: 10, name: "Goblet Squat", reps: [10, 8, 6] },
+                    { id: 11, name: "Dumbbell Wrist Twist (Forearm)", reps: [15, 15, 15] }]
+                }
+            ]
+            ,
+            duration: 3,
+            focus: ["Upper-body dominant routine targeting back", "Shoulders", "Arms", "Legs and forearms"]
+        },
 
-     {
-        title: '3rd Schedule',
-        frequency: '2 Days',
-        workoutsCount:20,
-        workouts: [
-            {
-                day: 1,
-                schedule: [{ id: 1, name: "Standing Shoulder Press", reps: [12, 10, 8, 6] },
-                { id: 2, name: "One-Arm Dumbbell Side Lateral Raise", reps: ["10-12", "10-12", "10-12", "10-12"] },
-                { id: 3, name: "Incline Dumbbell Press", reps: [12, 10, 8, 6] },
-                { id: 4, name: "Incline Dumbbell Flyes", reps: ["10-12", "10-12", "10-12", "10-12"] },
-                { id: 5, name: "Flat Dumbbell Press", reps: [12, 10, 8, 6] },
-                { id: 6, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
-                { id: 7, name: "Skull Crusher", reps: [12, 10, 8, 6] },
-                { id: 8, name: "Weighted Triceps Dips", reps: ["10-12", "10-12", "10-12", "10-12"] },
-                { id: 9, name: "Full Squat", reps: [10, 8, 6, 6] },
-                { id: 10, name: "Dumbbell Lunges", reps: [10, 9, 8, 7] }]
-            },
-            {
-                day: 2,
-                schedule: [{ id: 1, name: "Wide-Grip Upright Row", reps: ["10-12", "10-12", "10-12", "10-12"] },
-                { id: 2, name: "Bent-Over Side Lateral (Chest Supported)", reps: ["12-15", "12-15", "12-15", "12-15"] },
-                { id: 3, name: "Pull-Up", reps: [10, 10,10,10] },
-                { id: 4, name: "One-Arm Dumbbell Row", reps: [12, 10, 8, 6] },
-                { id: 5, name: "Wide-Grip T-Bar Row", reps: [12, 10, 8, 6] },
-                { id: 6, name: "Wall Curl (Biceps)", reps: [12, 10, 8, 6] },
-                { id: 7, name: "Preacher Curl", reps: [10, 8, 6, 6] },
-                { id: 8, name: "Hammer Curl", reps: ["8-10", "8-10", "8-10", "8-10"] },
-                { id: 9, name: "Deadlift", reps: [10, 8, 6, 4] },
-                { id: 10, name: "Leg Curl", reps: [8, 4] }]
-            }
-        ],
-        duration:3,
-        focus:["Shoulders","Chest","Triceps","Compound leg work","Back", "Biceps", "Forearms", "Posterior chain"]
+        {
+            title: '3rd Schedule',
+            frequency: '2 Days',
+            workoutsCount: 20,
+            workouts: [
+                {
+                    day: 1,
+                    schedule: [{ id: 1, name: "Standing Shoulder Press", reps: [12, 10, 8, 6] },
+                    { id: 2, name: "One-Arm Dumbbell Side Lateral Raise", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                    { id: 3, name: "Incline Dumbbell Press", reps: [12, 10, 8, 6] },
+                    { id: 4, name: "Incline Dumbbell Flyes", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                    { id: 5, name: "Flat Dumbbell Press", reps: [12, 10, 8, 6] },
+                    { id: 6, name: "Overhead Cable Triceps Extension", reps: [12, 10, 8, 6] },
+                    { id: 7, name: "Skull Crusher", reps: [12, 10, 8, 6] },
+                    { id: 8, name: "Weighted Triceps Dips", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                    { id: 9, name: "Full Squat", reps: [10, 8, 6, 6] },
+                    { id: 10, name: "Dumbbell Lunges", reps: [10, 9, 8, 7] }]
+                },
+                {
+                    day: 2,
+                    schedule: [{ id: 1, name: "Wide-Grip Upright Row", reps: ["10-12", "10-12", "10-12", "10-12"] },
+                    { id: 2, name: "Bent-Over Side Lateral (Chest Supported)", reps: ["12-15", "12-15", "12-15", "12-15"] },
+                    { id: 3, name: "Pull-Up", reps: [10, 10, 10, 10] },
+                    { id: 4, name: "One-Arm Dumbbell Row", reps: [12, 10, 8, 6] },
+                    { id: 5, name: "Wide-Grip T-Bar Row", reps: [12, 10, 8, 6] },
+                    { id: 6, name: "Wall Curl (Biceps)", reps: [12, 10, 8, 6] },
+                    { id: 7, name: "Preacher Curl", reps: [10, 8, 6, 6] },
+                    { id: 8, name: "Hammer Curl", reps: ["8-10", "8-10", "8-10", "8-10"] },
+                    { id: 9, name: "Deadlift", reps: [10, 8, 6, 4] },
+                    { id: 10, name: "Leg Curl", reps: [8, 4] }]
+                }
+            ],
+            duration: 3,
+            focus: ["Shoulders", "Chest", "Triceps", "Compound leg work", "Back", "Biceps", "Forearms", "Posterior chain"]
 
-    }
+        }
 
-];
+    ];
 
 interface Package {
-  id: string
-  name: string
-  description: string
-  includes: string[]
-  price: number
-  current?: boolean,
-  icons:any
+    id: string
+    name: string
+    description: string
+    includes: string[]
+    price: number
+    current?: boolean,
+    icons: any
 }
+
+interface AchievementBadge {
+    name: string;
+    description: string;
+    achieved: boolean
+    badge?: string
+}
+
+export const achievementBadges: AchievementBadge[] = [
+    {
+        name: "Milestone Master",
+        description: "Awarded for hitting 50 workouts ",
+        achieved: false,
+        badge: require('../assets/images/badges/milestoneMaster.png') 
+    },
+    { name: "Early Bird", description: "Earned by completing workouts in the morning.", achieved: true, badge: require('../assets/images/badges/nightOwl.png') },
+    { name: "Night Owl", description: "Earned by completing workouts in the evening.", achieved: true, badge: require("../assets/images/badges/nightOwl.png") },
+    { name: "Consistency Champ", description: "Awarded for logging workouts multiple days in a row.", achieved: true, badge: require("../assets/images/badges/consistencyChamp.png") },
+    { name: "Trailblazer", description: "Earned by trying a brand-new type of exercise.", achieved: true, badge: require("../assets/images/badges/trailblazer.png") },
+    { name: "Streak Keeper", description: "Awarded for maintaining a workout streak (7 days, 30 days, etc.).", achieved: false, badge: require("../assets/images/badges/streakKeeper.png") },
+    { name: "2YM", description: "Awarded for being a memebr for 2 years.", achieved: true, badge: require("../assets/images/badges/2yearMember.png") },
+    { name: "1YM", description: "Awarded for being a memebr for 1 years.", achieved: true, badge: require("../assets/images/badges/1yearMember.png") },
+    { name: "Veteren", description: "Awarded for being a memebr for 3+ years.", achieved: true, badge: require("../assets/images/badges/3yearMember.png") },
+    { name: "Zen Master", description: "Awarded for logging meditation or yoga sessions.", achieved: true, badge: require("../assets/images/badges/zenMaster.png") },
+    { name: "Challenge Conqueror", description: "Earned by finishing a special in-app challenge.", achieved: false, badge: require("../assets/images/badges/challengeConqueror.png")},
+
+];
 
 
 

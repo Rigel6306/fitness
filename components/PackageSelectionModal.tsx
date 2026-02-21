@@ -41,7 +41,7 @@ const [updatedPackage,setUpdatedPackageName] = useState <{name?:string,price?:st
     fetchPakacges()
   }, [])
 
-  console.log("at package Selection selected package:",selected)
+ 
 
 const handleSaveChanges = async () => {
   setUpdatedPackageName({name:selected.name,price:selected.price})
@@ -56,7 +56,7 @@ const handleSaveChanges = async () => {
     };
 
     await updateDocument(userData.id, newData, "users");
-    console.log("Successfully Updated");
+   
   } catch (err) {
     console.log("Error updating user:", err);
   }
@@ -130,69 +130,76 @@ const styles = StyleSheet.create({
   heading: {
     flex: 1,
     borderRadius: 20,
-    padding: 10,
-    backgroundColor: "rgb(13, 13, 14)",
-    marginBottom: 10,
+    padding: 8,
+    margin:8,
+    backgroundColor: "rgba(30, 30, 30, 0.75)",
+    marginBottom: 8,
   },
   headingText: {
     color: textPimary,
-    fontSize: 25,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginLeft: 10
+    marginLeft: 8
 
   },
   curentPackageText: {
-    margin: 10,
-    fontSize: 20,
+    marginTop:20,
+    margin: 8,
+    fontSize: 16,
     color: textSecondary
   },
   currentPackageContainer: {
-    margin: 10,
+    margin: 8,
     backgroundColor: "rgb(36, 36, 49)",
     borderRadius: 10,
-    padding: 10,
+    padding: 8,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
 
   },
   contentBody: {
-    flex: 4,
-    backgroundColor: "rgb(0, 0, 0)",
+    flex: 3,
+    backgroundColor: "rgba(30, 30, 30, 0.75)",
     borderRadius: 20,
+    margin:8,
   },
   scrollContainer: {
-    margin: 10,
+    margin: 8,
     flex: 1,
   },
 
-
-
   actionBtnsContainer: {
-    margin: 10,
-    padding: 10,
+    margin: 8,
+    padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    gap: 10,
+     marginHorizontal:10,
+    gap: 8,
   },
+
   cancleBtn: {
     flex: 1,
     backgroundColor: 'gray',
-    padding: 10,
-    borderRadius: 10,
+    padding: 8,
+    borderRadius: 8,
+     
     alignItems: 'center',
 
   },
   confirmBtn: {
     flex: 1,
-    backgroundColor: 'gray',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: 'rgb(255, 250, 250)',
+    padding: 8,
+    borderRadius: 8,
+   
     alignItems: 'center',
+
   },
   actionBtnText: {
+    color:textSecondary,
     fontWeight: 'bold',
-    fontSize: 15
+    fontSize: 16
   }
 
 })

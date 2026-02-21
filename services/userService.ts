@@ -22,7 +22,7 @@ export const getUser = async (uid: string) => {
             package: packageSnap.data()
         }
     } else {
-        console.log("Package not found")
+  
         return userData;
     }
 

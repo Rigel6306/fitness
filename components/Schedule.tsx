@@ -12,7 +12,6 @@ const {height} = Dimensions.get('screen')
 const Schedule = () => {
 
 const{userData} = useUserDataContext()
-  console.log("At Schedule",userData)
 
   const [isModalOpen,setIsModalOpen] = useState(false)
   const [isPackageModalOpen,setIsPackageModalOpen] = useState(false)
