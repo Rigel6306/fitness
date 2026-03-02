@@ -5,8 +5,18 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import RepsCard from './RepsCard';
+import React from 'react';
 const { primaryBackground, cardBackground, cardBackgroundSecondary, textPimary, textSecondary } = Colors
-const ExercisesCard = ({ id, name, reps, isComplete, updateWorkoutsList }) => {
+
+interface ExercisesCardProps {
+    id: number;
+    name: string;
+    reps: (string | number)[];
+    isComplete: boolean;
+    updateWorkoutsList: (id: number) => void;
+}
+
+const ExercisesCard = ({ id, name, reps, isComplete, updateWorkoutsList }: ExercisesCardProps) => {
 
     const [completedWorkout, setCompletedWorkout] = useState(false)
     const handleTouch = ()=>{

@@ -1,8 +1,8 @@
-import { createContext, useState } from "react"
+import React, { createContext, useState } from "react"
 
 export const userDataContext:React.Context<any> = createContext(null)
 
-const UserDataContextWrapper = ({children})=>{
+const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
 
     const [weightData,setWeightData] = useState({
         startWeight:85,
@@ -14,11 +14,16 @@ const UserDataContextWrapper = ({children})=>{
 
     const [userData, setUserData] = useState('empty uid')
 
-   
+    const [analyticalData,setAnalyticalData] = useState({
+        date:new Date().toISOString().split('T')[0],
+        isUpdated:false,
+        noOfWorkoutsCompleted:0,
+        isTotallyCompleted:false
+    });
 
     return(
 
-        <userDataContext.Provider value={{weightData,setWeightData,userData,setUserData}}>
+        <userDataContext.Provider value={{weightData,setWeightData,userData,setUserData,analyticalData,setAnalyticalData}}>
                     {
                         children
                     }

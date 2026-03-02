@@ -114,14 +114,14 @@ const Style = StyleSheet.create({
     container:{
       alignSelf:'center',
         position:'absolute',
-        bottom:25,
+        bottom:5,
         flexDirection:'row',
         alignItems:'center',
         marginHorizontal:20,
         backgroundColor:'#131313',
         paddingVertical:15,
         borderRadius:20,
-        borderCurve:'continuous',
+    
         shadowColor:'green',
         shadowOffset:{width:0,height:10},
         shadowRadius:10,

@@ -13,14 +13,13 @@ const Home = () => {
     
       <View style={styles.container}>
     <SafeScreenWrapper>
-      <ScrollView>
-
-   
+      <ScrollView >
           <Header />
            <Carousel />
           <Schedule />
           <Progress />
-             </ScrollView>
+          
+         </ScrollView>
       </SafeScreenWrapper>
     </View>
  </>

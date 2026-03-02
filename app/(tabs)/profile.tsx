@@ -1,10 +1,11 @@
+import { ContributionGraphComp, LineChartComp } from '@/components/AnalyticsChart';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import { Colors } from '@/constants/Colors';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import { Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { achievementBadges } from '../../data/data';
 
@@ -70,22 +71,34 @@ const Profile = () => {
 
         <View style={styles.scrollSection}>
           <ScrollView>
+             <LineChartComp/>
+             
             {/* Your Status section */}
             <Text style={styles.statsHeadingText}>Your Stats</Text>
             <View style={styles.statsContainer}>
               <View style={{ flex: 1, flexDirection: 'row', gap: 10 }}>
                 <View style={[styles.statItem, { backgroundColor: 'rgba(44, 45, 46, 0.39)', }]}>
-                  <Entypo name="medal" size={34} color="gold" />
+                  <Entypo name="medal" size={20} color="gold" />
                   <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>1</Text>
                   <Text style={{ color: textSecondary, fontWeight: 'bold' }}>Challenges</Text>
                 </View>
                 <View style={[styles.statItem, { backgroundColor: 'rgba(44, 45, 46, 0.39)', }]}>
-                  <FontAwesome5 name="fire" size={34} color="crimson" />
+                  <FontAwesome5 name="fire" size={20} color="crimson" />
                   <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>10</Text>
                   <Text style={{ color: textSecondary, fontWeight: 'bold' }}>Day Streak</Text>
                 </View>
+                <View style={[styles.statItem, { backgroundColor: 'rgba(44, 45, 46, 0.39)', }]}>
+                  <FontAwesome6 name="dumbbell" size={20} color="rgb(58, 167, 131)" />
+                  <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>10</Text>
+                  <Text style={{ color: textSecondary, fontWeight: 'bold' }}>Workouts</Text>
+                </View>
+                <View style={[styles.statItem, { backgroundColor: 'rgba(44, 45, 46, 0.39)', }]}>
+                  <FontAwesome6 name="clock" size={20} color="rgb(57, 125, 193)" />
+                  <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>10</Text>
+                  <Text style={{ color: textSecondary, fontWeight: 'bold' }}>hours</Text>
+                </View>
               </View>
-              <View style={{ flex: 1, flexDirection: 'row', gap: 10 }}>
+              {/* <View style={{ flex: 1, flexDirection: 'row', gap: 10 }}>
                 <View style={[styles.statItem, { backgroundColor: 'rgba(44, 45, 46, 0.39)', }]}>
                   <FontAwesome6 name="dumbbell" size={34} color="rgb(58, 167, 131)" />
                   <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>10</Text>
@@ -96,7 +109,7 @@ const Profile = () => {
                   <Text style={{ fontWeight: 'bold', marginTop: 10, color: textPimary, fontSize: 24, }}>10</Text>
                   <Text style={{ color: textSecondary, fontWeight: 'bold' }}>hours</Text>
                 </View>
-              </View>
+              </View> */}
             </View>
 
             {/* Achievement badge Section */}
@@ -104,6 +117,7 @@ const Profile = () => {
             <AchievementBadgeCard achievementBadges={achievementBadges} handlePress={handleBagePress} />
 
             {/* ── New Sections Start ── */}
+            <ContributionGraphComp/>
 
             {/* Your Goals */}
             <Text style={styles.statsHeadingText}>Your Goals</Text>
@@ -307,16 +321,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   statsContainer: {
-    height: height * 0.35,
+    height: height * 0.12,
     margin: 8,
     gap: 8,
-
-
   },
   statItem: {
-
     flex: 1,
-
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
@@ -335,12 +345,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-
   },
   badgeText: {
     textAlign: 'center',
     fontWeight: 'bold',
-
   },
   badgeLockOVerlay: {
     borderRadius: 100,
@@ -352,7 +360,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-
   },
 
   badgeModalContainer: {
@@ -378,14 +385,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontWeight: 'bold',
     fontSize: 32,
-
-
   },
   congratsSubTxt: {
     marginBottom: 20,
     color: textPimary,
     fontWeight: 'bold',
-
   },
   badgeHeading: {
     color: textPimary,

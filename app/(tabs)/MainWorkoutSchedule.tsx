@@ -58,12 +58,12 @@ const MainWorkoutSchedule = () => {
     const loadData = async () => {
 
       const storedSchedule = await getAsyncStorageData('schedule')
-      console.log("Stored Schedule:",storedSchedule)
+      
 
       if (storedSchedule) {
         
         const storedWorkouts = await getAsyncStorageData('workoutsList')
-        console.log("Stored Workouts:", storedWorkouts)
+     
         setSchedule(storedSchedule)
         // console.log('Stored Workouts at useEffectS',storedWorkouts.list)
         //same day-> keep stored data
