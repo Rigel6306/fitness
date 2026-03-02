@@ -28,7 +28,8 @@ export const updateAsyncStorageOnDebounce = async (key:string, data) => {
         try {
             await AsyncStorage.setItem(key, JSON.stringify(data))
         } catch (err) {
-            console.log("error at debounce AsyncStorage", err)
+            console.log("Error at debounce asyncStorage", err.message)
+            throw new Error(err instanceof Error?err.message:String(err))
         }
     }, 3000)
 }

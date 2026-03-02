@@ -71,8 +71,8 @@ const Profile = () => {
 
         <View style={styles.scrollSection}>
           <ScrollView>
-             <LineChartComp/>
-             
+            <LineChartComp />
+
             {/* Your Status section */}
             <Text style={styles.statsHeadingText}>Your Stats</Text>
             <View style={styles.statsContainer}>
@@ -117,7 +117,7 @@ const Profile = () => {
             <AchievementBadgeCard achievementBadges={achievementBadges} handlePress={handleBagePress} />
 
             {/* ── New Sections Start ── */}
-            <ContributionGraphComp/>
+            <ContributionGraphComp />
 
             {/* Your Goals */}
             <Text style={styles.statsHeadingText}>Your Goals</Text>

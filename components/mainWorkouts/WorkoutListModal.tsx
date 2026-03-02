@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors"
 import { useUserDataContext } from "@/hooks/useContext"
-import { workoutCompletionCounter } from "@/services/analyticsService"
+import { updateAnalyticalData } from "@/services/analyticsService"
 import { updateAsyncStorageOnDebounce } from "@/services/asynchStorageService"
 
 import {
@@ -86,7 +86,7 @@ const WorkoutsListModal = ({
     const completedWorkoutsList = { date: today, list: updatedList }
 
     //updates workout completion state and the asyncStorage analytical values
-    workoutCompletionCounter(updatedAnalyticalData)
+    updateAnalyticalData(updatedAnalyticalData)
 
 
     const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
