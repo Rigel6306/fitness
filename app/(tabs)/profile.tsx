@@ -1,19 +1,41 @@
 import { ContributionGraphComp, LineChartComp } from '@/components/AnalyticsChart';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import { Colors } from '@/constants/Colors';
+import { getAnalyticalData } from '@/services/analyticsService';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { achievementBadges } from '../../data/data';
-
 const { height, width } = Dimensions.get('screen')
 const { textPimary, textSecondary, background, cardBackgroundSecondary } = Colors
 
 
 const Profile = () => {
+
+  const [chartData,setChartData ]= useState<{ date: string; data: any; }[]>();
+
+
+
+  useEffect(()=>{
+
+    const getData=async()=>{
+        const data = await getAnalyticalData(new Date("2026-02-26"),new Date("2026-03-05"))
+        
+
+        setChartData([...data]);
+        console.log(chartData)
+    }
+
+  
+
+    getData();
+
+  },[])
+
+  console.log(chartData)
 
 
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -35,18 +57,7 @@ const Profile = () => {
 
   }
 
-  // ── Sample data for new sections ──
-  const goals = [
-    { title: "Lose 8 kg", current: 3.2, target: 8, unit: "kg", color: "#FF6B6B" },
-    { title: "Run 100 km", current: 42, target: 100, unit: "km", color: "#4ECDC4" },
-    { title: "50 Workouts", current: 18, target: 50, unit: "", color: "#45B7D1" },
-  ];
-
-  const recentWorkouts = [
-    { id: '1', name: "Full Body Strength", date: "Feb 16, 2026", duration: "48 min", calories: "420" },
-    { id: '2', name: "HIIT Cardio", date: "Feb 14, 2026", duration: "32 min", calories: "380" },
-    { id: '3', name: "Morning Yoga", date: "Feb 12, 2026", duration: "35 min", calories: "180" },
-  ];
+  
 
   return (
     <View style={styles.container}>
@@ -71,7 +82,7 @@ const Profile = () => {
 
         <View style={styles.scrollSection}>
           <ScrollView>
-            <LineChartComp />
+           {chartData &&<LineChartComp chartData={chartData}/>}
 
             {/* Your Status section */}
             <Text style={styles.statsHeadingText}>Your Stats</Text>
@@ -120,74 +131,6 @@ const Profile = () => {
             <ContributionGraphComp />
 
             {/* Your Goals */}
-            <Text style={styles.statsHeadingText}>Your Goals</Text>
-            <View style={styles.goalsContainer}>
-              {goals.map((goal, index) => {
-                const progress = (goal.current / goal.target) * 100;
-                return (
-                  <View key={index} style={styles.goalItem}>
-                    <View style={styles.goalHeader}>
-                      <Text style={styles.goalTitle}>{goal.title}</Text>
-                      <Text style={styles.goalProgressText}>
-                        {goal.current} / {goal.target} {goal.unit}
-                      </Text>
-                    </View>
-                    <View style={styles.progressBarBackground}>
-                      <View
-                        style={[
-                          styles.progressBarFill,
-                          { width: `${progress}%`, backgroundColor: goal.color }
-                        ]}
-                      />
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
-
-            {/* Recent Workouts */}
-            <Text style={styles.statsHeadingText}>Recent Workouts</Text>
-            <FlatList
-              data={recentWorkouts}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <View style={styles.recentWorkoutCard}>
-                  <View style={styles.recentWorkoutInfo}>
-                    <Text style={styles.recentWorkoutName}>{item.name}</Text>
-                    <Text style={styles.recentWorkoutDate}>{item.date}</Text>
-                  </View>
-                  <View style={styles.recentWorkoutStats}>
-                    <Text style={styles.recentWorkoutDuration}>{item.duration}</Text>
-                    <Text style={styles.recentWorkoutCalories}>{item.calories} kcal</Text>
-                  </View>
-                </View>
-              )}
-              keyExtractor={item => item.id}
-              ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-            />
-
-            {/* Quick Actions */}
-            <View style={styles.quickActionsContainer}>
-              <Pressable style={styles.quickActionButton}>
-                <FontAwesome5 name="edit" size={20} color={textPimary} />
-                <Text style={styles.quickActionText}>Edit Profile</Text>
-              </Pressable>
-
-              <Pressable style={styles.quickActionButton}>
-                <MaterialCommunityIcons name="cog" size={22} color={textPimary} />
-                <Text style={styles.quickActionText}>Settings</Text>
-              </Pressable>
-
-              <Pressable style={styles.quickActionButton}>
-                <Entypo name="share" size={20} color={textPimary} />
-                <Text style={styles.quickActionText}>Share Progress</Text>
-              </Pressable>
-
-              <Pressable style={[styles.quickActionButton, { borderColor: 'crimson' }]}>
-                <MaterialCommunityIcons name="logout" size={22} color="crimson" />
-                <Text style={[styles.quickActionText, { color: 'crimson' }]}>Log Out</Text>
-              </Pressable>
-            </View>
 
             {/* Extra bottom spacing */}
             <View style={{ height: 60 }} />

@@ -17,10 +17,24 @@ const chartConfig = {
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
         strokeWidth: 2, // optional, default 3
         barPercentage: 1,
+        decimalPlaces: 0,
         useShadowColorFromDataset: true // optional
     };
-export const LineChartComp = () => {
+
+
+export const LineChartComp =  ({chartData}) => {
+
+
     
+
+    console.log("At chart Comp",chartData)
+
+  
+
+    const dataSet = chartData.map(item=>(item.data?item.data.noOfWorkoutsCompleted:0))
+
+    console.log("Data Set: ",dataSet)
+    console.log("Data set",dataSet)
     return (
 
         <View style={styles.chartContainer}>
@@ -31,26 +45,19 @@ export const LineChartComp = () => {
 
                 chartConfig ={chartConfig}
                 data={{
-                    labels: ["January", "February", "March", "April", "May", "June"],
+                    labels: chartData.map((item)=>item.date.split('-')[2]),
                     datasets: [
                         {
-                            data: [
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100
-                            ]
+                            data: dataSet
                         }
                     ]
                 }}
                 width={Dimensions.get("window").width-20} // from react-native
                 height={200}
                 
-                yAxisLabel="$"
-                yAxisSuffix="k"
-                yAxisInterval={1} // optional, defaults to 1
+                // yAxisLabel="$"
+                // yAxisSuffix="k"
+                 // optional, defaults to 1
                
                 bezier
                 style={{

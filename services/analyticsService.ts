@@ -1,4 +1,5 @@
 
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getAsyncStorageData, updateAsyncStorageOnDebounce } from "./asynchStorageService"
 
 export const updateAnalyticalData = async (analyticalData) => {
@@ -32,5 +33,44 @@ export const updateAnalyticalData = async (analyticalData) => {
     }
 
 
+
+}
+
+export const getAnalyticalData = async (startDate:Date,endDate:Date)=>{
+
+    const formatDate= (date:Date)=> date.toISOString().split('T')[0]
+    
+    const generateKeysForRange = (startDate:Date,endDate:Date) =>{
+
+        const keys = []
+        let current =new Date(startDate)
+
+        while (current<=endDate){
+
+            keys.push(`analyticalData_${formatDate(current)}`)
+            current.setDate(current.getDate()+1)
+        }
+
+        return keys
+
+    }
+
+    const keyList = generateKeysForRange(startDate,endDate);
+    const values = await AsyncStorage.multiGet(keyList)
+
+    const structuredList = keyList.map((key,index)=>{
+
+       const  value = values[index][1]
+       const date = (key.split('_'))
+
+       return {
+        date:date[1],
+        data: value?JSON.parse(value):null
+       }
+    })
+
+    return structuredList
+
+   
 
 }
