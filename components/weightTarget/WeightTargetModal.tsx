@@ -241,11 +241,11 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                 {/* Current Progress Card */}
                 <View style={styles.card}>
                   <View style={styles.progressHeader}>
-                    <Text style={[styles.cardTitle, { fontSize: getResponsiveFontSize(18) }]}>
+                    <Text style={[styles.cardTitle, { fontSize: getResponsiveFontSize(16) }]}>
                       Current Progress
                     </Text>
                     <View style={styles.modeBadge}>
-                      <Text style={[styles.modeBadgeText, { fontSize: getResponsiveFontSize(12) }]}>
+                      <Text style={[styles.modeBadgeText, { fontSize: getResponsiveFontSize(10) }]}>
                         {localWeightData.weightLoss ? 'Losing Weight' : 'Gaining Weight'}
                       </Text>
                     </View>
@@ -257,14 +257,14 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                       <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
                         Start
                       </Text>
-                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(20) }]}>
                         {localWeightData.startWeight || '—'} kg
                       </Text>
                     </View>
 
                     <MaterialIcons 
-                      name="keyboard-double-arrow-right" 
-                      size={getResponsiveFontSize(24)} 
+                      name="keyboard-arrow-right" 
+                      size={getResponsiveFontSize(20)} 
                       color={textSecondary} 
                       style={styles.arrowIcon}
                     />
@@ -273,14 +273,14 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                       <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
                         Current
                       </Text>
-                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(20) }]}>
                         {localWeightData.currentWeight || '—'} kg
                       </Text>
                     </View>
 
                     <MaterialIcons 
-                      name="keyboard-double-arrow-right" 
-                      size={getResponsiveFontSize(24)} 
+                      name="keyboard-arrow-right" 
+                      size={getResponsiveFontSize(20)} 
                       color={textSecondary} 
                       style={styles.arrowIcon}
                     />
@@ -289,7 +289,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                       <Text style={[styles.labelSmall, { fontSize: getResponsiveFontSize(12) }]}>
                         Target
                       </Text>
-                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(22) }]}>
+                      <Text style={[styles.bigNumber, { fontSize: getResponsiveFontSize(20) }]}>
                         {localWeightData.targetWeight || '—'} kg
                       </Text>
                     </View>
@@ -316,7 +316,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
 
                 {/* Form Section */}
                 <View style={styles.card}>
-                  <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(19) }]}>
+                  <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(16) }]}>
                     Set Your Weight Goal
                   </Text>
                   <Text style={[styles.sectionSubtitle, { fontSize: getResponsiveFontSize(15) }]}>
@@ -369,17 +369,17 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
 
                     return (
                       <View key={key} style={styles.inputWrapper}>
-                        <Text style={[styles.inputLabel, { fontSize: getResponsiveFontSize(15) }]}>
+                        <Text style={[styles.inputLabel, { fontSize: getResponsiveFontSize(14) }]}>
                           {label}
                         </Text>
                         <View style={styles.inputContainer}>
                           <IconComponent 
                             name={icon} 
-                            size={getResponsiveFontSize(24)} 
+                            size={getResponsiveFontSize(20)} 
                             color={textSecondary} 
                           />
                           <TextInput
-                            style={[styles.input, { fontSize: getResponsiveFontSize(17) }]}
+                            style={[styles.input, { fontSize: getResponsiveFontSize(14) }]}
                             value={localWeightData[key as keyof LocalWeightData] as string}
                             onChangeText={(v) => setLocalWeightData((p) => ({ ...p, [key]: v }))}
                             placeholder={placeholder}
@@ -456,8 +456,8 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   backButton: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 34,
+    minHeight: 34,
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
@@ -493,6 +493,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: textPimary,
     fontWeight: 'bold',
+    
   },
   modeBadge: {
     backgroundColor: cardBackground,
@@ -523,8 +524,9 @@ const styles = StyleSheet.create({
   },
   labelSmall: {
     color: textSecondary,
-    fontWeight: '600',
+    fontWeight: 'bold',
     marginBottom: 4,
+    
   },
   bigNumber: {
     color: textPimary,

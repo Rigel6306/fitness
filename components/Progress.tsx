@@ -57,7 +57,7 @@ const style = StyleSheet.create({
   container: {
    
     margin: 10,
- 
+    marginTop:30,
     borderRadius: 15,
     backgroundColor: 'rgb(0, 0, 0)',
    

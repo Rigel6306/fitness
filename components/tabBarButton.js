@@ -15,28 +15,31 @@ const TabBarButton = ({
         scale.value = withSpring(typeof isFoucused === 'boolean' ? (isFoucused?1:0):isFoucused,{duration:500})
     },[scale,isFoucused])
     const animatedTextStyle = useAnimatedStyle(()=>{
-        const opacity = interpolate(scale.value,[0,1],[1,0])
+        const opacity = interpolate(scale.value,[0,1],[0,1])
+        
         return {
-            opacity
+            opacity,
+            
         }
     })
     const animatedIconStyle = useAnimatedStyle(()=>{
-        const scaleValue = interpolate(scale.value, [0,1],[1,1.3])
+        const scaleValue = interpolate(scale.value, [0,1],[1,1.1])
         const top = interpolate(scale.value, [0,1],[0,1])
         return{
             transform:[{
                 scale:scaleValue
             }],
             top
+            
           
         }
     })
    return (
     <Pressable style={styles.item} onPress={onPress} onLongPress={onLongPress}>
         <Animated.View style={animatedIconStyle}>
-        {icons[routeName]({ color })}
+        {icons[routeName]({color })}
         </Animated.View>
-        <Animated.Text style={[{ color },animatedTextStyle]}>{label}</Animated.Text>
+        <Animated.Text style={[{ color ,fontWeight:'semibold'},animatedTextStyle]}>{label}</Animated.Text>
     </Pressable>
   );
 };

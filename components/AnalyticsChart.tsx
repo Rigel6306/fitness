@@ -10,11 +10,11 @@ import { Colors } from "../constants/Colors";
 
 const {textPimary,textSecondary} = Colors
 const chartConfig = {
-        backgroundGradientFrom:"#346758",
+        backgroundGradientFrom:"#3b1552",
         backgroundGradientFromOpacity: 1,
-        backgroundGradientTo: "#438ad1",
+        backgroundGradientTo: "#509eec",
         backgroundGradientToOpacity: 0.5,
-        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        color: (opacity = 1) =>( "rgb(82, 211, 194)"),
         strokeWidth: 2, // optional, default 3
         barPercentage: 1,
         decimalPlaces: 0,
@@ -44,6 +44,9 @@ export const LineChartComp =  ({chartData}) => {
             <LineChart
 
                 chartConfig ={chartConfig}
+                withOuterLines={true}
+                withInnerLines={false}
+
                 data={{
                     labels: chartData.map((item)=>item.date.split('-')[2]),
                     datasets: [
@@ -102,7 +105,7 @@ export const ContributionGraphComp = () => {
         endDate={new Date("2017-02-27")}
         numDays={60}
         width={Dimensions.get('screen').width-20}
-        height={220}
+        height={120}
         gutterSize={5}
         showOutOfRangeDays={true}
         chartConfig={{
@@ -125,6 +128,7 @@ const styles = StyleSheet.create({
 
     chartContainer:{
         margin:10,
+        marginBottom:30,
         
     },
     heading:{

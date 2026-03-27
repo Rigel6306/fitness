@@ -21,6 +21,7 @@ interface PackageSelectionModalProps {
 }
 
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import PackageCard from './ui/PackageCard';
 
 const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible, onClose }) => {
@@ -68,10 +69,15 @@ const handleSaveChanges = async () => {
   <Modal
     visible={isVisible}
     animationType="slide"
-    transparent={true}
+    transparent={false}
     onRequestClose={onClose}
+   
   >
 
+  <SafeAreaView style={{flex:1,}} edges={['top','bottom']}>
+  
+
+ 
   {
     !userData.package?<View><Text>Loading</Text></View>:
  
@@ -116,7 +122,7 @@ const handleSaveChanges = async () => {
       </View>
     </View>
      }
-
+ </SafeAreaView>
   </Modal>
   )
 
@@ -126,9 +132,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    justifyContent: 'center',
   },
   heading: {
-    flex: 1,
+  
     borderRadius: 20,
     padding: 8,
     margin:8,

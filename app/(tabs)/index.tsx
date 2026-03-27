@@ -3,6 +3,7 @@ import Header from '@/components/header'
 import Progress from '@/components/Progress'
 import SafeScreenWrapper from '@/components/SafeScreenWrapper'
 import Schedule from '@/components/Schedule'
+
 import { Colors } from '@/constants/Colors'
 import React from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
@@ -16,9 +17,10 @@ const Home = () => {
       <ScrollView >
           <Header />
            <Carousel />
-          <Schedule />
+        
+            <Schedule />
+                    
           <Progress />
-          
          </ScrollView>
       </SafeScreenWrapper>
     </View>

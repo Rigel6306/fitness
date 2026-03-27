@@ -48,7 +48,7 @@ const TabBar = ({ state, descriptors, navigation }:{state:any,descriptors:any,na
           : route.name;
         
       const isFocused = state.index === index;
-      if (['_sitemap','+not-found','articles','MainWorkoutSchedule','ChallengeDetails','MealPlan','signup','(assignements)','assignementDetails','videoList','previousVideo'].includes(route.name)) return null
+      if (['_sitemap','+not-found','articles','MainWorkoutSchedule','ChallengeDetails','MealPlan','signup',].includes(route.name)) return null
       const onPress = () => {
         tabPositionX.value =withSpring(buttonWidth* index+2, {
               damping:15,

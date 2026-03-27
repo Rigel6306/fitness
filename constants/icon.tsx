@@ -1,16 +1,15 @@
-import { FontAwesome5 } from '@expo/vector-icons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import AntDesign from '@expo/vector-icons/AntDesign';
 
 import React, { JSX } from 'react';
 export const icons = {
     index : (props:any):JSX.Element=><Ionicons name="home" size={24} color={'#737373'} {...props} />,
     plan : (props:any):JSX.Element=><Ionicons name="code-slash" size={24} color={'#737373'} {...props} />,
-    profile : (props:any):JSX.Element=><AntDesign name="user" size={24} color={'#737373'} />,
-    payments: (props:any):JSX.Element=><MaterialIcons name="payment" size={24} color={'#737373'}  />
+    profile : (props:any):JSX.Element=><AntDesign name="user" size={24} color={'#737373'} {...props} />,
+    payments: (props:any):JSX.Element=><MaterialIcons name="payment" size={24} color={'#737373'}  {...props} />
 }
 
 export const packageIcons = {
