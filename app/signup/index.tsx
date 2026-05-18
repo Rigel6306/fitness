@@ -154,7 +154,7 @@ const SignUp = () => {
 
       try {
         const registerdUser = await registerUser(userInfo)
-        console.log("Signup Success", registerUser)
+        console.log("Signup Success", registerdUser)
       }
       catch(err){
 

@@ -42,11 +42,11 @@ interface WorkoutsListModalProps {
   setWorkoutsList: (list: WorkoutsList) => void;
 }
 
+
 type CompletedDayRecord = {
   date: string;
   isComplete: boolean;
 }
-
 
 const WorkoutsListModal = ({
   modalVisible,

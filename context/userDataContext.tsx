@@ -1,7 +1,7 @@
-import React, { createContext, useState } from "react"
+import { getSchedule } from "@/services/workoutService"
+import React, { createContext, useEffect, useState } from "react"
 
 export const userDataContext:React.Context<any> = createContext(null)
-
 const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
 
     const [weightData,setWeightData] = useState({
@@ -13,6 +13,10 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
     })
 
     const [userData, setUserData] = useState('empty uid')
+
+    useEffect(()=>{
+            getSchedule()
+    },[])
 
     const [analyticalData,setAnalyticalData] = useState({
         date:new Date().toISOString().split('T')[0],

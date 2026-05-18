@@ -31,6 +31,8 @@ export const registerUser = async (data:registerUserParams) => {
         await setDoc(doc(db, "users", user.uid), {
             membershipNumber:data.membershipNumber,
             packageRef:packageRef,
+            packageName:data.package.name,
+            packageId:data.package.id,
             name: data.fullName,
             age:data.age,
             contactNumber:data.contactNumber,
