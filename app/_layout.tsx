@@ -2,7 +2,7 @@
 import UserDataContextWrapper from '@/context/userDataContext';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from "react";
+import React, { useEffect } from 'react';
 import AuthStack from "../components/authStack";
 SplashScreen.preventAutoHideAsync();
 const _layout = () => {

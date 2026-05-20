@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const { textPimary, textSecondary } = Colors;
@@ -33,6 +34,7 @@ const CurentScheduleCard = ({
 
   const handlePress = () => {
     selectedDaySchedule(workout); // pass the full workout object (day + exercises)
+    console.log("Workout At Curent Schedule card", workout)
     setModalVisible(true);
   };
 

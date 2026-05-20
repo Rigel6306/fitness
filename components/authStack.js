@@ -1,49 +1,69 @@
 import { getUser } from "@/services/userService";
 import { Stack, useRootNavigationState, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { useUserDataContext } from '../hooks/useContext';
+import { useUserDataContext } from "../hooks/useContext";
 import { auth } from "../services/firebase";
+import { ActivityIndicator, View } from "react-native";
+
 const AuthStack = () => {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
   const router = useRouter();
-  const navigationState = useRootNavigationState()
-  const { userData, setUserData } = useUserDataContext()
+  const navigationState = useRootNavigationState();
+  const { userData, setUserData } = useUserDataContext();
+  const [firebaseUser, setFirebaseUser] = useState(null);
+
+  // ✅ Single Firebase Auth Listener
   useEffect(() => {
-    const onAuthChanged = async (user) => {
-      setUser(user);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setFirebaseUser(user);
+
       if (user) {
-        const userData = await getUser(user.uid)
-        setUserData({id:user.uid,...userData})
-      } else setUserData(null)
-      if (initializing) setInitializing(false);
-    };
-    const subscriber = auth.onAuthStateChanged(onAuthChanged);
-    return subscriber;
-  }, [initializing]);
+        (async () => {
+          try {
+            const fetchedData = await getUser(user.uid);
+         
+       
+            setUserData({ id: user.uid, ...fetchedData });
+          } catch (error) {
+            console.error("Failed to fetch user database data:", error);
+            setUserData(null);
+          } finally {
+            setInitializing(false);
+          }
+        })();
+      } else {
+        setUserData(null);
+        setInitializing(false);
+      }
+    });
+
+    return unsubscribe; // cleanup on unmount
+  }, []);
 
   useEffect(() => {
-    if (!initializing && navigationState?.key) {
-      user
-        ? router.replace("/(tabs)")
-        : router.replace("/");
-    }
-  }, [initializing, navigationState?.key, userData]);
+    if (initializing || !navigationState?.key) return;
 
+    if (firebaseUser && userData) {
+      router.replace("/(tabs)");
+    } else if (!firebaseUser) {
+      router.replace("/");
+    }
+  }, [initializing, navigationState?.key, firebaseUser, userData]);
+
+  if (initializing || (firebaseUser && !userData)) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  // ✅ Stack definition
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {
-        user ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        ) : (
-
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-
-        )
-      }
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(tabs)" />
     </Stack>
-
-
   );
 };
 

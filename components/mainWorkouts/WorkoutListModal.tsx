@@ -59,6 +59,7 @@ const WorkoutsListModal = ({
   const today = new Date().toISOString().split('T')[0]
   const { analyticalData, setAnalyticalData } = useUserDataContext()
 
+  console.log("Workouts List at Workouts list modal", workoutsList)
   // Updating the workout as completed or not
   const updateWorkoutsList = (id: string) => {
     const updatedList = workoutsList.list.map((item) => {

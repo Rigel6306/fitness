@@ -16,7 +16,7 @@ import { auth } from "../services/firebase";
 const { width, height } = Dimensions.get('screen')
 const Login = () => {
 
-  const {userId,setUserId} = useUserDataContext()
+  const {userData,setUserData} = useUserDataContext()
   const navigator = useNavigation();
   // const [initializing, setInitializing] = useState(true);
   // const [user, setUser] = useState();
@@ -70,7 +70,7 @@ const Login = () => {
 
     try {
 
-      const userData = await signInWithEmailAndPassword(
+      const responce = await signInWithEmailAndPassword(
         auth,
         userCredentials.email,
         userCredentials.password
@@ -79,14 +79,15 @@ const Login = () => {
         email: null,
         password: null,
       })
-      const user = userData.user
-      setUserId(user.uid)
+      const user = responce.user
+      setUserData(user.uid)
+     
       navigator.navigate("(tabs)");
     } catch (err) {
       console.log(err);
       setError("Login Error, Please Check Your Email And Password and Retry");
     }
-
+ console.log("User ID at Index", userData)
 
 
   };

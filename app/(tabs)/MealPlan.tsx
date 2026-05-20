@@ -4,13 +4,14 @@ import {
   Ionicons,
   MaterialIcons
 } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   Modal,
-  SafeAreaView,
+  
   ScrollView,
   StatusBar,
   StyleSheet,

@@ -1,5 +1,5 @@
 
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 
 
@@ -14,14 +14,15 @@ export const getScheduleFromUser = async (userId: string) => {
         const scheduleRef = collection(userDocRef, "schedules");
 
         // Step 3: Fetch all documents in the schedules subcollection
-        const snap = await getDocs(scheduleRef);
+        const q =query(scheduleRef,orderBy("createdAt",'desc',),limit(1))
+        const snap = await getDocs(q);
 
         const schedules = snap.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
         }));
 
-        console.log("Schedules at getSchedule from users:", schedules);
+    
         return schedules;
     } catch (err: any) {
         console.error("Error fetching schedules:", err.message);

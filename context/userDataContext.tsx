@@ -13,10 +13,9 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
     })
 
     const [userData, setUserData] = useState('empty uid')
+    console.log("User Data At context", userData)
 
-    useEffect(()=>{
-            getSchedule()
-    },[])
+  
 
     const [analyticalData,setAnalyticalData] = useState({
         date:new Date().toISOString().split('T')[0],

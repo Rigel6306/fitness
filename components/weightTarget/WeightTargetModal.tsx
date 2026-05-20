@@ -11,14 +11,14 @@ import {
   Modal,
   Platform,
   Pressable,
-  SafeAreaView,
+
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const { textPimary, textSecondary, secondaryBackground, primaryBackground, cardBackground } = Colors;
 const { width, height } = Dimensions.get('window');
 
