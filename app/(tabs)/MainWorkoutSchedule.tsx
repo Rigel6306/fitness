@@ -4,13 +4,15 @@ import WorkoutsListModal from '@/components/mainWorkouts/WorkoutListModal';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import TipsCard from '@/components/ui/TipsCard';
 import { Colors } from '@/constants/Colors';
-import { useUserDataContext } from '@/hooks/useContext';
+import { mainSchedules } from '@/data/data';
+import { getAsyncStorageData, setAsyncStorageData } from '@/services/asynchStorageService';
 import { getScheduleFromUser } from '@/services/workoutService';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useUserDataContext } from '@/hooks/useContext';
 const { textPimary, textSecondary } = Colors
 const HeadingProgress = () => (
   <View style={styles.headingProgressContainer}>
@@ -48,33 +50,91 @@ type ScheduleType = {
 const MainWorkoutSchedule = () => {
   const [modelVisible, setModelVisible] = useState(false)
   const [selectedDaySchedule, setSelectedDaySchedule] = useState<Workouts | null>(null)
-  const [schedule, setSchedule] = useState<ScheduleType[] | null>(null)
+  const [schedule, setSchedule] = useState<ScheduleType | null>();
   const [workoutList, setWorkoutList] = useState<any>()
-  const [isScheduleLoading,setIsScheduleLoading] = useState(true)
   const today = new Date().toISOString().split('T')[0]
-  const {userData} = useUserDataContext()
-  console.log("userData at main workout schedule", userData)
   
- 
+  const {userData} = useUserDataContext()
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    const loadSchedule = async ()=>{
-      setIsScheduleLoading(true)
-      const dbSchedule = await getScheduleFromUser(userData.id) as ScheduleType[]
-      setSchedule(dbSchedule)
-      setWorkoutList(dbSchedule?.[0]?.workouts)
+    const loadData = async () => {
 
+      const storedSchedule = await getAsyncStorageData('schedule')
+      
+
+      if (storedSchedule) {
+        
+        const storedWorkouts = await getAsyncStorageData('workoutsList')
+     
+        setSchedule(storedSchedule)
+        // console.log('Stored Workouts at useEffectS',storedWorkouts.list)
+        //same day-> keep stored data
+        if (storedWorkouts&&storedWorkouts.date === today) {
+          setWorkoutList(storedWorkouts)
+        }
+        else {//new day-> create a fresh list
+          const baseList = (storedWorkouts && storedWorkouts.list)
+            ? storedWorkouts.list
+            : (storedSchedule.workouts && storedSchedule.workouts.length > 0
+              ? // use first day's schedule as a fallback
+              storedSchedule.workouts[0].schedule
+              : [] )
+          const newWorkoutsList = { date: today, list: baseList.map((item: any) => ({ ...item, isComplete: false })) }
+          setWorkoutList(newWorkoutsList)
+          await setAsyncStorageData('workoutsList', newWorkoutsList)
+        }
+      } else {
+        const dbSchedule = await getScheduleFromUser(userData.id) 
+        setSchedule(dbSchedule)
+      }
+    }
+    loadData()
+  }, [])
+  
+  useEffect(() => {
+    const loadSelectedDayWorkouts = async () => {
+      if (selectedDaySchedule && selectedDaySchedule.schedule) {
+        const today = new Date().toISOString().split('T')[0]
+        const dayKey = `workoutsList_day${selectedDaySchedule.day}`
+        
+        // Try to get the stored workouts for this specific day
+        const storedDayWorkouts = await getAsyncStorageData(dayKey)
+        
+        if (storedDayWorkouts && storedDayWorkouts.date === today) {
+          // Same day, use stored data
+          
+          setWorkoutList(storedDayWorkouts)
+        } else {
+          // New day or first time, create fresh list for this day
+          const newWorkoutsList = {
+            date: today,
+            list: selectedDaySchedule.schedule.map(item => ({
+              ...item,
+              isComplete: false
+            }))
+          }
+          setWorkoutList(newWorkoutsList)
+          await setAsyncStorageData(dayKey, newWorkoutsList)
+        }
+      }
     }
 
-    loadSchedule()
-      
-    
-  },[])
-   console.log("Schedule at main workouts", schedule,workoutList)
-  return (
+    loadSelectedDayWorkouts()
+  }, [selectedDaySchedule])
 
-   
+  // Initialize first day on app startup
+  useEffect(() => {
+    const initializeFirstDay = async () => {
+      if (schedule && schedule.workouts && schedule.workouts.length > 0 && !selectedDaySchedule) {
+        setSelectedDaySchedule(schedule.workouts[0])
+        await setAsyncStorageData('schedule', schedule)
+      }
+    }
+
+    initializeFirstDay()
+  }, [schedule])
+  return (
     <>
       <LinearGradient
         colors={['#00000037', '#000000f6', '#000000ff', '#000000ff']}
@@ -102,11 +162,11 @@ const MainWorkoutSchedule = () => {
               {
                 schedule && <ScheduleCard
                   index={0}
-                  frequency={schedule[0].frequency}
-                  duration={schedule[0].duration}
-                  title={schedule[0].title}
-                  dayCount={schedule[0].workouts.length}
-                  workoutsCount={schedule[0].workoutsCount}
+                  frequency={schedule.frequency}
+                  duration={schedule.duration}
+                  title={schedule.title}
+                  dayCount={schedule.workouts.length}
+                  workoutsCount={schedule.workoutsCount}
                 />
               }
 
@@ -115,7 +175,7 @@ const MainWorkoutSchedule = () => {
             <View style={styles.currentScheduleContainer}>
               <View style={styles.curentScheduleHeading}>
                 <Ionicons name="calendar-sharp" size={20} color={textPimary} />
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: textPimary, textAlign: 'left' }}>{schedule && schedule[0]?.title}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: textPimary, textAlign: 'left' }}>Your Schedule</Text>
                 <Pressable onPress={() => { console.log("pres") }}>
                   <View style={{ padding: 10, backgroundColor: 'rgba(37, 249, 192, 0.57)', borderRadius: 15 }}>
                     <Text style={{ fontWeight: 'bold' }} >Start Now</Text>
@@ -124,7 +184,7 @@ const MainWorkoutSchedule = () => {
               </View>
               {/*Curent Schedule Focus List */}
               <View style={styles.focusList}>
-                {schedule && schedule[0] && schedule[0].focus.map((item, index) => (
+                {mainSchedules[2].focus.map((item, index) => (
                   <View key={index} style={styles.focusListItem}>
                     <Text style={{ fontWeight: 'bold', color: textSecondary }} >{item}</Text>
                   </View >))
@@ -132,7 +192,7 @@ const MainWorkoutSchedule = () => {
               </View>
               {/*Curent Schedule Day Card, */}
               {
-                schedule && schedule[0] && schedule[0].workouts.map((workout, index: React.Key) => (
+                schedule && schedule.workouts.map((workout, index: React.Key) => (
                   <CurentScheduleCard
                     setModalVisible={setModelVisible}
                     selectedDaySchedule={setSelectedDaySchedule}

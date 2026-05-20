@@ -341,3 +341,32 @@ export const getScheduleFromUser = async (userId: string) => {
 };
 
 getScheduleFromUser(userData.id) as ScheduleType[]
+
+
+
+
+
+export const getScheduleFromUser = async (userId: string) => {
+  
+    try {
+        // Step 1: Reference the user document
+        const userDocRef = doc(db, "users", userId);
+
+        // Step 2: Reference the schedules subcollection inside that document
+        const scheduleRef = collection(userDocRef, "schedules");
+        // Step 3: Fetch all documents in the schedules subcollection
+        const q =query(scheduleRef,orderBy("createdAt",'desc',),limit(1))
+        const snap = await getDocs(q);
+        if(!snap.empty){
+
+             const doc = snap.docs[0]
+             const data = doc.data()
+              if (!data) return null
+              return { id: doc.id, title: data.title, frequency: data.frequency, workoutsCount: data.workoutsCount, workouts: data.workouts, duration: data.duration, focus: data.focus, }
+        }
+
+    } catch (err: any) {
+        console.error("Error fetching schedules:", err.message);
+        throw err;
+    }
+};
