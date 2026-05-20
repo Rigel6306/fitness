@@ -64,7 +64,6 @@ const MainWorkoutSchedule = () => {
       const dbSchedule = await getScheduleFromUser(userData.id) as ScheduleType[]
       setSchedule(dbSchedule)
       setWorkoutList(dbSchedule?.[0]?.workouts)
-      setIsScheduleLoading(false)
 
     }
 
