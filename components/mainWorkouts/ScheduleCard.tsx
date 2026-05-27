@@ -2,6 +2,7 @@
 import { View, Text, Pressable,StyleSheet } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Colors } from '@/constants/Colors'
+import React from 'react'
 import { FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 const {textPimary,textSecondary}= Colors
 const ScheduleCard = ({ title, frequency, duration, index, dayCount, workoutsCount }) => {

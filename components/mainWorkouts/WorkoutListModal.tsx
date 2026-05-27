@@ -1,7 +1,8 @@
 import { Colors } from "@/constants/Colors"
+import { DailyAnalyticalData, ExerciseRecord } from "@/context/userDataContext"
 import { useUserDataContext } from "@/hooks/useContext"
 import { updateAnalyticalData } from "@/services/analyticsService"
-import { updateAsyncStorageOnDebounce } from "@/services/asynchStorageService"
+import { saveWorkoutDataImmediately, updateAsyncStorageOnDebounce } from "@/services/asynchStorageService"
 
 import {
   Dimensions,
@@ -14,7 +15,7 @@ import {
 } from "react-native"
 import ExercisesCard from "../ui/ExercisesCard"
 
-import React from "react"
+import React, { useEffect } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 const { textPimary, textSecondary } = Colors
 const { width, height } = Dimensions.get('window')
@@ -29,6 +30,7 @@ interface WorkoutItem {
 interface WorkoutsList {
   date: string;
   list: WorkoutItem[];
+  analyticalData?: DailyAnalyticalData;
 }
 
 interface WorkoutsListModalProps {
@@ -40,12 +42,6 @@ interface WorkoutsListModalProps {
   };
   workoutsList: WorkoutsList;
   setWorkoutsList: (list: WorkoutsList) => void;
-}
-
-
-type CompletedDayRecord = {
-  date: string;
-  isComplete: boolean;
 }
 
 const WorkoutsListModal = ({
@@ -60,6 +56,28 @@ const WorkoutsListModal = ({
   const { analyticalData, setAnalyticalData } = useUserDataContext()
 
   console.log("Workouts List at Workouts list modal", workoutsList)
+  console.log("Workouts List Modal selected Day Schedule:", selectedDaySchedule)
+
+  // Save data immediately when modal closes
+  useEffect(() => {
+    return () => {
+      if (workoutsList && analyticalData.noOfWorkoutsCompleted > 0) {
+        const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
+        
+        // Save workout list with analytical data
+        const completedWorkoutsList = {
+          date: today,
+          list: workoutsList.list,
+          analyticalData: analyticalData
+        }
+        
+        saveWorkoutDataImmediately(dayKey, completedWorkoutsList)
+        updateAnalyticalData(analyticalData)
+        console.log("Modal closed - data saved immediately")
+      }
+    }
+  }, [])
+
   // Updating the workout as completed or not
   const updateWorkoutsList = (id: string) => {
     const updatedList = workoutsList.list.map((item) => {
@@ -69,30 +87,60 @@ const WorkoutsListModal = ({
       return item
     })
 
-    // counting number of completed workouts for the day
-    let completionCount = 0;
+    console.log("workouts List Modal updated list", updatedList)
+
+    // Count completed workouts and build completed exercises list
+    let completionCount = 0
+    const completedExercises: ExerciseRecord[] = []
+    
     updatedList.forEach((item) => {
-      if (item.isComplete) completionCount++
+      if (item.isComplete) {
+        completionCount++
+        completedExercises.push({
+          id: item.id,
+          name: item.name,
+          reps: typeof item.reps === 'string' ? [item.reps] : item.reps,
+          isComplete: true,
+          completedAt: new Date().toISOString()
+        })
+      }
     })
+
     const allCompleted = updatedList.every(ex => ex.isComplete)
 
-    const updatedAnalyticalData = {
-      ...analyticalData,
+    // Enhanced analytical data with exercise details
+    const updatedAnalyticalData: DailyAnalyticalData = {
+      date: today,
+      dayNumber: selectedDaySchedule?.day || 1,
       noOfWorkoutsCompleted: completionCount,
-      isTotallyCompleted: allCompleted
+      totalWorkouts: updatedList.length,
+      isTotallyCompleted: allCompleted,
+      completedExercises: completedExercises,
+      durationMinutes: 0,
+      caloriesBurned: 0,
+      startTime: analyticalData.startTime,
+      endTime: new Date().toISOString()
     }
 
     setAnalyticalData(updatedAnalyticalData)
 
-    const completedWorkoutsList = { date: today, list: updatedList }
-
-    //updates workout completion state and the asyncStorage analytical values
+    // Save analytical data
     updateAnalyticalData(updatedAnalyticalData)
 
-
     const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
+    
+    // Create unified workout data with analytical info linked
+    const completedWorkoutsList: WorkoutsList = {
+      date: today,
+      list: updatedList,
+      analyticalData: updatedAnalyticalData
+    }
+
+    // Debounce saves the workout data
     updateAsyncStorageOnDebounce(dayKey, completedWorkoutsList)
     setWorkoutsList(completedWorkoutsList)
+    
+    console.log("Workout updated:", { completionCount, allCompleted })
   }
 
   // Calculate modal height based on device size
@@ -103,19 +151,28 @@ const WorkoutsListModal = ({
     return '90%' // Extra large devices
   }
 
+  const handleCloseModal = () => {
+    // Save data before closing
+    if (analyticalData.noOfWorkoutsCompleted > 0) {
+      const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
+      const completedWorkoutsList = {
+        date: today,
+        list: workoutsList.list,
+        analyticalData: analyticalData
+      }
+      saveWorkoutDataImmediately(dayKey, completedWorkoutsList)
+    }
+    setModalVisible(false)
+  }
+
   return (
     <Modal
       transparent={true}
       visible={modalVisible}
       animationType='slide'
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={handleCloseModal}
       statusBarTranslucent={true}
     >
-      {/* Backdrop overlay */}
-      {/* <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-        <View style={styles.backdrop} />
-      </TouchableWithoutFeedback> */}
-
       {/* Modal content */}
       <View style={styles.modalContentContainer}>
         <SafeAreaView style={[styles.modalContainer, { height: getModalHeight() }]}>

@@ -10,11 +10,11 @@ import { Colors } from "../constants/Colors";
 
 const {textPimary,textSecondary} = Colors
 const chartConfig = {
-        backgroundGradientFrom:"#3b1552",
+        backgroundGradientFrom:"#545455",
         backgroundGradientFromOpacity: 1,
-        backgroundGradientTo: "#509eec",
+        backgroundGradientTo: "#0c0c0c",
         backgroundGradientToOpacity: 0.5,
-        color: (opacity = 1) =>( "rgb(82, 211, 194)"),
+        color: (opacity = 1) =>( "rgb(255, 245, 52)"),
         strokeWidth: 2, // optional, default 3
         barPercentage: 1,
         decimalPlaces: 0,
@@ -128,8 +128,7 @@ const styles = StyleSheet.create({
 
     chartContainer:{
         margin:10,
-        marginBottom:30,
-        
+       
     },
     heading:{
          textAlign: 'left',

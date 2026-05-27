@@ -5,6 +5,7 @@ import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import TipsCard from '@/components/ui/TipsCard';
 import { Colors } from '@/constants/Colors';
 import { mainSchedules } from '@/data/data';
+import { useUserDataContext } from '@/hooks/useContext';
 import { getAsyncStorageData, setAsyncStorageData } from '@/services/asynchStorageService';
 import { getScheduleFromUser } from '@/services/workoutService';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -12,7 +13,6 @@ import Octicons from '@expo/vector-icons/Octicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useUserDataContext } from '@/hooks/useContext';
 const { textPimary, textSecondary } = Colors
 const HeadingProgress = () => (
   <View style={styles.headingProgressContainer}>
@@ -127,7 +127,8 @@ const MainWorkoutSchedule = () => {
   useEffect(() => {
     const initializeFirstDay = async () => {
       if (schedule && schedule.workouts && schedule.workouts.length > 0 && !selectedDaySchedule) {
-        setSelectedDaySchedule(schedule.workouts[0])
+        const firstDay = schedule.workouts[0]
+        setSelectedDaySchedule(firstDay)
         await setAsyncStorageData('schedule', schedule)
       }
     }

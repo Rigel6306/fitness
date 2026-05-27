@@ -203,11 +203,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
     >
       <View style={styles.backdrop}>
         <SafeAreaView style={styles.container}>
-          <KeyboardAvoidingView
-            style={styles.keyboardAvoider}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
-          >
+         
             <View style={styles.modalContent}>
               {/* Header */}
               <View style={styles.header}>
@@ -231,7 +227,11 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                   <Ionicons name="close-circle-sharp" size={getResponsiveFontSize(28)} color={textPimary} />
                 </Pressable>
               </View>
-
+ <KeyboardAvoidingView
+            style={styles.keyboardAvoider}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+          >
               <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 keyboardShouldPersistTaps="handled"
@@ -337,7 +337,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                         size={getResponsiveFontSize(26)} 
                         color="green" 
                       />
-                      <Text style={[styles.modeButtonText, { fontSize: getResponsiveFontSize(15) }]}>
+                      <Text style={[styles.modeButtonText, localWeightData.weightLoss && styles.modeButtonActive, { fontSize: getResponsiveFontSize(15) }]}>
                         Lose Weight
                       </Text>
                     </Pressable>
@@ -354,7 +354,7 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                         size={getResponsiveFontSize(26)} 
                         color="crimson" 
                       />
-                      <Text style={[styles.modeButtonText, { fontSize: getResponsiveFontSize(15) }]}>
+                      <Text style={[styles.modeButtonText, !localWeightData.weightLoss && styles.modeButtonActive, { fontSize: getResponsiveFontSize(15) }]}>
                         Gain Weight
                       </Text>
                     </Pressable>
@@ -418,8 +418,9 @@ const WeightTargetModal = ({ isModalOpen, setIsModalOpen }: { isModalOpen: boole
                   </Text>
                 </View>
               </ScrollView>
+                 </KeyboardAvoidingView>
             </View>
-          </KeyboardAvoidingView>
+       
         </SafeAreaView>
       </View>
     </Modal>
@@ -587,14 +588,15 @@ const styles = StyleSheet.create({
     minHeight: 60, // Ensure minimum touch target
   },
   modeButtonActive: {
-    backgroundColor: 'rgb(38, 69, 62)',
+    backgroundColor: 'rgb(243, 247, 246)',
+    color:'black'
   },
   modeButtonText: {
     color: textPimary,
     fontWeight: 'bold',
   },
   inputWrapper: {
-    marginBottom: Math.max(16, height * 0.02),
+    marginBottom: Math.max(16, height * 0.0),
   },
   inputLabel: {
     color: textPimary,
@@ -605,16 +607,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: 12,
-    paddingHorizontal: Math.max(12, width * 0.03),
+    borderRadius: 17,
+    paddingHorizontal: Math.max(12, width * 0.01),
     paddingVertical: Platform.OS === 'ios' ? 12 : 8,
   },
   input: {
     flex: 1,
     color: textPimary,
-    paddingVertical: 10,
+    paddingVertical: 4,
     paddingLeft: 10,
-    minHeight: 44, // Better touch target
+    minHeight: 34, // Better touch target
   },
   buttonRow: {
     flexDirection: 'row',

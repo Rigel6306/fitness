@@ -1,76 +1,114 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { getAsyncStorageData, updateAsyncStorageOnDebounce } from "./asynchStorageService"
 
-export const updateAnalyticalData = async (analyticalData) => {
-
+export const updateAnalyticalData = async (analyticalData: any) => {
     try {
-        const todayKey = `analyticalData_${new Date().toISOString().split('T')[0]}`
+        const todayKey = `analyticalData_${analyticalData.date}`
+        const dayKey = `completedDay_${analyticalData.date}`
 
-        const existingAnalyticalData = await getAsyncStorageData(todayKey)
+        // Save analytical data immediately
+        await AsyncStorage.setItem(todayKey, JSON.stringify(analyticalData))
+        
+        console.log("Analytical data saved:", analyticalData)
 
-        if (existingAnalyticalData) {
-            console.log("Existing analytical Data : ", existingAnalyticalData)
-            const updatedData = {
-
-                ...analyticalData
-            }
-
-            updateAsyncStorageOnDebounce(todayKey, updatedData)
-            console.log("Updated Data, :", updatedData)
+        // Mark day as completed if all workouts done
+        if (analyticalData.isTotallyCompleted) {
+            await AsyncStorage.setItem(dayKey, JSON.stringify({
+                date: analyticalData.date,
+                dayNumber: analyticalData.dayNumber,
+                completed: true,
+                timestamp: new Date().toISOString()
+            }))
+            console.log("Day marked as completed:", dayKey)
         }
-        else {
-            updateAsyncStorageOnDebounce(todayKey, analyticalData)
-            console.log("New Value for today :", analyticalData)
-        }
-
-
     }
     catch (err) {
-
-        console.log("Error updating values to the AsyncStorage")
-
+        console.error("Error updating analytical data:", err)
     }
-
-
-
 }
 
-export const getAnalyticalData = async (startDate:Date,endDate:Date)=>{
-
-    const formatDate= (date:Date)=> date.toISOString().split('T')[0]
+export const getAnalyticalData = async (startDate: Date, endDate: Date) => {
+    const formatDate = (date: Date) => date.toISOString().split('T')[0]
     
-    const generateKeysForRange = (startDate:Date,endDate:Date) =>{
-
+    const generateKeysForRange = (startDate: Date, endDate: Date) => {
         const keys = []
-        let current =new Date(startDate)
+        let current = new Date(startDate)
 
-        while (current<=endDate){
-
+        while (current <= endDate) {
             keys.push(`analyticalData_${formatDate(current)}`)
-            current.setDate(current.getDate()+1)
+            current.setDate(current.getDate() + 1)
         }
 
         return keys
-
     }
 
-    const keyList = generateKeysForRange(startDate,endDate);
+    const keyList = generateKeysForRange(startDate, endDate);
     const values = await AsyncStorage.multiGet(keyList)
 
-    const structuredList = keyList.map((key,index)=>{
+    const structuredList = keyList.map((key, index) => {
+        const value = values[index][1]
+        const date = (key.split('_'))[1]
 
-       const  value = values[index][1]
-       const date = (key.split('_'))
-
-       return {
-        date:date[1],
-        data: value?JSON.parse(value):null
-       }
+        return {
+            date: date,
+            data: value ? JSON.parse(value) : null
+        }
     })
 
     return structuredList
+}
 
-   
+// Get completed days for streak calculation
+export const getCompletedDays = async (startDate: Date, endDate: Date) => {
+    const formatDate = (date: Date) => date.toISOString().split('T')[0]
+    const keys: string[] = []
+    let current = new Date(startDate)
 
+    while (current <= endDate) {
+        keys.push(`completedDay_${formatDate(current)}`)
+        current.setDate(current.getDate() + 1)
+    }
+
+    const values = await AsyncStorage.multiGet(keys)
+    const completedDays = values
+        .filter(([_, value]) => value !== null)
+        .map(([key, value]) => JSON.parse(value || '{}'))
+
+    console.log("Completed days retrieved:", completedDays)
+    return completedDays
+}
+
+// Get streak count
+export const calculateStreak = async () => {
+    try {
+        const today = new Date()
+        const keys: string[] = []
+        let current = new Date(today)
+        current.setDate(current.getDate() - 30) // Check last 30 days
+        
+        const endDate = new Date(today)
+
+        let streak = 0
+        let checkDate = new Date(today)
+
+        // Count backwards from today
+        for (let i = 0; i < 30; i++) {
+            const dateStr = checkDate.toISOString().split('T')[0]
+            const dayKey = `completedDay_${dateStr}`
+            const result = await AsyncStorage.getItem(dayKey)
+            
+            if (result) {
+                streak++
+                checkDate.setDate(checkDate.getDate() - 1)
+            } else {
+                break // Streak broken
+            }
+        }
+
+        console.log("Current streak:", streak)
+        return streak
+    } catch (err) {
+        console.error("Error calculating streak:", err)
+        return 0
+    }
 }

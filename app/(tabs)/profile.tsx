@@ -1,4 +1,4 @@
-import { ContributionGraphComp, LineChartComp } from '@/components/AnalyticsChart';
+import { LineChartComp } from '@/components/AnalyticsChart';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import { Colors } from '@/constants/Colors';
 import { getAnalyticalData } from '@/services/analyticsService';
@@ -19,21 +19,27 @@ const Profile = () => {
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
+    const getData = async () => {
+        try {
+            // Get last 7 days of data
+            const today = new Date()
+            const lastWeek = new Date(today)
+            lastWeek.setDate(today.getDate() - 7)
 
-    const getData=async()=>{
-        const data = await getAnalyticalData(new Date("2026-02-26"),new Date("2026-03-05"))
-        
+            const data = await getAnalyticalData(lastWeek, today)
+            
+            console.log('Analytical Data at profile (last 7 days):', data)
 
-        setChartData([...data]);
-        console.log(chartData)
+            setChartData([...data])
+        } catch (err) {
+            console.error('Error fetching analytical data:', err)
+        }
     }
 
-  
+    getData()
 
-    getData();
-
-  },[])
+  }, [])
 
   console.log(chartData)
 
@@ -128,7 +134,7 @@ const Profile = () => {
             <AchievementBadgeCard achievementBadges={achievementBadges} handlePress={handleBagePress} />
 
             {/* ── New Sections Start ── */}
-            <ContributionGraphComp />
+           
 
             {/* Your Goals */}
 

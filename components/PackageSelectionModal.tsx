@@ -150,14 +150,14 @@ const styles = StyleSheet.create({
 
   },
   curentPackageText: {
-    marginTop:20,
-    margin: 8,
+    marginTop:4,
+    marginHorizontal: 8,
     fontSize: 16,
     color: textSecondary
   },
   currentPackageContainer: {
     margin: 8,
-    backgroundColor: "rgb(36, 36, 49)",
+    backgroundColor: "rgb(0, 0, 0)",
     borderRadius: 10,
     padding: 8,
     alignItems: 'center',
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
 
   cancleBtn: {
     flex: 1,
-    backgroundColor: 'gray',
+      backgroundColor: 'rgb(255, 255, 255)',
     padding: 8,
     borderRadius: 8,
      
@@ -199,12 +199,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(255, 250, 250)',
     padding: 8,
     borderRadius: 8,
-   
     alignItems: 'center',
 
   },
   actionBtnText: {
-    color:textSecondary,
+    color:"black",
     fontWeight: 'bold',
     fontSize: 16
   }
