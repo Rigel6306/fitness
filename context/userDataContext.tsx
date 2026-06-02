@@ -1,5 +1,5 @@
-import React, { createContext, useState } from "react";
-
+import { syncDailyAnalyticalData } from "@/services/analyticsService";
+import React, { createContext, useEffect, useState } from "react";
 export interface ExerciseRecord {
   id: string | number;
   name: string;
@@ -33,8 +33,15 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
         updatedOn:'2026-01-03'
     })
 
-    const [userData, setUserData] = useState('empty uid')
-
+    const [userData, setUserData] = useState()
+  
+    useEffect(()=>{
+        if(userData?.id){
+      syncDailyAnalyticalData(userData.id)
+        }
+  
+    },[userData])
+    
     const [analyticalData, setAnalyticalData] = useState<DailyAnalyticalData>({
         date: new Date().toISOString().split('T')[0],
         dayNumber: 0,
@@ -47,6 +54,7 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
         startTime: undefined,
         endTime: undefined
     });
+
 
     return(
 
