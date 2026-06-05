@@ -23,8 +23,8 @@ const TabBarButton = ({
         }
     })
     const animatedIconStyle = useAnimatedStyle(()=>{
-        const scaleValue = interpolate(scale.value, [0,1],[1,1.1])
-        const top = interpolate(scale.value, [0,1],[0,1])
+        const scaleValue = interpolate(scale.value, [0,1],[1,1.2])
+        const top = interpolate(scale.value, [0,1],[10,0])
         return{
             transform:[{
                 scale:scaleValue

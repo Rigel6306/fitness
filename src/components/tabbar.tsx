@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useTabContext } from "../hooks/useContext";
@@ -83,7 +83,7 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
 
           const onPress = () => {
             tabPositionX.value = withSpring(buttonWidth * index + 2, {
-              damping: 15,
+              damping: 25,
               mass: 1,
               stiffness: 180,
               overshootClamping: false,
