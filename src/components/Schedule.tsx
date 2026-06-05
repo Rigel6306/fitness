@@ -3,7 +3,7 @@ import { useUserDataContext } from '@/hooks/useContext'
 import Octicons from '@expo/vector-icons/Octicons'
 import { useNavigation, useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Animated, Dimensions, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native'
 import PackageSelectionModal from './PackageSelectionModal'
 import WeightTargetModal from './weightTarget/WeightTargetModal'
@@ -97,12 +97,12 @@ const{userData} = useUserDataContext()
           >
             <ImageBackground
               style={{ flex: 1, elevation: 15, justifyContent: 'center' }}
-              source={require('../assets/images/cardsImg/card2.jpg')}
+              source={require('../../assets/images/cardsImg/card2.jpg')}
             >
 
               {/* Overlay with opacity */}
               <View style={{
-                ...StyleSheet.absoluteFillObject,
+                ...StyleSheet.absoluteFill,
                 backgroundColor: 'rgba(50, 30, 73, 0.84)',
 
               }} />
@@ -130,7 +130,7 @@ const{userData} = useUserDataContext()
               <View style={{ flex: 1, borderRadius: 15, overflow: 'hidden' }}>
                 <LottieView
                   autoPlay
-                  source={require('../assets/lottie/diet.json')}
+                  source={require('../../assets/lottie/diet.json')}
                   style={{
                     height: '100%',
                     width: '100%',

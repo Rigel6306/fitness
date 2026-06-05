@@ -21,7 +21,7 @@ type challenges = challenge[]
 const challenges: challenges = [
     {
         challangeIndex: 1,
-        bckImg: require('../assets/images/cardsImg/card9.jpg'),
+        bckImg: require('../../assets/images/cardsImg/card9.jpg'),
         title: "Mission Slimpossible",
         discription: 'Build foundational strength and cardio endurance',
         level: 'Beginner',
@@ -68,7 +68,7 @@ const challenges: challenges = [
     },
     {
         challangeIndex: 2,
-        bckImg: require('../assets/images/cardsImg/card10.jpg'),
+        bckImg: require('../../assets/images/cardsImg/card10.jpg'),
         title: "Fat Burn Express",
         discription: 'Boost metabolism and burn fat',
         duration: 14,
@@ -95,7 +95,7 @@ const challenges: challenges = [
     },
     {
         challangeIndex: 3,
-        bckImg: require('../assets/images/cardsImg/card11.jpg'),
+        bckImg: require('../../assets/images/cardsImg/card11.jpg'),
         title: "Fit and Gain",
         discription: 'Sculpt lean muscle and improve endurance',
         duration: 21,
@@ -135,7 +135,7 @@ const challenges: challenges = [
     },
     {
         challangeIndex: 4,
-        bckImg: require('../assets/images/cardsImg/card12.jpg'),
+        bckImg: require('../../assets/images/cardsImg/card12.jpg'),
         title: "Cardio Core Crusher",
         discription: 'Strengthen core and improve cardiovascular health',
         duration: 10,
@@ -197,7 +197,7 @@ const challenges: challenges = [
     },
     {
         challangeIndex: 5,
-        bckImg: require('../assets/images/cardsImg/card9.jpg'),
+        bckImg: require('../../assets/images/cardsImg/card9.jpg'),
         title: "Core Revival",
         discription: 'Strengthen your foundation with core, posture, and Cardio',
         level: 'Beginner',
@@ -252,7 +252,7 @@ export const workoutSchedule = {
     duration: 84,
     progress: 42,
     level: "Advanced",
-    bckImg: require('../assets/images/workouts/schedule-bg.jpg'),
+    bckImg: require('../../assets/images/workouts/schedule-bg.jpg'),
     weeklyStructure: [
         {
             week: 1,
@@ -314,7 +314,7 @@ export const mealPlanData = {
     duration: 10,
     level: "Intermediate",
     description: "Optimized for muscle growth and fat loss with balanced macronutrients. Perfect for your fitness journey.",
-    bckImg: require('../assets/images/meals/breakfast1.jpg'),
+    bckImg: require('../../assets/images/meals/breakfast1.jpg'),
     stats: {
         calories: 2500,
         protein: 180,
@@ -488,18 +488,18 @@ export const achievementBadges: AchievementBadge[] = [
         name: "Milestone Master",
         description: "Awarded for hitting 50 workouts ",
         achieved: false,
-        badge: require('../assets/images/badges/milestoneMaster.png') 
+        badge: require('../../assets/images/badges/milestoneMaster.png') 
     },
-    { name: "Early Bird", description: "Earned by completing workouts in the morning.", achieved: true, badge: require('../assets/images/badges/nightOwl.png') },
-    { name: "Night Owl", description: "Earned by completing workouts in the evening.", achieved: true, badge: require("../assets/images/badges/nightOwl.png") },
-    { name: "Consistency Champ", description: "Awarded for logging workouts multiple days in a row.", achieved: true, badge: require("../assets/images/badges/consistencyChamp.png") },
-    { name: "Trailblazer", description: "Earned by trying a brand-new type of exercise.", achieved: true, badge: require("../assets/images/badges/trailblazer.png") },
-    { name: "Streak Keeper", description: "Awarded for maintaining a workout streak (7 days, 30 days, etc.).", achieved: false, badge: require("../assets/images/badges/streakKeeper.png") },
-    { name: "2YM", description: "Awarded for being a memebr for 2 years.", achieved: true, badge: require("../assets/images/badges/2yearMember.png") },
-    { name: "1YM", description: "Awarded for being a memebr for 1 years.", achieved: true, badge: require("../assets/images/badges/1yearMember.png") },
-    { name: "Veteren", description: "Awarded for being a memebr for 3+ years.", achieved: true, badge: require("../assets/images/badges/3yearMember.png") },
-    { name: "Zen Master", description: "Awarded for logging meditation or yoga sessions.", achieved: true, badge: require("../assets/images/badges/zenMaster.png") },
-    { name: "Challenge Conqueror", description: "Earned by finishing a special in-app challenge.", achieved: false, badge: require("../assets/images/badges/challengeConqueror.png")},
+    { name: "Early Bird", description: "Earned by completing workouts in the morning.", achieved: true, badge: require('../../assets/images/badges/nightOwl.png') },
+    { name: "Night Owl", description: "Earned by completing workouts in the evening.", achieved: true, badge: require("../../assets/images/badges/nightOwl.png") },
+    { name: "Consistency Champ", description: "Awarded for logging workouts multiple days in a row.", achieved: true, badge: require("../../assets/images/badges/consistencyChamp.png") },
+    { name: "Trailblazer", description: "Earned by trying a brand-new type of exercise.", achieved: true, badge: require("../../assets/images/badges/trailblazer.png") },
+    { name: "Streak Keeper", description: "Awarded for maintaining a workout streak (7 days, 30 days, etc.).", achieved: false, badge: require("../../assets/images/badges/streakKeeper.png") },
+    { name: "2YM", description: "Awarded for being a memebr for 2 years.", achieved: true, badge: require("../../assets/images/badges/2yearMember.png") },
+    { name: "1YM", description: "Awarded for being a memebr for 1 years.", achieved: true, badge: require("../../assets/images/badges/1yearMember.png") },
+    { name: "Veteren", description: "Awarded for being a memebr for 3+ years.", achieved: true, badge: require("../../assets/images/badges/3yearMember.png") },
+    { name: "Zen Master", description: "Awarded for logging meditation or yoga sessions.", achieved: true, badge: require("../../assets/images/badges/zenMaster.png") },
+    { name: "Challenge Conqueror", description: "Earned by finishing a special in-app challenge.", achieved: false, badge: require("../../assets/images/badges/challengeConqueror.png")},
 
 ];
 

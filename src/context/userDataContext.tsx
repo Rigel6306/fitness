@@ -1,5 +1,6 @@
 import { syncDailyAnalyticalData } from "@/services/analyticsService";
 import React, { createContext, useEffect, useState } from "react";
+import { initGeofenceTracking } from "@/services/geoFence";
 export interface ExerciseRecord {
   id: string | number;
   name: string;
@@ -38,6 +39,7 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
     useEffect(()=>{
         if(userData?.id){
       syncDailyAnalyticalData(userData.id)
+    //   initGeofenceTracking(userData.id,{lat:6.807961031997385, lng:80.95854326344013,radius: 200})
         }
   
     },[userData])

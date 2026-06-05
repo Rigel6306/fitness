@@ -6,7 +6,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import React, { SetStateAction, useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { achievementBadges } from '../../data/data';
 const { height, width } = Dimensions.get('screen')
@@ -172,7 +172,7 @@ const AchievementBadgeCard = ({ achievementBadges, handlePress }: AchievementBad
             >
             </ImageBackground>
             {
-              !item.achieved && <View style={[styles.badgeLockOVerlay, { ...StyleSheet.absoluteFillObject, borderRadius: 100, backgroundColor: 'rgba(76, 69, 69, 0.46)', }]} >
+              !item.achieved && <View style={[styles.badgeLockOVerlay, { ...StyleSheet.absoluteFill, borderRadius: 100, backgroundColor: 'rgba(76, 69, 69, 0.46)', }]} >
                 <MaterialCommunityIcons name="lock" size={44} color="rgba(252, 249, 249, 0.87)" />
               </View>}
           </Pressable>)
@@ -210,7 +210,7 @@ const BadgeModal = ({ badge, isVisible, close }: any) => {
         <Text style={styles.badgeDescription}>{badge.description}</Text>
       </View>
       {
-        !badge.achieved && <View style={[styles.lockedAchievementOverlay, { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(1, 1, 1, 0.45)', }]} >
+        !badge.achieved && <View style={[styles.lockedAchievementOverlay, { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(1, 1, 1, 0.45)', }]} >
           <MaterialCommunityIcons name="lock" size={100} color="rgba(252, 249, 249, 0.87)" />
         </View>}
 

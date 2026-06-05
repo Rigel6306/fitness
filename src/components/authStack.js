@@ -1,9 +1,12 @@
 import { getUser } from "@/services/userService";
+import { BlurTargetView } from "expo-blur";
 import { Stack, useRootNavigationState, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useUserDataContext } from "../hooks/useContext";
 import { auth } from "../services/firebase";
-import { ActivityIndicator, View } from "react-native";
+
+
 
 const AuthStack = () => {
   const [initializing, setInitializing] = useState(true);
@@ -11,7 +14,9 @@ const AuthStack = () => {
   const navigationState = useRootNavigationState();
   const { userData, setUserData } = useUserDataContext();
   const [firebaseUser, setFirebaseUser] = useState(null);
+  
 
+  const targetRef = useRef<View | null>(null);
   // ✅ Single Firebase Auth Listener
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -62,9 +67,19 @@ const AuthStack = () => {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+   
       <Stack.Screen name="(tabs)" />
     </Stack>
   );
 };
 
 export default AuthStack;
+
+const styles = StyleSheet.create({
+ background: {
+    flex: 1,
+    flexWrap: 'wrap',
+    ...StyleSheet.absoluteFill,
+  }
+
+})

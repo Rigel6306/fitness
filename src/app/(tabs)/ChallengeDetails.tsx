@@ -1,11 +1,11 @@
 import ChallengeStartModal from '@/components/ChallengeStartModal';
 import WorkoutSessionScreen from '@/components/WorkoutSessionScreen';
 import { Colors } from '@/constants/Colors';
+import { ChallangeContext } from '@/context/challengeContext';
 import { Ionicons } from '@expo/vector-icons';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -21,13 +21,9 @@ const {background,cardBackground,cardBackgroundSecondary,textPimary,textSecondar
 const { width, height } = Dimensions.get('window');
 
 
-type RootStackParamList = {
-  ChallengeDetails: { data: any };
-};
-
 const ChallengeDetails = () => {
-  const route = useRoute<RouteProp<RootStackParamList, 'ChallengeDetails'>>();
-  const { data } = route.params;
+  const context = useContext(ChallangeContext);
+  const data = context?.currentChallange;
   
 const [selectedDay, setSelectedDay] = useState<any>(null);
 const [showWorkoutSession, setShowWorkoutSession] = useState(false);

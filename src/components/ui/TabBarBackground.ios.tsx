@@ -1,6 +1,8 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
+
+// Default iOS tab bar height (expo-router)
+const TAB_BAR_HEIGHT = 49;
 
 export default function BlurTabBarBackground() {
   return (
@@ -15,5 +17,5 @@ export default function BlurTabBarBackground() {
 }
 
 export function useBottomTabOverflow() {
-  return useBottomTabBarHeight();
+  return TAB_BAR_HEIGHT;
 }

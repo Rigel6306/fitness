@@ -12,7 +12,7 @@ export const ChallangeContextWrapper = ({children})=>{
 
     return(
         
-        <ChallangeContext.Provider value={currentChallange}>
+        <ChallangeContext.Provider value={{currentChallange, setCurrentChallange}}>
             {children}
         </ChallangeContext.Provider>
 

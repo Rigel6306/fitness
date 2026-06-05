@@ -2,12 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import CryptoJS from 'crypto-js';
 import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ActivityIndicator,
   Alert,
   Modal,
-  
+
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
 export default function PaymentPage() {
@@ -668,3 +668,92 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React from 'react';
+// import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+// // 1. Import the package under a base name
+// import PayHereModule from '@payhere/payhere-mobilesdk-reactnative';
+
+// // 2. 📍 FIX: Safely assert the type and declare the "PayHere" variable your function expects
+// const PayHere = PayHereModule as unknown as {
+//   startPayment: (
+//     paymentObject: any,
+//     successCallback: (paymentId: string) => void,
+//     errorCallback: (error: string) => void,
+//     cancelCallback: () => void
+//   ) => void;
+// };
+
+// export default function CheckoutScreen() {
+  
+//   const handlePayment = () => {
+//     const paymentObject = {
+//       "sandbox": true,                 
+//       "merchant_id": "1231840",        
+//       "notify_url": "https://example.com/fake-webhook", 
+//       "order_id": "FitnessPlanObj99",
+//       "items": "Premium Fitness Plan Membership",
+//       "amount": "1500.00",
+//       "currency": "LKR",
+//       "first_name": "Charitha",
+//       "last_name": "Perera",
+//       "email": "charitha@example.com",
+//       "phone": "0771234567",
+//       "address": "No.1, Main Street",
+//       "city": "Colombo",
+//       "country": "Sri Lanka"
+//     };
+
+//     // This will now find the 'PayHere' variable perfectly
+//     PayHere.startPayment(
+//       paymentObject, 
+//       (paymentId) => {
+//         console.log("Payment Success! ID: ", paymentId);
+//         Alert.alert("Success", `Payment Completed! ID: ${paymentId}`);
+//       },
+//       (errorData) => {
+//         console.error("PayHere Error: ", errorData);
+//         Alert.alert("Payment Failed", errorData);
+//       },
+//       () => {
+//         console.log("User closed the payment screen without paying.");
+//       }
+//     );
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Subscription Checkout</Text>
+//       <TouchableOpacity style={styles.button} onPress={handlePayment}>
+//         <Text style={styles.buttonText}>Pay with PayHere</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+//   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+//   button: { backgroundColor: '#007AFF', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 8 },
+//   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' }
+// });
+
+
