@@ -1,10 +1,10 @@
 import { getUser } from "@/services/userService";
-import { BlurTargetView } from "expo-blur";
 import { Stack, useRootNavigationState, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useUserDataContext } from "../hooks/useContext";
 import { auth } from "../services/firebase";
+import InitializingLoader from "./ui/initilizingLoader";
 
 
 
@@ -57,9 +57,7 @@ const AuthStack = () => {
 
   if (initializing || (firebaseUser && !userData)) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <InitializingLoader/>
     );
   }
 

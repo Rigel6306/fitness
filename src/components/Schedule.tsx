@@ -1,46 +1,57 @@
+import { useUserDataContext } from '@/hooks/useContext';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Octicons from '@expo/vector-icons/Octicons';
+import { useRouter } from 'expo-router';
+import LottieView from 'lottie-react-native';
+import { useRef, useState } from 'react';
+import { Animated, Dimensions, ImageBackground, LayoutChangeEvent, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import PackageSelectionModal from './PackageSelectionModal';
+import WeightTargetModal from './weightTarget/WeightTargetModal';
 
-import { useUserDataContext } from '@/hooks/useContext'
-import Octicons from '@expo/vector-icons/Octicons'
-import { useNavigation, useRouter } from 'expo-router'
-import LottieView from 'lottie-react-native'
-import { useRef, useState } from 'react'
-import { Animated, Dimensions, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native'
-import PackageSelectionModal from './PackageSelectionModal'
-import WeightTargetModal from './weightTarget/WeightTargetModal'
+const { height } = Dimensions.get('screen');
 
-const {height} = Dimensions.get('screen')
 const Schedule = () => {
+  const { userData } = useUserDataContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
+  const router = useRouter();
 
-const{userData} = useUserDataContext()
+  const [dimensions, setDimensions] = useState({
+    schedule: { width: 0, height: 0 },
+    meal: { width: 0, height: 0 },
+    weight: { width: 0, height: 0 },
+    package: { width: 0, height: 0 },
+  });
 
-  const [isModalOpen,setIsModalOpen] = useState(false)
-  const [isPackageModalOpen,setIsPackageModalOpen] = useState(false)
-  const router = useRouter()
-  const navigator = useNavigation()
+  const handleLayout = (key: keyof typeof dimensions) => (e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setDimensions(prev => ({ ...prev, [key]: { width, height } }));
+  };
 
-  // Animation refs for all cards
   const tiltAnim = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const mealPlanTilt = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const weightTilt = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const packageTilt = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
 
-  // Reusable function to create tilt handlers
-  const createTiltHandlers = (animRef: Animated.ValueXY | Animated.Value,link?: undefined) => ({
-    handlePressIn: (event: { nativeEvent: { locationX: any; locationY: any } }) => {
+  const createDynamicTiltHandlers = (animRef: Animated.ValueXY, layoutKey: keyof typeof dimensions) => ({
+    handlePressIn: (event: { nativeEvent: { locationX: number; locationY: number } }) => {
       const { locationX, locationY } = event.nativeEvent;
-      const centerX = 100;
-      const centerY = 100;
-
+      const { width, height } = dimensions[layoutKey];
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
       const dx = locationX - centerX;
       const dy = locationY - centerY;
 
-      const tiltX = -dy / 60;
-      const tiltY = dx / 60;
+      const tiltX = -dy / (height / 2.5);
+      const tiltY = dx / (width / 2.5);
 
       Animated.spring(animRef, {
         toValue: { x: tiltX, y: tiltY },
         useNativeDriver: true,
-        friction: 5,
+        friction: 4, 
+        tension: 55,
       }).start();
     },
     handlePressOut: () => {
@@ -48,190 +59,321 @@ const{userData} = useUserDataContext()
         toValue: { x: 0, y: 0 },
         useNativeDriver: true,
         friction: 5,
+        tension: 40,
       }).start();
     },
   });
 
-  const { handlePressIn, handlePressOut } = createTiltHandlers(tiltAnim);
-  const { handlePressIn: mealPressIn, handlePressOut: mealPressOut } = createTiltHandlers(mealPlanTilt);
-  const { handlePressIn: weightPressIn, handlePressOut: weightPressOut } = createTiltHandlers(weightTilt);
-  const { handlePressIn: packagePressIn, handlePressOut: packagePressOut } = createTiltHandlers(packageTilt);
-
-  // Reusable function to create tilt style
   const createTiltStyle = (animRef: Animated.ValueXY) => ({
     transform: [
-      { perspective: 1000 },
+      { perspective: 700 },
       {
         rotateX: animRef.x.interpolate({
           inputRange: [-1, 1],
-          outputRange: ['-10deg', '10deg'],
+          outputRange: ['-14deg', '14deg'],
         }),
       },
       {
         rotateY: animRef.y.interpolate({
           inputRange: [-1, 1],
-          outputRange: ['-10deg', '10deg'],
+          outputRange: ['-14deg', '14deg'],
         }),
       },
     ],
   });
 
-  const tiltStyle = createTiltStyle(tiltAnim);
-  const mealPlanTiltStyle = createTiltStyle(mealPlanTilt);
-  const weightTiltStyle = createTiltStyle(weightTilt);
-  const packageTiltStyle = createTiltStyle(packageTilt);
-
-
   return (
     <View style={style.container}>
       
-      <View style={style.schedule}>
-        
-
-        <Animated.View style={[{ flex: 1, justifyContent: 'center' },tiltStyle]}>
-        {/* Main workout schedule card section */}
-          <Pressable style={{ flex: 1, elevation: 15, borderRadius: 15, overflow:'hidden' }}
-           onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-           onPress={() => { router.navigate('/(tabs)/MainWorkoutSchedule') }}
+      {/* 1. LEFT TILE: Main Schedule */}
+      <View style={style.schedule} onLayout={handleLayout('schedule')}>
+        <Animated.View style={[{ flex: 1, justifyContent: 'center' }, createTiltStyle(tiltAnim)]}>
+          <Pressable 
+            style={style.solidCardWrapper}
+            onPressIn={createDynamicTiltHandlers(tiltAnim, 'schedule').handlePressIn}
+            onPressOut={createDynamicTiltHandlers(tiltAnim, 'schedule').handlePressOut}
+            onPress={() => { router.navigate('/(tabs)/MainWorkoutSchedule') }}
           >
             <ImageBackground
-              style={{ flex: 1, elevation: 15, justifyContent: 'center' }}
+              style={style.imageBackgroundStyle}
               source={require('../../assets/images/cardsImg/card2.jpg')}
             >
+              {/* Smoked Indigo Liquid Glass Overlay Mask */}
+              <View style={style.mainWorkoutBgMask} />
 
-              {/* Overlay with opacity */}
-              <View style={{
-                ...StyleSheet.absoluteFill,
-                backgroundColor: 'rgba(50, 30, 73, 0.84)',
-
-              }} />
-
-              {/* Text content stays fully visible */}
-
-              <Text style={style.scheduleTextHeading}>Your Schedule</Text>
-              <Text style={style.scheduleText}>Basic</Text>
-
+              <View style={style.mainWorkoutContent}>
+                <View style={style.tagContainer}>
+                  <FontAwesome5 name="dumbbell" size={10} color="#0affca" />
+                  <Text style={style.tagText}>ROUTINE</Text>
+                </View>
+                <View>
+                  <Text style={style.scheduleTextHeading}>Your Schedule</Text>
+                  <Text style={style.scheduleText}>Basic</Text>
+                </View>
+              </View>
             </ImageBackground>
           </Pressable>
         </Animated.View>
-
       </View>
-      {/* Meal plan card */}
-      <View style={{ flex: 1, gap: 10 }}>
-        <View style={{ flex: 1, flexDirection: 'row', gap: 10 }} >
-          <Animated.View style={[{ flex: 1 }, mealPlanTiltStyle]}>
+
+      {/* RIGHT STACK MATRIX VIEW */}
+      <View style={style.rightColumnContainer}>
+        
+        {/* Top Splits Row */}
+        <View style={style.splitRow} >
+          
+          {/* 2. Diet Module Tile */}
+          <Animated.View 
+            style={[{ flex: 1 }, createTiltStyle(mealPlanTilt)]}
+            onLayout={handleLayout('meal')}
+          >
             <Pressable 
-              style={{ flex: 1, elevation: 15, borderRadius: 15, overflow: 'hidden' }} 
-              onPressIn={mealPressIn}
-              onPressOut={mealPressOut}
+              style={style.solidCardWrapper} 
+              onPressIn={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressIn}
+              onPressOut={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressOut}
               onPress={() => { router.navigate('/(tabs)/MealPlan') }}
             >
-              <View style={{ flex: 1, borderRadius: 15, overflow: 'hidden' }}>
+              <View style={[style.solidBaseCard, style.dietSolidColor]}>
                 <LottieView
                   autoPlay
+                  loop
                   source={require('../../assets/lottie/diet.json')}
-                  style={{
-                    height: '100%',
-                    width: '100%',
-                    backgroundColor: '#328a84df',
-                  }}
+                  style={style.lottieAsset}
                 />
+                <View style={style.miniBottomBar}>
+                  <Text style={style.miniBarText}>MEAL PLAN</Text>
+                </View>
               </View>
             </Pressable>
           </Animated.View>
-          {/* Weight management card */}
-          <Animated.View style={[{ flex: 1 }, weightTiltStyle]}>
+
+          {/* 3. Target Management Control Tile - REDESIGNED */}
+          <Animated.View 
+            style={[{ flex: 1 }, createTiltStyle(weightTilt)]}
+            onLayout={handleLayout('weight')}
+          >
             <Pressable
-              onPressIn={weightPressIn}
-              onPressOut={weightPressOut}
+              onPressIn={createDynamicTiltHandlers(weightTilt, 'weight').handlePressIn}
+              onPressOut={createDynamicTiltHandlers(weightTilt, 'weight').handlePressOut}
               onPress={() => { setIsModalOpen(!isModalOpen) }}
-              style={{ flex: 1, backgroundColor: 'rgb(71, 67, 172)', elevation: 15, borderRadius: 15, alignItems: 'center', gap: 10, justifyContent: 'center', overflow: 'hidden' }}
+              style={[style.solidBaseCard, style.weightSolidColor]}
             >
-              <Text style={{ fontWeight: 'bold', color: '#000000', }}>
-                Set Target
-              </Text>
-              <Octicons name="goal" size={30} color="gray" />
+              {/* Futuristic structural glass integrated target icon block */}
+              <View style={style.targetGlassIconContainer}>
+                <Octicons name="goal" size={22} color="#9b3eff" />
+              </View>
+              <Text style={style.weightButtonLabel}>SET TARGET</Text>
             </Pressable>
           </Animated.View>
+
         </View>
-        {/* Package selection card */}
-        <Animated.View style={[{ flex: 1 }, packageTiltStyle]}>
+
+        {/* 4. Package Selection Module Tile */}
+        <Animated.View 
+          style={[{ flex: 1 }, createTiltStyle(packageTilt)]}
+          onLayout={handleLayout('package')}
+        >
           <Pressable 
-            onPressIn={packagePressIn}
-            onPressOut={packagePressOut}
+            onPressIn={createDynamicTiltHandlers(packageTilt, 'package').handlePressIn}
+            onPressOut={createDynamicTiltHandlers(packageTilt, 'package').handlePressOut}
             onPress={() => { setIsPackageModalOpen(!isPackageModalOpen) }}
-            style={{
-              flex: 1, 
-              backgroundColor: 'rgb(180, 180, 76)',
-              alignItems: 'center', 
-              justifyContent: 'center',
-              elevation: 15, 
-              borderRadius: 15,
-              overflow: 'hidden'
-            }}
+            style={[style.solidBaseCard, style.packageSolidColor]}
           >
-            <Text style={style.payment}>your package</Text>
+            <View style={style.packageContentRow}>
+              <MaterialCommunityIcons name="badge-account-horizontal" size={20} color="#00e5ff" />
+              <Text style={style.payment}>YOUR PACKAGE</Text>
+            </View>
           </Pressable>
         </Animated.View>
+
       </View>
-      {/* Weight target modal */}
-        <WeightTargetModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        />
-        {/* package selection modal */}
-        <PackageSelectionModal
-        isVisible={isPackageModalOpen}
-        onClose={()=>setIsPackageModalOpen(false)}
-        />
+
+      <WeightTargetModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <PackageSelectionModal isVisible={isPackageModalOpen} onClose={() => setIsPackageModalOpen(false)} />
     </View>
-  )
-}
+  );
+};
 
 const style = StyleSheet.create({
   container: {
-    
     flex: 2,
-    height:height*0.223,
-   maxHeight:height*0.3,
-   marginTop:30,
+    height: height * 0.223,
+    maxHeight: height * 0.3,
+    marginTop: 10,
     margin: 10,
     flexDirection: 'row',
     gap: 10,
   },
   schedule: {
     flex: 1,
-    borderRadius: 15,
-    overflow: 'hidden'
-
+    borderRadius: 16,
   },
-  scheduleText: {
-    textAlign: 'center',
-    fontFamily: 'Bebas',
-    fontSize: 60,
-    fontWeight: '400',
-    color: 'rgba(233, 125, 53, 1)'
+  rightColumnContainer: {
+    flex: 1, 
+    gap: 10,
+  },
+  splitRow: {
+    flex: 1, 
+    flexDirection: 'row', 
+    gap: 10,
+  },
+  solidCardWrapper: {
+    flex: 1, 
+    borderRadius: 16, 
+    overflow: 'hidden',
+    backgroundColor: '#0c0b12',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
+  },
+  solidBaseCard: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 10,
+      },
+    }),
+  },
+  imageBackgroundStyle: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  mainWorkoutBgMask: {
+    ...StyleSheet.absoluteFill,
+    // Saturated Deep Cosmic-Violet liquid sheen backdrop mask
+    backgroundColor: 'rgba(21, 21, 22, 0.82)', 
+    borderWidth: 1.5,
+    borderRadius:20,
+    borderColor: 'rgba(138, 92, 246, 0.3)',
+  },
+  mainWorkoutContent: {
+    flex: 1,
+    padding: 14,
+    justifyContent: 'space-between',
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(22, 71, 61, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(10, 255, 202, 0.25)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    gap: 4,
+  },
+  tagText: {
+    color: '#0affca',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  // Opaque Deep Emerald Teal Liquid Glass Look
+  dietSolidColor: {
+    backgroundColor: '#18635f',
+    borderWidth: 1.5,
+  
+  },
+  // Opaque Midnight Amethyst Liquid Glass Look
+  weightSolidColor: {
+    backgroundColor: '#53266ed3', 
+    borderWidth: 1.5,
+    
+    gap: 8,
+  },
+  // Opaque Deep Electric Ocean Liquid Glass Look
+  packageSolidColor: {
+    backgroundColor: '#0a192f', 
+    borderWidth: 1.5,
+   
+  },
+  lottieAsset: {
+    height: '100%',
+    width: '100%',
+    transform: [{ scale: 1.2 }],
+  },
+  miniBottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(10, 33, 32, 0.85)',
+    paddingVertical: 4,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: 'rgba(10, 255, 202, 0.1)',
+  },
+  miniBarText: {
+    color: '#0affca',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  // Integrated premium target glass icon capsule container
+  targetGlassIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 12,
+    backgroundColor: 'rgba(78, 62, 255, 0.27)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(123, 62, 255, 0.83)',
+  },
+  packageContentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 10,
   },
   scheduleTextHeading: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontFamily: 'Bebas',
-    fontSize: 20,
-    color: 'white',
+    fontSize: 18,
+    color: 'rgba(255, 255, 255, 0.6)',
+    letterSpacing: 0.5,
   },
-  yourWeight: {
-    textAlign: 'center',
+  scheduleText: {
+    textAlign: 'left',
     fontFamily: 'Bebas',
-    fontSize: 20,
-    color: 'rgb(252, 252, 252)'
+    fontSize: 48,
+    lineHeight: 48,
+    fontWeight: '400',
+    color: '#ffffff',
+    marginTop: 2,
+  },
+  weightButtonLabel: {
+    fontWeight: '900', 
+    color: '#fdfdfd',
+    fontSize: 11,
+    letterSpacing: 0.5,
   },
   payment: {
     textAlign: 'center',
     fontFamily: 'Bebas',
-    fontSize: 20,
-  }
+    fontSize: 16,
+    color: '#00e5ff',
+    letterSpacing: 0.5,
+  },
+});
 
-
-})
-
-export default Schedule
+export default Schedule;

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 import { useTabContext } from "../hooks/useContext";
 import TabBarButton from './tabBarButton';
 
@@ -8,8 +8,8 @@ const { width } = Dimensions.get('screen');
 
 const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: any, navigation: any }) => {
   const { isTabOpen } = useTabContext();
-  const primaryColor = 'rgba(16, 17, 16, 0.96)';
-  const inactiveColor = '#606565';
+  const primaryColor = '#2d64ef'; // Fluid violet accent
+  const inactiveColor = 'rgba(255, 255, 255, 0.4)';
 
   const [dimentions, setDimentions] = useState({ height: 20, width: 100 });
   const buttonWidth = dimentions.width / 3;
@@ -22,36 +22,78 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
   };
 
   const tabPositionX = useSharedValue(0);
+  
+  // Dedicated liquid structural nodes
+  const bubbleScaleX = useSharedValue(1);
+  const bubbleScaleY = useSharedValue(1);
+  const prevIndexRef = useRef(state.index);
 
-  // ✅ Fix: update indicator position when active tab changes
+  // ✅ EXACT PREVIOUS PHYSICS RESTORED
   useEffect(() => {
-    tabPositionX.value = withSpring(buttonWidth * state.index + 2, {
-      damping: 15,
+    const targetX = buttonWidth * state.index + 2;
+
+    // Your exact spring parameters that give it that loose, springy travel physics
+    tabPositionX.value = withSpring(targetX, {
+      damping: 5,
       mass: 1,
-      stiffness: 180,
+      stiffness: 80,
       overshootClamping: false,
     });
+
+    // Clean, structured liquid distortion that doesn't ruin the bubble shape
+    if (state.index !== prevIndexRef.current) {
+      const travelDistance = Math.abs(state.index - prevIndexRef.current);
+      
+      // Subtly scale up horizontal stretch based on distance without distorting boundaries
+      const targetStretchX = 1 + travelDistance * 0.09;
+      const targetSquashY = 1 - travelDistance * 0.04;
+
+      // Stretch instantly when movement starts
+      bubbleScaleX.value = targetStretchX;
+      bubbleScaleY.value = targetSquashY;
+
+      // Smoothly snap back to a perfect container shape right as the position spring finishes
+      bubbleScaleX.value = withDelay(20, withSpring(1, { damping: 16, stiffness: 490 }));
+      bubbleScaleY.value = withDelay(20, withSpring(1, { damping:16, stiffness: 990 }));
+    }
+
+    prevIndexRef.current = state.index;
   }, [state.index, buttonWidth]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: tabPositionX.value }],
+      transform: [
+        { translateX: tabPositionX.value },
+        { scaleX: bubbleScaleX.value },
+        { scaleY: bubbleScaleY.value }
+      ],
     };
   });
 
   return (
     isTabOpen && (
       <View onLayout={onTabBarLayout} style={Style.container}>
+        {/* PREMIUM LIQUID GLASS BUBBLE CONTAINER */}
         <Animated.View
           style={[
             animatedStyle,
             {
               position: 'absolute',
-              backgroundColor: '#cccad1',
-              borderRadius: 15,
+              backgroundColor: 'rgba(255, 255, 255, 0.05)', // Sleek glass tint
+              borderRadius: 12,
               margin: 10,
               height: dimentions.height - 20,
               width: buttonWidth - 25,
+              borderWidth: 1,
+              // Light catching frosted perimeter ridges
+              borderTopColor: 'rgba(255, 255, 255, 0.35)',
+              borderLeftColor: 'rgba(255, 255, 255, 0.15)',
+              borderRightColor: 'rgba(255, 255, 255, 0.15)',
+              borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+              shadowColor: '#ffffff',
+              shadowOffset: { width: 0, height: 14 },
+              shadowRadius: 8,
+              shadowOpacity: 0.04,
             },
           ]}
         />
@@ -67,7 +109,6 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
 
           const isFocused = state.index === index;
 
-          // Skip hidden routes
           if (
             [
               '_sitemap',
@@ -82,10 +123,11 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
             return null;
 
           const onPress = () => {
+            // Your exact click override properties
             tabPositionX.value = withSpring(buttonWidth * index + 2, {
               damping: 25,
               mass: 1,
-              stiffness: 180,
+              stiffness: 350,
               overshootClamping: false,
             });
 
@@ -128,18 +170,22 @@ const Style = StyleSheet.create({
   container: {
     alignSelf: 'center',
     position: 'absolute',
-    bottom: 5,
+    bottom: 12, // Floating glass HUD positioning profile
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20,
-    backgroundColor: '#131313',
+    backgroundColor: 'rgba(10, 10, 14, 0.85)', // Dark smoked glass base chassis
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.08)', // Fine crisp perimeter edge track
     paddingVertical: 15,
-    borderRadius: 20,
-    shadowColor: 'green',
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10,
-    shadowOpacity: 0.1,
+    borderRadius: 16,
     width: width - 20,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 16,
+    shadowOpacity: 0.5,
+    elevation: 10,
   },
 });
 

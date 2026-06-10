@@ -3,20 +3,25 @@ import { DailyAnalyticalData, ExerciseRecord } from "@/context/userDataContext"
 import { useUserDataContext } from "@/hooks/useContext"
 import { updateAnalyticalData } from "@/services/analyticsService"
 import { saveWorkoutDataImmediately, updateAsyncStorageOnDebounce } from "@/services/asynchStorageService"
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 import {
+  Animated,
   Dimensions,
   FlatList,
   Modal,
+  PanResponder,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   View
 } from "react-native"
 import ExercisesCard from "../ui/ExercisesCard"
 
-import React, { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
+
 const { textPimary, textSecondary } = Colors
 const { width, height } = Dimensions.get('window')
 
@@ -55,8 +60,15 @@ const WorkoutsListModal = ({
   const today = new Date().toISOString().split('T')[0]
   const { analyticalData, setAnalyticalData } = useUserDataContext()
 
-  console.log("Workouts List at Workouts list modal", workoutsList)
-  console.log("Workouts List Modal selected Day Schedule:", selectedDaySchedule)
+  // Animated value tracking for drag sheet tracking
+  const animatedTranslateY = useRef(new Animated.Value(0)).current
+
+  // Reset animation translation layout when modal becomes visible
+  useEffect(() => {
+    if (modalVisible) {
+      animatedTranslateY.setValue(0)
+    }
+  }, [modalVisible])
 
   // Save data immediately when modal closes
   useEffect(() => {
@@ -64,7 +76,6 @@ const WorkoutsListModal = ({
       if (workoutsList && analyticalData.noOfWorkoutsCompleted > 0) {
         const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
         
-        // Save workout list with analytical data
         const completedWorkoutsList = {
           date: today,
           list: workoutsList.list,
@@ -87,9 +98,6 @@ const WorkoutsListModal = ({
       return item
     })
 
-    console.log("workouts List Modal updated list", updatedList)
-
-    // Count completed workouts and build completed exercises list
     let completionCount = 0
     const completedExercises: ExerciseRecord[] = []
     
@@ -108,7 +116,6 @@ const WorkoutsListModal = ({
 
     const allCompleted = updatedList.every(ex => ex.isComplete)
 
-    // Enhanced analytical data with exercise details
     const updatedAnalyticalData: DailyAnalyticalData = {
       date: today,
       dayNumber: selectedDaySchedule?.day || 1,
@@ -123,36 +130,27 @@ const WorkoutsListModal = ({
     }
 
     setAnalyticalData(updatedAnalyticalData)
-
-    // Save analytical data
     updateAnalyticalData(updatedAnalyticalData)
 
     const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
     
-    // Create unified workout data with analytical info linked
     const completedWorkoutsList: WorkoutsList = {
       date: today,
       list: updatedList,
       analyticalData: updatedAnalyticalData
     }
 
-    // Debounce saves the workout data
     updateAsyncStorageOnDebounce(dayKey, completedWorkoutsList)
     setWorkoutsList(completedWorkoutsList)
-    
-    console.log("Workout updated:", { completionCount, allCompleted })
   }
 
-  // Calculate modal height based on device size
   const getModalHeight = () => {
-    if (height < 600) return '75%' // Small devices
-    if (height < 700) return '80%' // Medium devices
-    if (height < 800) return '85%' // Large devices
-    return '90%' // Extra large devices
+    if (height < 600) return height * 0.80
+    if (height < 700) return height * 0.85
+    return height * 0.90
   }
 
   const handleCloseModal = () => {
-    // Save data before closing
     if (analyticalData.noOfWorkoutsCompleted > 0) {
       const dayKey = `workoutsList_day${selectedDaySchedule?.day || 1}`
       const completedWorkoutsList = {
@@ -165,6 +163,42 @@ const WorkoutsListModal = ({
     setModalVisible(false)
   }
 
+  // PanResponder bottom sheet swipe system
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return gestureState.dy > 10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dy > 0) {
+          animatedTranslateY.setValue(gestureState.dy)
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const modalLimit = getModalHeight()
+        if (gestureState.dy > modalLimit * 0.25 || gestureState.vy > 0.6) {
+          Animated.timing(animatedTranslateY, {
+            toValue: modalLimit,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => handleCloseModal())
+        } else {
+          Animated.spring(animatedTranslateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 45,
+            friction: 8
+          }).start()
+        }
+      },
+    })
+  ).current
+
+  const activeTransformStyle = {
+    transform: [{ translateY: animatedTranslateY }]
+  }
+
   return (
     <Modal
       transparent={true}
@@ -173,124 +207,245 @@ const WorkoutsListModal = ({
       onRequestClose={handleCloseModal}
       statusBarTranslucent={true}
     >
-      {/* Modal content */}
       <View style={styles.modalContentContainer}>
-        <SafeAreaView style={[styles.modalContainer, { height: getModalHeight() }]}>
-          {/* Draggable indicator */}
-          <View style={styles.dragIndicator} />
+        {/* Backdrop overlay area for click out */}
+        <Pressable style={styles.backdropOverlay} onPress={handleCloseModal} />
 
-          {/* Modal Header */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Basic Schedule</Text>
-            <Text style={styles.modalSubtitle}>
-              Day {selectedDaySchedule?.day || 0} • {workoutsList?.list?.length || 0} Exercises
-            </Text>
-          </View>
+        {/* Ambient liquid fluid glow nodes behind the glass sheet */}
+        <View style={styles.liquidGlowOrbOrchid} />
+        <View style={styles.liquidGlowOrbTeal} />
 
-          {/* Modal Body */}
-          <View style={styles.modalBody}>
-            <FlatList
-              data={workoutsList?.list || []}
-              renderItem={({ item }) => (
-                <ExercisesCard
-                  updateWorkoutsList={updateWorkoutsList}
-                  id={item.id}
-                  name={item.name}
-                  reps={item.reps}
-                  isComplete={item.isComplete}
-                />
-              )}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContentContainer}
-              ListEmptyComponent={
-                <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>No exercises found</Text>
+        <Animated.View 
+          style={[
+            styles.modalContainer, 
+            { height: getModalHeight() },
+            activeTransformStyle
+          ]}
+          {...panResponder.panHandlers}
+        >
+          <SafeAreaView style={styles.safeAreaWrapper} edges={['bottom']}>
+            
+            {/* Interactive Liquid Drag Handle */}
+            <View style={styles.dragHandleZone}>
+              <View style={styles.dragIndicator} />
+            </View>
+
+            {/* Glass Frosted Header Panel */}
+            <View style={styles.modalHeader}>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.modalTitle}>BASIC SCHEDULE</Text>
+                <View style={styles.badgeRow}>
+                  <Text style={styles.modalSubtitle}>DAY {selectedDaySchedule?.day || 0}</Text>
+                  <View style={styles.counterGlassBadge}>
+                    <Text style={styles.highlightCount}>{workoutsList?.list?.length || 0} EXERCISES</Text>
+                  </View>
                 </View>
-              }
-            />
-          </View>
-        </SafeAreaView>
+              </View>
+              
+              <Pressable 
+                onPress={handleCloseModal}
+                style={({ pressed }) => [pressed && { opacity: 0.7 }, styles.glassCloseButton]}
+              >
+                <Ionicons name="close-outline" size={22} color="#ffffff" />
+              </Pressable>
+            </View>
+
+            {/* Main Content body */}
+            <View style={styles.modalBody}>
+              <FlatList
+                data={workoutsList?.list || []}
+                renderItem={({ item }) => (
+                  <View style={styles.cardGlassWrapper}>
+                    <ExercisesCard
+                      updateWorkoutsList={updateWorkoutsList}
+                      id={item.id}
+                      name={item.name}
+                      reps={item.reps}
+                      isComplete={item.isComplete}
+                    />
+                  </View>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listContentContainer}
+                ListEmptyComponent={
+                  <View style={styles.emptyContainer}>
+                    <View style={styles.emptyIconGlassBubble}>
+                      <Ionicons name="fitness-outline" size={32} color="#0affca" />
+                    </View>
+                    <Text style={styles.emptyText}>NO EXERCISES SCHEDULED</Text>
+                  </View>
+                }
+              />
+            </View>
+          </SafeAreaView>
+        </Animated.View>
       </View>
     </Modal>
   )
 }
 
+// --- LIQUID GLASSY DESIGN THEME SYSTEM ---
+
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContentContainer: {
     flex: 1,
     justifyContent: 'flex-end',
+    backgroundColor: 'rgb(0, 0, 0)', // Tinted transparency for natural glassy bleedthrough
+  },
+  backdropOverlay: {
+    ...StyleSheet.absoluteFill,
+  },
+  // Ambient fluid backdrop layers
+  liquidGlowOrbOrchid: {
+    position: 'absolute',
+    bottom: height * 0.5,
+    right: -40,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgb(157, 0, 255)',
+    opacity: 0.8,
+  },
+  liquidGlowOrbTeal: {
+    position: 'absolute',
+    bottom: 40,
+    left: -60,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: 'rgba(10, 255, 202, 0.56)',
+    opacity: 0.6,
   },
   modalContainer: {
     width: '100%',
-    backgroundColor: "#000000",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 16,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 24,
+    // High translucent base simulating fluid back-surface refraction
+    backgroundColor: 'rgba(18, 22, 33, 0.72)', 
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    borderWidth: 1.5,
+    // Specular crisp glass reflection edge
+    borderColor: 'rgba(255, 255, 255, 0.12)', 
+    paddingHorizontal: 22,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: -10 },
+        shadowOpacity: 0.4,
+        shadowRadius: 16,
       },
       android: {
-        elevation: 20,
+        elevation: 24,
       },
     }),
   },
+  safeAreaWrapper: {
+    flex: 1,
+  },
+  dragHandleZone: {
+    width: '100%',
+    alignItems: 'center',
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
   dragIndicator: {
-    alignSelf: 'center',
-    width: 40,
-    height: 4,
-    backgroundColor: '#333',
-    borderRadius: 2,
-    marginTop: 8,
-    marginBottom: 16,
+    width: 48,
+    height: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)', // Glossy liquid bar appearance
+    borderRadius: 10,
   },
   modalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    paddingVertical: 18,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: 16,
   },
+  headerTextContainer: {
+    flex: 1,
+    gap: 4,
+  },
   modalTitle: {
-    fontSize: width < 350 ? 22 : 26,
-    fontWeight: 'bold',
-    color: textPimary,
-    textAlign: 'center',
-    marginBottom: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-condensed',
+    fontSize: width < 360 ? 22 : 26,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: 0.8,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
   },
   modalSubtitle: {
-    fontSize: width < 350 ? 13 : 15,
-    fontWeight: '600',
-    color: textSecondary,
-    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+    color: 'rgba(255, 255, 255, 0.5)',
+    letterSpacing: 0.5,
+  },
+  counterGlassBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  highlightCount: {
+    color: '#0affca',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  // Specular reflection stylized round action button
+  glassCloseButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
   },
   modalBody: {
     flex: 1,
   },
   listContentContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: Platform.OS === 'ios' ? 42 : 26,
+  },
+  cardGlassWrapper: {
+    marginVertical: 1,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: 70,
+    gap: 14,
+  },
+  emptyIconGlassBubble: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(10, 255, 202, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(10, 255, 202, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyText: {
-    fontSize: 16,
-    color: '#666',
+    fontFamily: 'Bebas',
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.3)',
+    letterSpacing: 1.5,
     textAlign: 'center',
   },
 })
 
-export default WorkoutsListModal
+export default WorkoutsListModal;

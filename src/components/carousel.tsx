@@ -1,6 +1,5 @@
 import { Colors } from '@/constants/Colors';
 import challenges from '@/data/data';
-import React from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -23,12 +22,21 @@ const { width } = Dimensions.get('screen');
 const _imgWidth = width - 20;
 const _imgHeight = _imgWidth * 0.4;
 
+type LevelType = 'Beginner' | 'Intermediate' | 'Advanced';
+
+type ChallengeItem = {
+  level: LevelType;
+  title: string;
+  discription: string;
+  bckImg: any;
+};
+
 const Photo = ({
   item,
   index,
   scrollX
 }: {
-  item: any;
+  item: ChallengeItem;
   index: number;
   scrollX: SharedValue<number>;
 }) => {
@@ -53,11 +61,11 @@ const Photo = ({
     ]
   }));
 
-  const levelColor = {
+  const levelColor: Record<LevelType, string> = {
     Beginner:'rgba(44, 101, 157, 0.64)',
     Intermediate:'rgba(144, 151, 50, 1)',
     Advanced:'rgba(145, 38, 49, 1)'
-  }
+  };
   
   return (
     <CustomLink href={'ChallengeDetails'} data={item}>
@@ -121,7 +129,7 @@ const styles = StyleSheet.create({
     height: _imgHeight + 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop:10,
+    marginTop:15,
   },
 
   listContent: {
@@ -147,7 +155,7 @@ const styles = StyleSheet.create({
   },
 
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
 

@@ -1,9 +1,8 @@
 import { Colors } from '@/constants/Colors';
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ProgressIndicator from './ui/progressIndicator';
 
-const { cardBackgroundSecondary, textPimary } = Colors;
+const {  textPimary } = Colors;
 
 const Progress = () => {
   const targetDetails = [
@@ -33,8 +32,8 @@ const Progress = () => {
           value={75}
           mainText={"100 KG"}
           subText={"Of 100 KG"}
-          actionColor={'#667eea'}
-          gradientArray={['rgba(102, 126, 234, 0.2)', 'rgba(102, 126, 234, 0.1)']}
+          actionColor={'#66ead6'}
+          gradientArray={['rgba(110, 104, 122, 0.63)', 'rgba(61, 63, 63, 0.2)']}
           details={targetDetails}
         />
           
@@ -44,8 +43,8 @@ const Progress = () => {
           value={90}
           mainText={"9 Exercises"}
           subText={"Of 10 Exercises"}
-          actionColor={'#894cafff'}
-          gradientArray={['rgba(76, 175, 80, 0.2)', 'rgba(76, 175, 80, 0.1)']}
+          actionColor={'#667eea'}
+          gradientArray={['rgba(61, 63, 63, 0.2)', 'rgba(110, 104, 122, 0.63)']}
           details={challengeDetails}
         />
       </View>

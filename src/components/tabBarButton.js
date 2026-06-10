@@ -11,19 +11,24 @@ const TabBarButton = ({
   label,
 }) => {
     const scale = useSharedValue(0);
+    
     useEffect(()=>{
-        scale.value = withSpring(typeof isFoucused === 'boolean' ? (isFoucused?1:0):isFoucused,{duration:500})
+        scale.value = withSpring(typeof isFoucused === 'boolean' ? (isFoucused?1:0):isFoucused,{duration:900})
     },[scale,isFoucused])
     const animatedTextStyle = useAnimatedStyle(()=>{
         const opacity = interpolate(scale.value,[0,1],[0,1])
-        
+         const scaleValue = interpolate(scale.value, [0,1],[1,1.1])
         return {
+            transform:[{
+                scale:scaleValue
+                
+            }],
             opacity,
             
         }
     })
     const animatedIconStyle = useAnimatedStyle(()=>{
-        const scaleValue = interpolate(scale.value, [0,1],[1,1.2])
+        const scaleValue = interpolate(scale.value, [0,1],[1,1.1])
         const top = interpolate(scale.value, [0,1],[10,0])
         return{
             transform:[{

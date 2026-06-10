@@ -5,7 +5,6 @@ import SafeScreenWrapper from '@/components/SafeScreenWrapper'
 import Schedule from '@/components/Schedule'
 
 import { Colors } from '@/constants/Colors'
-import React from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 const {background,primaryBackground} = Colors
 const Home = () => {
