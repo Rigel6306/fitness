@@ -1,62 +1,151 @@
-
-import { View, Text, Pressable,StyleSheet } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
+'use client'
 import { Colors } from '@/constants/Colors'
-import React from 'react'
 import { FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
-const {textPimary,textSecondary}= Colors
+import { LinearGradient } from 'expo-linear-gradient'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
+
+const { textPimary, textSecondary } = Colors
+
 const ScheduleCard = ({ title, frequency, duration, index, dayCount, workoutsCount }) => {
   return (
-    <Pressable
-      style={({ pressed }) => [pressed && { opacity: 0.5 }]}
-    >
+    <Pressable style={({ pressed }) => [pressed && styles.pressedCard]}>
       <LinearGradient
         style={styles.scheduleCardContainer}
-        colors={['#2d3231de', '#1b222091']}
+        colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.01)']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View >
-          <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 40, width: 40, backgroundColor: '#ffffff3a', borderRadius: 100 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{index + 1}</Text>
+        {/* Left Side: Dynamic Index Bubble */}
+        <View style={styles.indexBadgeContainer}>
+          <View style={styles.indexBadge}>
+            <Text style={styles.indexText}>{index + 1}</Text>
           </View>
         </View>
-        <View style={{ display: 'flex', marginLeft: 10, }}>
-          <Text style={{ fontSize: 15, color: textPimary, marginBottom: 2, marginLeft: 2 }}>{title}</Text>
-          <Text style={{ fontSize: 13, color: textSecondary, marginLeft: 3 }}>{frequency}</Text>
-          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', gap: 10, marginTop: 20 }}>
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-              <MaterialIcons name="calendar-month" size={24} color="rgba(73, 193, 143, 1)" />
-              <Text style={{ color: textSecondary }}>{duration} Months</Text>
+
+        {/* Center Side: Meta Header Info & Sub-Badges */}
+        <View style={styles.metaDataContainer}>
+          <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
+          <Text style={styles.frequencyText}>{frequency}</Text>
+          
+          <View style={styles.metricsRow}>
+            <View style={styles.metricBadge}>
+              <MaterialIcons name="calendar-month" size={16} color="#4cddbb" />
+              <Text style={styles.metricText}>{duration} Months</Text>
             </View>
-            <View style={{ display: 'flex', flexDirection: 'row', gap: 5, alignItems: 'center' }} >
-              <MaterialCommunityIcons name="sine-wave" size={24} color="rgba(103, 47, 201, 0.88)" />
-              <Text style={{ color: textSecondary }}>{dayCount} Day</Text>
+            <View style={styles.metricBadge}>
+              <MaterialCommunityIcons name="sine-wave" size={16} color="#9d62ff" />
+              <Text style={styles.metricText}>{dayCount} Days</Text>
             </View>
           </View>
         </View>
-        <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <FontAwesome6 name="dumbbell" size={20} color="rgba(141, 187, 47, 0.72)" />
-          <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#fff3f398' }}>{workoutsCount}</Text>
-          <Text style={{ fontSize: 13, color: '#ffffff3e', fontWeight: 'bold' }}>Workouts</Text>
+
+        {/* Right Side: Total Combined Workout Count Specular View */}
+        <View style={styles.workoutCountContainer}>
+          <FontAwesome6 name="dumbbell" size={14} color="#4cddbb" style={styles.dumbbellIcon} />
+          <Text style={styles.workoutsCountText}>{workoutsCount}</Text>
+          <Text style={styles.workoutsLabelText}>Workouts</Text>
         </View>
+
       </LinearGradient>
     </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
-      scheduleCardContainer: {
-    display: 'flex',
+  pressedCard: {
+    opacity: 0.8,
+    transform: [{ scale: 0.99 }],
+  },
+  scheduleCardContainer: {
     flexDirection: 'row',
-    marginTop: 10,
-    gap: 10,
     alignItems: 'center',
     borderRadius: 20,
-    height: 130,
-    padding: 10
-
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 16,
+    minHeight: 125,
+    width: '100%',
+  },
+  // Left Layout
+  indexBadgeContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  indexBadge: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 38,
+    width: 38,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 99,
+  },
+  indexText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  // Center Layout
+  metaDataContainer: {
+    flex: 2,
+    marginLeft: 14,
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+    marginBottom: 2,
+  },
+  frequencyText: {
+    fontSize: 13,
+    color: '#8E9492',
+    fontWeight: '500',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  metricBadge: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+  },
+  metricText: {
+    color: '#B0B5B3',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  // Right Layout
+  workoutCountContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255, 255, 255, 0.06)',
+    paddingLeft: 10,
+  },
+  dumbbellIcon: {
+    marginBottom: -2,
+    opacity: 0.9,
+  },
+  workoutsCountText: {
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -1,
+  },
+  workoutsLabelText: {
+    fontSize: 11,
+    color: '#8E9492',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
 })
 
-export default ScheduleCard
+export default ScheduleCard;

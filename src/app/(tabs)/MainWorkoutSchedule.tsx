@@ -1,3 +1,4 @@
+'use client'
 import CurentScheduleCard from '@/components/mainWorkouts/CurentScheduleCard';
 import ScheduleCard from '@/components/mainWorkouts/ScheduleCard';
 import WorkoutsListModal from '@/components/mainWorkouts/WorkoutListModal';
@@ -10,158 +11,148 @@ import { getAsyncStorageData, setAsyncStorageData } from '@/services/asynchStora
 import { getScheduleFromUser } from '@/services/workoutService';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-const { textPimary, textSecondary } = Colors
+
+const { textPimary, textSecondary } = Colors;
+
 const HeadingProgress = () => (
   <View style={styles.headingProgressContainer}>
     <View style={styles.progressItem}>
-      <Text style={{ fontWeight: 'bold', color: '#ffffff9a' }}>Schedule Progress</Text>
-      <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>0%</Text>
+      <Text style={styles.progressLabel}>Schedule Progress</Text>
+      <Text style={styles.progressValue}>0%</Text>
     </View>
-    <View style={{ width: 2, height: 30, backgroundColor: '#ffffff9a' }} />
+    <View style={styles.progressDivider} />
     <View style={styles.progressItem}>
-      <Text style={{ fontWeight: 'bold', color: '#ffffff9a' }}  >Days Completed</Text>
-      <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>0/30</Text>
+      <Text style={styles.progressLabel}>Days Completed</Text>
+      <Text style={styles.progressValue}>0/30</Text>
     </View>
   </View>
-)
+);
 
 type Exercise = {
-  id: number,
-  name: string,
-  reps: (number | string)[]
-}
+  id: number;
+  name: string;
+  reps: (number | string)[];
+};
 type Workouts = {
-  day: number,
-  schedule: Exercise[]
-}
+  day: number;
+  schedule: Exercise[];
+};
 type ScheduleType = {
-  id: string,
-  title: string,
-  frequency: string,
-  workoutsCount: number,
-  workouts: Workouts[],
-  duration: number,
-  focus: string[]
-}
+  id: string;
+  title: string;
+  frequency: string;
+  workoutsCount: number;
+  workouts: Workouts[];
+  duration: number;
+  focus: string[];
+};
 
 const MainWorkoutSchedule = () => {
-  const [modelVisible, setModelVisible] = useState(false)
-  const [selectedDaySchedule, setSelectedDaySchedule] = useState<Workouts | null>(null)
+  const [modelVisible, setModelVisible] = useState(false);
+  const [selectedDaySchedule, setSelectedDaySchedule] = useState<Workouts | null>(null);
   const [schedule, setSchedule] = useState<ScheduleType | null>();
-  const [workoutList, setWorkoutList] = useState<any>()
-  const today = new Date().toISOString().split('T')[0]
+  const [workoutList, setWorkoutList] = useState<any>();
+  const today = new Date().toISOString().split('T')[0];
   
-  const {userData} = useUserDataContext()
+  const { userData } = useUserDataContext();
 
   useEffect(() => {
-
     const loadData = async () => {
-
-      const storedSchedule = await getAsyncStorageData('schedule')
-      
-
+      const storedSchedule = await getAsyncStorageData('schedule');
       if (storedSchedule) {
-        
-        const storedWorkouts = await getAsyncStorageData('workoutsList')
-     
-        setSchedule(storedSchedule)
-        // console.log('Stored Workouts at useEffectS',storedWorkouts.list)
-        //same day-> keep stored data
-        if (storedWorkouts&&storedWorkouts.date === today) {
-          setWorkoutList(storedWorkouts)
-        }
-        else {//new day-> create a fresh list
+        const storedWorkouts = await getAsyncStorageData('workoutsList');
+        setSchedule(storedSchedule);
+        if (storedWorkouts && storedWorkouts.date === today) {
+          setWorkoutList(storedWorkouts);
+        } else {
           const baseList = (storedWorkouts && storedWorkouts.list)
             ? storedWorkouts.list
             : (storedSchedule.workouts && storedSchedule.workouts.length > 0
-              ? // use first day's schedule as a fallback
-              storedSchedule.workouts[0].schedule
-              : [] )
-          const newWorkoutsList = { date: today, list: baseList.map((item: any) => ({ ...item, isComplete: false })) }
-          setWorkoutList(newWorkoutsList)
-          await setAsyncStorageData('workoutsList', newWorkoutsList)
+              ? storedSchedule.workouts[0].schedule
+              : []);
+          const newWorkoutsList = { date: today, list: baseList.map((item: any) => ({ ...item, isComplete: false })) };
+          setWorkoutList(newWorkoutsList);
+          await setAsyncStorageData('workoutsList', newWorkoutsList);
         }
       } else {
-        const dbSchedule = await getScheduleFromUser(userData.id) 
-        setSchedule(dbSchedule)
+        const dbSchedule = await getScheduleFromUser(userData.id); 
+        setSchedule(dbSchedule);
       }
-    }
-    loadData()
-  }, [])
+    };
+    loadData();
+  }, []);
   
   useEffect(() => {
     const loadSelectedDayWorkouts = async () => {
       if (selectedDaySchedule && selectedDaySchedule.schedule) {
-        const today = new Date().toISOString().split('T')[0]
-        const dayKey = `workoutsList_day${selectedDaySchedule.day}`
-        
-        // Try to get the stored workouts for this specific day
-        const storedDayWorkouts = await getAsyncStorageData(dayKey)
+        const today = new Date().toISOString().split('T')[0];
+        const dayKey = `workoutsList_day${selectedDaySchedule.day}`;
+        const storedDayWorkouts = await getAsyncStorageData(dayKey);
         
         if (storedDayWorkouts && storedDayWorkouts.date === today) {
-          // Same day, use stored data
-          
-          setWorkoutList(storedDayWorkouts)
+          setWorkoutList(storedDayWorkouts);
         } else {
-          // New day or first time, create fresh list for this day
           const newWorkoutsList = {
             date: today,
             list: selectedDaySchedule.schedule.map(item => ({
               ...item,
               isComplete: false
             }))
-          }
-          setWorkoutList(newWorkoutsList)
-          await setAsyncStorageData(dayKey, newWorkoutsList)
+          };
+          setWorkoutList(newWorkoutsList);
+          await setAsyncStorageData(dayKey, newWorkoutsList);
         }
       }
-    }
+    };
+    loadSelectedDayWorkouts();
+  }, [selectedDaySchedule]);
 
-    loadSelectedDayWorkouts()
-  }, [selectedDaySchedule])
-
-  // Initialize first day on app startup
   useEffect(() => {
     const initializeFirstDay = async () => {
       if (schedule && schedule.workouts && schedule.workouts.length > 0 && !selectedDaySchedule) {
-        const firstDay = schedule.workouts[0]
+        const firstDay = schedule.workouts[0];
         setSelectedDaySchedule(firstDay)
-        await setAsyncStorageData('schedule', schedule)
+        await setAsyncStorageData('schedule', schedule);
       }
-    }
+    };
+    initializeFirstDay();
+  }, [schedule]);
 
-    initializeFirstDay()
-  }, [schedule])
   return (
-    <>
-      <LinearGradient
-        colors={['#00000037', '#000000f6', '#000000ff', '#000000ff']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.container}>
-        <View style={styles.header} >
-          <SafeScreenWrapper>
+    <View style={styles.masterWrapper}>
+      <View style={styles.container}>
+        {/* Glass Header Panel */}
+            <SafeScreenWrapper>
+        <View style={styles.header}>
+      
             <View style={styles.headerContent}>
-              <Text style={styles.headerText}>Hello</Text>
-              <Text style={styles.headerSubText}>Day after day - 3 Months</Text>
+
+              <Text style={styles.headerSubText}>Day after day — 3 Months</Text>
               <HeadingProgress />
             </View>
-          </SafeScreenWrapper>
+         
         </View>
-        <View style={styles.contentBody}>
-          <ScrollView style={{ marginBottom: 20 }}>
-            <View style={styles.scheduleList}>
-              <View style={styles.scheduleListHeading}>
-                <Octicons name="stack" size={20} color={textPimary} />
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: textPimary }}>Training Progression</Text>
-              </View>
-              <Text style={{ fontWeight: 'bold', color: textSecondary }}>Progress through each schedule after completing the duration period</Text>
 
-              {
-                schedule && <ScheduleCard
+        {/* Workspace Body Elements */}
+        <View style={styles.contentBody}>
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}
+          >
+            {/* Section 1: Training Progression Panel */}
+            <View style={styles.sectionContainer}>
+              <View style={styles.sectionHeaderHeading}>
+                <Octicons name="stack" size={16} color="#4cddbb" />
+                <Text style={styles.sectionTitleText}>Training Progression</Text>
+              </View>
+              <Text style={styles.sectionDescriptionText}>
+                Progress through each schedule after completing the duration period
+              </Text>
+
+              {schedule && (
+                <ScheduleCard
                   index={0}
                   frequency={schedule.frequency}
                   duration={schedule.duration}
@@ -169,149 +160,203 @@ const MainWorkoutSchedule = () => {
                   dayCount={schedule.workouts.length}
                   workoutsCount={schedule.workoutsCount}
                 />
-              }
-
+              )}
             </View>
-            {/* Curent Schedule */}
-            <View style={styles.currentScheduleContainer}>
+
+            {/* Section 2: Current Track Schedule Display Panel */}
+            <View style={styles.sectionContainer}>
               <View style={styles.curentScheduleHeading}>
-                <Ionicons name="calendar-sharp" size={20} color={textPimary} />
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: textPimary, textAlign: 'left' }}>Your Schedule</Text>
-                <Pressable onPress={() => { console.log("pres") }}>
-                  <View style={{ padding: 10, backgroundColor: 'rgba(37, 249, 192, 0.57)', borderRadius: 15 }}>
-                    <Text style={{ fontWeight: 'bold' }} >Start Now</Text>
-                  </View>
+                <View style={styles.sectionHeaderHeading}>
+                  <Ionicons name="calendar-sharp" size={16} color="#4cddbb" />
+                  <Text style={styles.sectionTitleText}>Your Schedule</Text>
+                </View>
+                <Pressable 
+                  style={({ pressed }) => [styles.startNowButton, pressed && styles.buttonPressed]} 
+                  onPress={() => console.log("Pressed")}
+                >
+                  <Text style={styles.startNowButtonText}>Start Now</Text>
                 </Pressable>
               </View>
-              {/*Curent Schedule Focus List */}
+
+              {/* High-Contrast Target Focus List Tags */}
               <View style={styles.focusList}>
                 {mainSchedules[2].focus.map((item, index) => (
                   <View key={index} style={styles.focusListItem}>
-                    <Text style={{ fontWeight: 'bold', color: textSecondary }} >{item}</Text>
-                  </View >))
-                }
+                    <Text style={styles.focusListItemText}>{item}</Text>
+                  </View>
+                ))}
               </View>
-              {/*Curent Schedule Day Card, */}
-              {
-                schedule && schedule.workouts.map((workout, index: React.Key) => (
-                  <CurentScheduleCard
-                    setModalVisible={setModelVisible}
-                    selectedDaySchedule={setSelectedDaySchedule}
-                    key={index} workout={workout} />
-                ))
-              }
+
+              {/* Nested Iterative Track Workout Node Elements */}
+              {schedule && schedule.workouts.map((workout, index) => (
+                <CurentScheduleCard
+                  setModalVisible={setModelVisible}
+                  selectedDaySchedule={setSelectedDaySchedule}
+                  key={index} 
+                  workout={workout} 
+                />
+              ))}
             </View>
+
             <TipsCard />
           </ScrollView>
         </View>
+         </SafeScreenWrapper>
+      </View>
 
-      </LinearGradient>
-      {workoutList && selectedDaySchedule && <WorkoutsListModal
-        setWorkoutsList={setWorkoutList}
-        workoutsList={workoutList}
-        modalVisible={modelVisible}
-        setModalVisible={setModelVisible}
-        selectedDaySchedule={selectedDaySchedule}
-      />}
-    </>
-  )
-}
+      {workoutList && selectedDaySchedule && (
+        <WorkoutsListModal
+          setWorkoutsList={setWorkoutList}
+          workoutsList={workoutList}
+          modalVisible={modelVisible}
+          setModalVisible={setModelVisible}
+          selectedDaySchedule={selectedDaySchedule}
+        />
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-
+  masterWrapper: {
+    flex: 1,
+    backgroundColor: '#030405',
+  },
   container: {
     flex: 1,
   },
-  // Header
+  // Header Panel Layout Architecture
   header: {
-    flex: 1,
-    backgroundColor: "#000000c0",
-    borderBottomEndRadius: 20,
-    borderBottomStartRadius: 20,
-
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(12, 15, 14, 0.35)',
+    paddingBottom: 16,
   },
   headerContent: {
-    padding: 10
+    paddingHorizontal: 20,
+  
   },
-
   headerText: {
-    color: textPimary,
-    fontSize: 20,
-    fontWeight: 'bold',
-
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: -0.5,
   },
   headerSubText: {
-    fontSize: 15,
-    color: textSecondary,
-    fontWeight: 'bold',
-
+    fontSize: 13,
+    color: '#8E9492',
+    fontWeight: '600',
+    marginTop: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   contentBody: {
-    flex: 3,
-    paddingBottom: 70
+    flex: 1,
   },
-  // heading Progress Container
+  scrollContainer: {
+    paddingTop: 24,
+    paddingBottom: 70,
+  },
+  // Specular Refractive Progress Box
   headingProgressContainer: {
-    display: 'flex',
     flexDirection: 'row',
-    gap: 10,
     alignItems: 'center',
     justifyContent: 'space-around',
-    marginTop: 10,
-    padding: 10,
-    margin: 20,
-    height: '50%',
-    borderRadius: 30,
-    backgroundColor: "#3a403e5e",
+    marginTop: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   progressItem: {
-    display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
   },
-  // Schedule List
-  scheduleList: {
-    margin: 10
-
+  progressLabel: {
+    fontWeight: '600',
+    fontSize: 12,
+    color: '#8E9492',
+    marginBottom: 4,
   },
-  scheduleListHeading: {
-
-    display: 'flex',
-    gap: 10,
+  progressValue: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  progressDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  // Global Workspace Component Blocks
+  sectionContainer: {
+    marginHorizontal: 16,
+    marginBottom: 28,
+  },
+  sectionHeaderHeading: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    gap: 8,
+    marginBottom: 6,
   },
-  //ScheduleCard
-  // Curent Schedule
-  currentScheduleContainer: {
-    margin: 10,
-    marginTop: 20
+  sectionTitleText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
   },
-
+  sectionDescriptionText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#8E9492',
+    lineHeight: 18,
+    marginBottom: 16,
+  },
   curentScheduleHeading: {
-    display: 'flex',
     flexDirection: 'row',
-    gap: 5,
+    alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 10,
-    marginBottom: 10,
+    marginBottom: 12,
   },
+  // Action Pill Trigger Nodes
+  startNowButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'rgba(76, 221, 187, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(76, 221, 187, 0.3)',
+    borderRadius: 99,
+  },
+  startNowButtonText: {
+    color: '#4cddbb',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
+  // Targets Specification Tag Badges List
   focusList: {
-    marginTop: 10,
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 30,
+    gap: 8,
+    marginBottom: 20,
   },
   focusListItem: {
-    padding: 10,
-    borderRadius: 20,
-    backgroundColor: '#1b2220dc'
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
-  // WORKOUT Modal 
+  focusListItemText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#B0B5B3',
+  },
+});
 
-})
-
-export default MainWorkoutSchedule
+export default MainWorkoutSchedule;

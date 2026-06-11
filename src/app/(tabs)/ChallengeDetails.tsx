@@ -1,10 +1,9 @@
-import ChallengeStartModal from '@/components/ChallengeStartModal';
+'use client'
 import WorkoutSessionScreen from '@/components/WorkoutSessionScreen';
 import { Colors } from '@/constants/Colors';
 import { ChallangeContext } from '@/context/challengeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useContext, useState } from 'react';
 import {
   Animated,
@@ -16,18 +15,19 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-const {background,cardBackground,cardBackgroundSecondary,textPimary,textSecondary,primaryBackground,secondaryBackground} = Colors
 
+const { background, cardBackground, cardBackgroundSecondary, textPimary, textSecondary, primaryBackground, secondaryBackground } = Colors;
 const { width, height } = Dimensions.get('window');
-
 
 const ChallengeDetails = () => {
   const context = useContext(ChallangeContext);
   const data = context?.currentChallange;
   
-const [selectedDay, setSelectedDay] = useState<any>(null);
-const [showWorkoutSession, setShowWorkoutSession] = useState(false);
-const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<any>(null);
+  const [showWorkoutSession, setShowWorkoutSession] = useState(false);
+  const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
+  
+  // UNTOUCHED: Kept exactly as requested
   const scrollY = new Animated.Value(0);
   const headerHeight = scrollY.interpolate({
     inputRange: [0, 300],
@@ -49,11 +49,10 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
 
   const renderDifficultyBadge = (level: string) => {
     const colors = {
-      Beginner: { bg: '#4CAF50', text: '#FFFFFF' },
-      Intermediate: { bg: '#FF9800', text: '#FFFFFF' },
-      Advanced: { bg: '#F44336', text: '#FFFFFF' },
+      Beginner: { bg: 'rgba(76, 221, 187, 0.15)', text: '#4cddbb' },
+      Intermediate: { bg: 'rgba(255, 176, 58, 0.15)', text: '#ffb03a' },
+      Advanced: { bg: 'rgba(255, 114, 114, 0.15)', text: '#ff7272' },
     };
-
     const color = colors[level as keyof typeof colors] || colors.Beginner;
 
     return (
@@ -65,6 +64,7 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
     );
   };
 
+  // Redesigned Day Card Subcomponent
   const renderDayCard = (schedule: any, index: number) => (
     <Animated.View 
       key={index}
@@ -89,14 +89,14 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
       ]}
     >
       <View style={styles.dayCardHeader}>
-        <View style={styles.dayNumber}>
-          <Text style={styles.dayNumberText}>{index + 1}</Text>
+        <View style={styles.dayNumberBox}>
+          <Text style={styles.dayNumberText}>{String(index + 1).padStart(2, '0')}</Text>
         </View>
         <View style={styles.dayInfo}>
           <Text style={styles.dayTitle}>{schedule.day}</Text>
-          <Text style={styles.dayFocus}>{schedule.focus}</Text>
+          <Text style={styles.dayFocus} numberOfLines={1}>{schedule.focus}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color="#666" />
+        <Ionicons name="fitness-outline" size={16} color="#8E9492" />
       </View>
       
       <View style={styles.workoutsContainer}>
@@ -110,37 +110,39 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
       
       <View style={styles.dayCardFooter}>
         <View style={styles.timeTag}>
-          <Ionicons name="time-outline" size={14} color="#666" />
+          <Ionicons name="time-outline" size={14} color="#8E9492" />
           <Text style={styles.timeText}>45-60 min</Text>
         </View>
-        <TouchableOpacity style={styles.startButton}  onPress={() => {
-    setSelectedDay(schedule);
-    setShowWorkoutSession(true);
-  }}>
+        <TouchableOpacity 
+          style={styles.startButton}  
+          activeOpacity={0.8}
+          onPress={() => {
+            setSelectedDay(schedule);
+            setShowWorkoutSession(true);
+          }}
+        >
           <Text style={styles.startButtonText}>START</Text>
+          <Ionicons name="play" size={10} color="#060708" />
         </TouchableOpacity>
       </View>
     </Animated.View>
   );
 
   return (
-   
-    <LinearGradient
-      colors={['#00000037', '#000000f6', '#000000ff','#000000ff']} // Array of colors for the gradient
-        start={{ x: 0, y: 0 }} 
-        end={{ x: 1, y:1 }}
-    style={styles.container}>
+    <View
       
+      style={styles.container}
+    >
+      {/* UNTOUCHED: Collapsible Header View Structure */}
       <Animated.View style={[styles.header, { height: headerHeight }]}>
+
+     
         <Animated.Image
           source={data.bckImg}
           style={[styles.headerImage, { opacity: headerOpacity }]}
           resizeMode="cover"
         />
-        <LinearGradient
-          colors={['rgba(0,0,0,0.8)', 'transparent', 'rgba(0,0,0,0.2)']}
-          style={StyleSheet.absoluteFill}
-        />
+          <View style={[StyleSheet.absoluteFill,{position:'absolute',backgroundColor:'rgba(0, 0, 0, 0.36)',height:'100%'}]}/>
         
         <BlurView intensity={80} style={styles.blurHeader} tint="dark">
           <Animated.Text 
@@ -172,72 +174,54 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.content}>
-          {/* Challenge Overview Card */}
-          <Animated.View 
-            style={[
-              styles.overviewCard,
-              {
-                // opacity: scrollY.interpolate({
-                //   inputRange: [0, 200],
-                //   outputRange: [0, 1],
-                //   extrapolate: 'clamp',
-                // }),
-                // transform: [
-                //   {
-                //     translateY: scrollY.interpolate({
-                //       inputRange: [0, 200],
-                //       outputRange: [30, 0],
-                //       extrapolate: 'clamp',
-                //     }),
-                //   },
-                // ],
-              },
-            ]}
-          >
+          
+          {/* Redesigned Overview Info Card */}
+          <View style={styles.overviewCard}>
             <Text style={styles.description}>{data.discription}</Text>
+            
+            <View style={styles.statsDivider} />
             
             <View style={styles.statsContainer}>
               <View style={styles.statItem}>
-                <Ionicons name="calendar-outline" size={24} color="#4CAF50" />
-                <Text style={styles.statValue}>{data.duration} days</Text>
+                <Ionicons name="calendar-clear-outline" size={20} color="#4cddbb" />
+                <Text style={styles.statValue}>{data.duration} Days</Text>
                 <Text style={styles.statLabel}>Duration</Text>
               </View>
               
               <View style={styles.statItem}>
-                <Ionicons name="fitness-outline" size={24} color="#2196F3" />
+                <Ionicons name="layers-outline" size={20} color="#9d62ff" />
                 <Text style={styles.statValue}>{data.schedule.length}</Text>
                 <Text style={styles.statLabel}>Workouts</Text>
               </View>
               
               <View style={styles.statItem}>
-                <Ionicons name="flash-outline" size={24} color="#FF9800" />
+                <Ionicons name="flash-outline" size={20} color="#ffb03a" />
                 {renderDifficultyBadge(data.level)}
-                <Text style={styles.statLabel}>Level</Text>
+                <Text style={styles.statLabel}>Intensity</Text>
               </View>
             </View>
-          </Animated.View>
-
-          {/* Challenge Action Buttons */}
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.primaryButton}
-            onPress={() => setShowChallengeStartModal(true)}
-            >
-              <Ionicons name="play-circle" size={20} color="#FFF" />
-              <Text style={styles.primaryButtonText}>Start Challenge</Text>
-            </TouchableOpacity>
-            
-            {/* <TouchableOpacity style={styles.secondaryButton}>
-              <Ionicons name="bookmark-outline" size={20} color="#666" />
-              <Text style={styles.secondaryButtonText}>Save</Text>
-            </TouchableOpacity> */}
           </View>
 
-          {/* Schedule Section */}
+          {/* Redesigned Start Action Button Area */}
+
+          {/* Routine Button Used to open Challenge Start Modal which is unnessasary as it shows redundent UI and points back to the workouts session screen */}
+          <View style={styles.actionButtons}>
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              activeOpacity={0.9}
+              onPress={() => setShowChallengeStartModal(true)}
+            >
+              <Ionicons name="play-sharp" size={18} color="#ffffff" />
+              <Text style={styles.primaryButtonText}>Start Today's Routine</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Redesigned Schedule Flow Timeline */}
           <View style={styles.scheduleSection}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Challenge Workout Schedule</Text>
+              <Text style={styles.sectionTitle}>Workout Schedule</Text>
               <Text style={styles.sectionSubtitle}>
-                {data.duration}-day program • {data.level}
+                Follow your structured {data.duration}-day microcycle
               </Text>
             </View>
 
@@ -246,57 +230,56 @@ const [showChallengeStartModal, setShowChallengeStartModal] = useState(false);
             )}
           </View>
 
-          {/* Tips Section */}
+          {/* Redesigned Guidelines Information Card */}
           <View style={styles.tipsCard}>
-            <Ionicons name="bulb-outline" size={24} color="#FF9800" />
+            <View style={styles.tipsIconContainer}>
+              <Ionicons name="bulb" size={20} color="#ffb03a" />
+            </View>
             <View style={styles.tipsContent}>
-              <Text style={styles.tipsTitle}>Pro Tips</Text>
-              <Text style={styles.tipsText}>
-                • Rest days are crucial for muscle recovery
-                • Stay hydrated throughout your workouts
-                • Track your progress with photos and measurements
-                • Listen to your body and adjust intensity as needed
-              </Text>
+              <Text style={styles.tipsTitle}>Coach Guidelines</Text>
+              <View style={styles.tipsList}>
+                <Text style={styles.tipsText}>• Prioritize systematic recovery between microcycles.</Text>
+                <Text style={styles.tipsText}>• Maintain consistent intra-workout hydration volume.</Text>
+                <Text style={styles.tipsText}>• Track execution metrics within performance sub-logs.</Text>
+                <Text style={styles.tipsText}>• Scale loading limits based on individual muscular fatigue.</Text>
+              </View>
             </View>
           </View>
         </View>
       </Animated.ScrollView>
 
-    <Modal
-      visible={showWorkoutSession}
-      animationType="slide"
-      onRequestClose={() => setShowWorkoutSession(false)}
-    >
-      {selectedDay && (
-        <WorkoutSessionScreen
-          dayData={selectedDay}
-          onClose={() => setShowWorkoutSession(false)}
-        />
-      )}
-    </Modal>
+      {/* Workspace Modals Setup */}
+      <Modal
+        visible={showWorkoutSession}
+        animationType="slide"
+        onRequestClose={() => setShowWorkoutSession(false)}
+      >
+        {selectedDay && (
+          <WorkoutSessionScreen
+            dayData={selectedDay}
+            onClose={() => setShowWorkoutSession(false)}
+          />
+        )}
+      </Modal>
 
-    <ChallengeStartModal
-  visible={showChallengeStartModal}
-  onClose={() => setShowChallengeStartModal(false)}
-  challengeData={data}
-  onStartDay={(day) => {
-    setSelectedDay(day);
-    setShowChallengeStartModal(false);
-    setShowWorkoutSession(true);
-  }}
-/>
-
-
-</LinearGradient>
-
-
+      {/* <ChallengeStartModal
+        visible={showChallengeStartModal}
+        onClose={() => setShowChallengeStartModal(false)}
+        challengeData={data}
+        onStartDay={(day) => {
+          setSelectedDay(day);
+          setShowChallengeStartModal(false);
+          setShowWorkoutSession(true);
+        }}
+      /> */}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+  backgroundColor:'black'
   },
   header: {
     position: 'absolute',
@@ -305,8 +288,8 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     overflow: 'hidden',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   headerImage: {
     width: '100%',
@@ -322,232 +305,241 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerTitle: {
-    fontSize: 32,
     fontWeight: 'bold',
     color: '#FFF',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
   scrollContent: {
     paddingTop: height * 0.35,
-    paddingBottom: 100,
+    paddingBottom: 60,
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   overviewCard: {
-    backgroundColor: cardBackground,
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 16,
   },
   description: {
-    fontSize: 16,
-    color: textPimary,
-    lineHeight: 24,
-    marginBottom: 24,
+    fontSize: 14,
+    color: '#8E9492',
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+  statsDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    marginVertical: 16,
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: textPimary,
-    marginTop: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 6,
   },
   statLabel: {
-    fontSize: 12,
-    color: textSecondary,
-    marginTop: 4,
+    fontSize: 11,
+    color: '#8E9492',
+    fontWeight: '600',
+    marginTop: 2,
   },
   difficultyBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginTop: 5,
   },
   difficultyText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.2,
   },
   actionButtons: {
-   
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 30,
+    marginBottom: 28,
   },
   primaryButton: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    paddingVertical: 16,
-    borderRadius: 15,
-    overflow: 'hidden',
-     backgroundColor:primaryBackground,
+    paddingVertical: 14,
+    borderRadius: 16,
+    backgroundColor: '#372b93', 
   },
   primaryButtonText: {
-    color:textPimary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    backgroundColor: '#FFF',
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  secondaryButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '500',
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: -0.1,
   },
   scheduleSection: {
-    marginBottom: 30,
+    marginBottom: 12,
   },
   sectionHeader: {
-    marginBottom: 24,
+    marginBottom: 16,
+    paddingLeft: 4,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color:textPimary,
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.3,
   },
   sectionSubtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 2,
   },
   dayCard: {
-    backgroundColor: '#2a302e75',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    
+    padding: 16,
+    marginBottom: 12,
   },
   dayCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 14,
   },
-  dayNumber: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: textSecondary,
+  dayNumberBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   dayNumberText: {
-    color: textPimary,
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
   dayInfo: {
     flex: 1,
   },
   dayTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: textPimary,
-    marginBottom: 2,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   dayFocus: {
-    fontSize: 14,
-    color: textSecondary,
+    fontSize: 12,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 1,
   },
   workoutsContainer: {
-    marginBottom: 20,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+    gap: 6,
   },
   workoutItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+    alignItems: 'center',
   },
   bulletPoint: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: secondaryBackground,
-    marginTop: 8,
-    marginRight: 12,
+    width: 4,
+    height: 4,
+    borderRadius: 99,
+    backgroundColor: '#4cddbb',
+    marginRight: 10,
+    opacity: 0.8,
   },
   workoutText: {
     flex: 1,
-    fontSize: 14,
-    color: textPimary,
-    lineHeight: 20,
+    fontSize: 13,
+    color: '#B0B5B3',
+    fontWeight: '500',
   },
   dayCardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 4,
   },
   timeTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   timeText: {
     fontSize: 12,
-    color:textSecondary,
+    color: '#8E9492',
+    fontWeight: '600',
   },
   startButton: {
-    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: secondaryBackground,
-    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
   },
   startButtonText: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: '600',
+    color: '#060708',
+    fontSize: 11,
+    fontWeight: '800',
   },
   tipsCard: {
     flexDirection: 'row',
-    backgroundColor: cardBackgroundSecondary,
+    backgroundColor: 'rgba(255, 176, 58, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 176, 58, 0.08)',
     borderRadius: 20,
-    padding: 20,
+    padding: 16,
     alignItems: 'flex-start',
+    gap: 12,
+    marginBottom:40,
+    marginTop: 8,
+  },
+  tipsIconContainer: {
+    padding: 8,
+    backgroundColor: 'rgba(255, 176, 58, 0.05)',
+    borderRadius: 10,
   },
   tipsContent: {
     flex: 1,
-    marginLeft: 16,
   },
   tipsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FF9800',
-    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffb03a',
+    marginBottom: 6,
+  },
+  tipsList: {
+    gap: 4,
   },
   tipsText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 22,
+    fontSize: 12,
+    color: '#B0B5B3',
+    lineHeight: 18,
+    fontWeight: '500',
   },
 });
 

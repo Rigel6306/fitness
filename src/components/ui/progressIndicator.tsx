@@ -118,10 +118,10 @@ const styles = StyleSheet.create({
         marginTop: 12,
     },
     mainContentText: {
-        fontFamily: 'Bebas',
-        fontSize: 26,
+        fontFamily: 'mono',
+        fontSize: 16,
         color: '#ffffff',
-        letterSpacing: 0.5,
+        letterSpacing: 1,
     },
     mainContentSubText: {
         fontSize: 11,

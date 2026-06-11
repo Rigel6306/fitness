@@ -2,8 +2,7 @@ import TabBar from '@/components/tabbar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { TabContextComp } from '@/context/tabContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { DarkTheme, Tabs, ThemeProvider } from 'expo-router';
 
 export default function TabLayout() {
 
@@ -13,10 +12,12 @@ export default function TabLayout() {
 
  
     <TabContextComp>
-      <Tabs tabBar={(props) => <TabBar {...props} />}>
+      <ThemeProvider value={DarkTheme}>
+      <Tabs  tabBar={(props) => <TabBar {...props} />}>
 
         <Tabs.Screen
           name="index"
+          
           options={{
             headerShown: false,
             title: 'Home',
@@ -68,6 +69,7 @@ export default function TabLayout() {
 
 
       </Tabs>
+      </ThemeProvider>
        </TabContextComp>
      
    

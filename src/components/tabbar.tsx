@@ -53,8 +53,8 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
       bubbleScaleY.value = targetSquashY;
 
       // Smoothly snap back to a perfect container shape right as the position spring finishes
-      bubbleScaleX.value = withDelay(20, withSpring(1, { damping: 16, stiffness: 490 }));
-      bubbleScaleY.value = withDelay(20, withSpring(1, { damping:16, stiffness: 990 }));
+      bubbleScaleX.value = withDelay(20, withSpring(1, { damping: 29, stiffness: 450 }));
+      bubbleScaleY.value = withDelay(20, withSpring(1, { damping:29, stiffness: 950 }));
     }
 
     prevIndexRef.current = state.index;
@@ -125,9 +125,9 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
           const onPress = () => {
             // Your exact click override properties
             tabPositionX.value = withSpring(buttonWidth * index + 2, {
-              damping: 25,
+              damping: 45,
               mass: 1,
-              stiffness: 350,
+              stiffness: 450,
               overshootClamping: false,
             });
 

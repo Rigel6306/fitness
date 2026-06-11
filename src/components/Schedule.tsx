@@ -1,7 +1,6 @@
 import { useUserDataContext } from '@/hooks/useContext';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Octicons from '@expo/vector-icons/Octicons';
 import { useRouter } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useRef, useState } from 'react';
@@ -38,7 +37,7 @@ const Schedule = () => {
     handlePressIn: (event: { nativeEvent: { locationX: number; locationY: number } }) => {
       const { locationX, locationY } = event.nativeEvent;
       const { width, height } = dimensions[layoutKey];
-      
+
       const centerX = width / 2;
       const centerY = height / 2;
       const dx = locationX - centerX;
@@ -50,7 +49,7 @@ const Schedule = () => {
       Animated.spring(animRef, {
         toValue: { x: tiltX, y: tiltY },
         useNativeDriver: true,
-        friction: 4, 
+        friction: 4,
         tension: 55,
       }).start();
     },
@@ -84,11 +83,11 @@ const Schedule = () => {
 
   return (
     <View style={style.container}>
-      
+
       {/* 1. LEFT TILE: Main Schedule */}
       <View style={style.schedule} onLayout={handleLayout('schedule')}>
         <Animated.View style={[{ flex: 1, justifyContent: 'center' }, createTiltStyle(tiltAnim)]}>
-          <Pressable 
+          <Pressable
             style={style.solidCardWrapper}
             onPressIn={createDynamicTiltHandlers(tiltAnim, 'schedule').handlePressIn}
             onPressOut={createDynamicTiltHandlers(tiltAnim, 'schedule').handlePressOut}
@@ -118,17 +117,17 @@ const Schedule = () => {
 
       {/* RIGHT STACK MATRIX VIEW */}
       <View style={style.rightColumnContainer}>
-        
+
         {/* Top Splits Row */}
         <View style={style.splitRow} >
-          
+
           {/* 2. Diet Module Tile */}
-          <Animated.View 
+          <Animated.View
             style={[{ flex: 1 }, createTiltStyle(mealPlanTilt)]}
             onLayout={handleLayout('meal')}
           >
-            <Pressable 
-              style={style.solidCardWrapper} 
+            <Pressable
+              style={style.solidCardWrapper}
               onPressIn={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressIn}
               onPressOut={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressOut}
               onPress={() => { router.navigate('/(tabs)/MealPlan') }}
@@ -136,11 +135,12 @@ const Schedule = () => {
               <View style={[style.solidBaseCard, style.dietSolidColor]}>
                 <LottieView
                   autoPlay
+                  speed={1.5}
                   loop
                   source={require('../../assets/lottie/diet.json')}
                   style={style.lottieAsset}
                 />
-                <View style={style.miniBottomBar}>
+                <View style={[style.miniBottomBar,{ backgroundColor: 'rgba(106, 32, 136, 0.43)',}]}>
                   <Text style={style.miniBarText}>MEAL PLAN</Text>
                 </View>
               </View>
@@ -148,8 +148,8 @@ const Schedule = () => {
           </Animated.View>
 
           {/* 3. Target Management Control Tile - REDESIGNED */}
-          <Animated.View 
-            style={[{ flex: 1 }, createTiltStyle(weightTilt)]}
+          <Animated.View
+            style={[{ flex: 1 }, createTiltStyle(weightTilt), { justifyContent: "center" }]}
             onLayout={handleLayout('weight')}
           >
             <Pressable
@@ -160,20 +160,23 @@ const Schedule = () => {
             >
               {/* Futuristic structural glass integrated target icon block */}
               <View style={style.targetGlassIconContainer}>
-                <Octicons name="goal" size={22} color="#9b3eff" />
+
+                <MaterialCommunityIcons name="weight" size={50} color="#ffffff" />
               </View>
-              <Text style={style.weightButtonLabel}>SET TARGET</Text>
+              <View style={[style.miniBottomBar,{ backgroundColor: 'rgba(237, 235, 240, 0.39)',}]}>
+                <Text style={style.miniBarText}>SET TARGET</Text>
+              </View>
             </Pressable>
           </Animated.View>
 
         </View>
 
         {/* 4. Package Selection Module Tile */}
-        <Animated.View 
+        <Animated.View
           style={[{ flex: 1 }, createTiltStyle(packageTilt)]}
           onLayout={handleLayout('package')}
         >
-          <Pressable 
+          <Pressable
             onPressIn={createDynamicTiltHandlers(packageTilt, 'package').handlePressIn}
             onPressOut={createDynamicTiltHandlers(packageTilt, 'package').handlePressOut}
             onPress={() => { setIsPackageModalOpen(!isPackageModalOpen) }}
@@ -181,8 +184,11 @@ const Schedule = () => {
           >
             <View style={style.packageContentRow}>
               <MaterialCommunityIcons name="badge-account-horizontal" size={20} color="#00e5ff" />
-              <Text style={style.payment}>YOUR PACKAGE</Text>
+              <Text style={style.package}>YOUR PACKAGE</Text>
             </View>
+             <View style={[style.miniBottomBar,{backgroundColor:'rgba(40, 153, 246, 0.41)'}]}>
+                <Text style={style.miniBarText}>CHANGE PACKAGE</Text>
+              </View>
           </Pressable>
         </Animated.View>
 
@@ -209,17 +215,17 @@ const style = StyleSheet.create({
     borderRadius: 16,
   },
   rightColumnContainer: {
-    flex: 1, 
+    flex: 1,
     gap: 10,
   },
   splitRow: {
-    flex: 1, 
-    flexDirection: 'row', 
+    flex: 1,
+    flexDirection: 'row',
     gap: 10,
   },
   solidCardWrapper: {
-    flex: 1, 
-    borderRadius: 16, 
+    flex: 1,
+    borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: '#0c0b12',
     ...Platform.select({
@@ -259,10 +265,10 @@ const style = StyleSheet.create({
   mainWorkoutBgMask: {
     ...StyleSheet.absoluteFill,
     // Saturated Deep Cosmic-Violet liquid sheen backdrop mask
-    backgroundColor: 'rgba(21, 21, 22, 0.82)', 
+    backgroundColor: 'rgba(14, 14, 15, 0.37)',
     borderWidth: 1.5,
-    borderRadius:20,
-    borderColor: 'rgba(138, 92, 246, 0.3)',
+    borderRadius: 20,
+     borderColor: 'rgba(138, 92, 246, 0.3)',
   },
   mainWorkoutContent: {
     flex: 1,
@@ -282,62 +288,63 @@ const style = StyleSheet.create({
     gap: 4,
   },
   tagText: {
-    color: '#0affca',
+    color: '#f9f9f9',
     fontSize: 9,
     fontWeight: '900',
     letterSpacing: 1,
   },
   // Opaque Deep Emerald Teal Liquid Glass Look
   dietSolidColor: {
-    backgroundColor: '#18635f',
+    backgroundColor: '#b231c0bd',
     borderWidth: 1.5,
-  
+
   },
   // Opaque Midnight Amethyst Liquid Glass Look
   weightSolidColor: {
-    backgroundColor: '#53266ed3', 
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3ad7b8b7',
     borderWidth: 1.5,
-    
+
     gap: 8,
   },
   // Opaque Deep Electric Ocean Liquid Glass Look
   packageSolidColor: {
-    backgroundColor: '#0a192f', 
+    backgroundColor: '#2c58b5',
     borderWidth: 1.5,
-   
+
   },
   lottieAsset: {
-    height: '100%',
-    width: '100%',
-    transform: [{ scale: 1.2 }],
+    height: '70%',
+    width: '70%',
+    
   },
   miniBottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(10, 33, 32, 0.85)',
     paddingVertical: 4,
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: 'rgba(10, 255, 202, 0.1)',
   },
+
   miniBarText: {
-    color: '#0affca',
+    color: '#ffffff97',
     fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 0.5,
+    fontWeight: 'bold',
+    letterSpacing: 0.4,
   },
   // Integrated premium target glass icon capsule container
   targetGlassIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 12,
-    backgroundColor: 'rgba(78, 62, 255, 0.27)',
+    width: 58,
+    height: 58,
     alignItems: 'center',
+    marginBottom: 12,
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(123, 62, 255, 0.83)',
+
   },
   packageContentRow: {
     flexDirection: 'row',
@@ -349,7 +356,7 @@ const style = StyleSheet.create({
     textAlign: 'left',
     fontFamily: 'Bebas',
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgb(255, 104, 40)',
     letterSpacing: 0.5,
   },
   scheduleText: {
@@ -361,13 +368,7 @@ const style = StyleSheet.create({
     color: '#ffffff',
     marginTop: 2,
   },
-  weightButtonLabel: {
-    fontWeight: '900', 
-    color: '#fdfdfd',
-    fontSize: 11,
-    letterSpacing: 0.5,
-  },
-  payment: {
+  package: {
     textAlign: 'center',
     fontFamily: 'Bebas',
     fontSize: 16,

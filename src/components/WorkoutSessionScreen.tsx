@@ -1,10 +1,12 @@
+'use client'
+import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
   Modal,
- 
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -12,6 +14,8 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { cardBackground, cardBackgroundSecondary, textPimary, textSecondary, primaryBackground, secondaryBackground } = Colors;
 const { width, height } = Dimensions.get('window');
 
 interface WorkoutSessionScreenProps {
@@ -23,10 +27,8 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const [timer, setTimer] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
   const [showCongrats, setShowCongrats] = useState(false);
   
-  console.log(dayData)
   const progressAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -36,42 +38,41 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 500,
+      duration: 400,
       useNativeDriver: true,
     }).start();
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout| number | null = null;
+    let interval: NodeJS.Timeout | null = null;
     
     if (isActive) {
       interval = setInterval(() => {
         setTimer((prev) => prev + 1);
       }, 1000);
-    } else if (!isActive && timer !== 0) {
-      clearInterval(interval as NodeJS.Timeout);
+    } else if (!isActive && timer !== 0 && interval) {
+      clearInterval(interval);
     }
     
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timer]);
+  }, [isActive]);
 
   useEffect(() => {
-    if (currentWorkoutIndex < totalWorkouts) {
+    if (totalWorkouts > 0) {
       Animated.timing(progressAnim, {
         toValue: (currentWorkoutIndex + 1) / totalWorkouts,
-        duration: 500,
-        useNativeDriver: false,
+        duration: 400,
+        useNativeDriver: false, // width layout updates cannot utilize native driver
       }).start();
     }
-  }, [currentWorkoutIndex]);
+  }, [currentWorkoutIndex, totalWorkouts]);
 
   const handleNextWorkout = () => {
     if (currentWorkoutIndex < totalWorkouts - 1) {
       setCurrentWorkoutIndex(prev => prev + 1);
     } else {
-      setIsCompleted(true);
       setShowCongrats(true);
       setIsActive(false);
     }
@@ -95,214 +96,229 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <StatusBar barStyle="light-content" backgroundColor="#060708" />
       
-      {/* Header */}
+      {/* Structural Header Area */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.backButton}>
-          <Ionicons name="close" size={28} color="#FFF" />
+        <TouchableOpacity onPress={onClose} activeOpacity={0.7} style={styles.backButton}>
+          <Ionicons name="close" size={22} color="#FFFFFF" />
         </TouchableOpacity>
+        
         <View style={styles.headerContent}>
-          <Text style={styles.dayTitle}>{dayData?.day}</Text>
-          <Text style={styles.focusText}>{dayData?.focus}</Text>
+          <Text style={styles.dayTitle}>{dayData?.day || 'Routine'}</Text>
+          <Text style={styles.focusText} numberOfLines={1}>{dayData?.focus || 'Workout Active'}</Text>
         </View>
+        
         <View style={styles.timerContainer}>
-          <Ionicons name="time-outline" size={20} color="#FFF" />
+          <Ionicons name="time" size={14} color="#4cddbb" />
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
         </View>
       </View>
 
-      {/* Progress Bar */}
+      {/* Dynamic Segment Tracker Section */}
       <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>
-          Workout {currentWorkoutIndex + 1} of {totalWorkouts}
-        </Text>
+        <View style={styles.progressLabelRow}>
+          <Text style={styles.progressText}>Current Segment</Text>
+          <Text style={styles.progressCounterText}>
+            {currentWorkoutIndex + 1} <Text style={{ color: '#8E9492' }}>/ {totalWorkouts}</Text>
+          </Text>
+        </View>
         <View style={styles.progressBar}>
           <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
         </View>
       </View>
 
-      {/* Main Content */}
+      {/* Main Routine Execution Space Container */}
       <Animated.ScrollView 
         style={[styles.content, { opacity: fadeAnim }]}
         contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
       >
+        {/* Core Focal Activity Presenter Card */}
         <View style={styles.currentWorkoutCard}>
-          <View style={styles.workoutBadge}>
-            <Text style={styles.workoutBadgeText}>
-              {currentWorkoutIndex + 1}
-            </Text>
+          <View style={styles.cardHeaderRow}>
+            <View style={styles.workoutBadge}>
+              <Text style={styles.workoutBadgeText}>
+                {String(currentWorkoutIndex + 1).padStart(2, '0')}
+              </Text>
+            </View>
+            <Text style={styles.activeLabel}>IN PROGRESS</Text>
           </View>
           
           <Text style={styles.currentWorkoutTitle}>
-            {workouts[currentWorkoutIndex]}
+            {workouts[currentWorkoutIndex] || 'No Exercise Found'}
           </Text>
           
           <View style={styles.workoutDetails}>
             <View style={styles.detailItem}>
-              <Ionicons name="barbell-outline" size={20} color="#667eea" />
-              <Text style={styles.detailText}>3 Sets</Text>
+              <Ionicons name="barbell-outline" size={16} color="#4cddbb" />
+              <Text style={styles.detailValue}>3 Sets</Text>
+              <Text style={styles.detailLabel}>Target Volume</Text>
             </View>
             <View style={styles.detailItem}>
-              <Ionicons name="repeat-outline" size={20} color="#667eea" />
-              <Text style={styles.detailText}>12-15 Reps</Text>
+              <Ionicons name="repeat-outline" size={16} color="#9d62ff" />
+              <Text style={styles.detailValue}>12-15 Reps</Text>
+              <Text style={styles.detailLabel}>Frequency</Text>
             </View>
             <View style={styles.detailItem}>
-              <Ionicons name="fitness-outline" size={20} color="#667eea" />
-              <Text style={styles.detailText}>Medium Weight</Text>
+              <Ionicons name="speedometer-outline" size={16} color="#ffb03a" />
+              <Text style={styles.detailValue}>RPE 7-8</Text>
+              <Text style={styles.detailLabel}>Intensity</Text>
             </View>
           </View>
           
-          {/* Exercise Instructions */}
+          {/* Executive Instructive Walkthrough Block */}
           <View style={styles.instructionsContainer}>
-            <Text style={styles.instructionsTitle}>Instructions</Text>
-            <View style={styles.instructionItem}>
-              <Ionicons name="checkmark-circle" size={16} color="#667eea" />
-              <Text style={styles.instructionText}>
-                Maintain proper form throughout the exercise
-              </Text>
-            </View>
-            <View style={styles.instructionItem}>
-              <Ionicons name="checkmark-circle" size={16} color="#667eea" />
-              <Text style={styles.instructionText}>
-                Control the movement, don't use momentum
-              </Text>
-            </View>
-            <View style={styles.instructionItem}>
-              <Ionicons name="checkmark-circle" size={16} color="#667eea" />
-              <Text style={styles.instructionText}>
-                Breathe out during exertion, in during relaxation
-              </Text>
-            </View>
+            <Text style={styles.instructionsTitle}>Execution Strategy</Text>
+            {[
+              "Maintain consistent spinal neutral alignment throughout ranges.",
+              "Control eccentric phases completely—avoid leveraging kinetic bounce.",
+              "Force dynamic exhalation matching peak workload engagement targets."
+            ].map((instruction, index) => (
+              <View key={index} style={styles.instructionItem}>
+                <Ionicons name="arrow-forward-circle-outline" size={14} color="#4cddbb" />
+                <Text style={styles.instructionText}>{instruction}</Text>
+              </View>
+            ))}
           </View>
         </View>
 
-        {/* Workout List */}
+        {/* Global Track Sequence Blueprint View */}
         <View style={styles.workoutListContainer}>
-          <Text style={styles.workoutListTitle}>Today's Workouts</Text>
-          {workouts.map((workout: string, index: number) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.workoutListItem,
-                index === currentWorkoutIndex && styles.activeWorkoutItem,
-                index < currentWorkoutIndex && styles.completedWorkoutItem,
-              ]}
-              onPress={() => setCurrentWorkoutIndex(index)}
-            >
-              <View style={styles.workoutListContent}>
-                <View style={styles.workoutListIcon}>
-                  {index < currentWorkoutIndex ? (
-                    <Ionicons name="checkmark-circle" size={20} color="#48bb78" />
-                  ) : (
-                    <Text style={styles.workoutListNumber}>{index + 1}</Text>
-                  )}
+          <Text style={styles.workoutListTitle}>Session Sequence Blueprint</Text>
+          {workouts.map((workout: string, index: number) => {
+            const isCurrent = index === currentWorkoutIndex;
+            const isPast = index < currentWorkoutIndex;
+            
+            return (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.85}
+                style={[
+                  styles.workoutListItem,
+                  isCurrent && styles.activeWorkoutItem,
+                ]}
+                onPress={() => setCurrentWorkoutIndex(index)}
+              >
+                <View style={styles.workoutListContent}>
+                  <View style={[
+                    styles.workoutListIcon,
+                    isCurrent && styles.activeWorkoutListIcon,
+                    isPast && styles.pastWorkoutListIcon
+                  ]}>
+                    {isPast ? (
+                      <Ionicons name="checkmark-sharp" size={14} color="#060708" />
+                    ) : (
+                      <Text style={[styles.workoutListNumber, isCurrent && styles.activeWorkoutListNumber]}>
+                        {index + 1}
+                      </Text>
+                    )}
+                  </View>
+                  <Text style={[
+                    styles.workoutListText,
+                    isCurrent && styles.activeWorkoutListText,
+                    isPast && styles.completedWorkoutText,
+                  ]} numberOfLines={1}>
+                    {workout}
+                  </Text>
                 </View>
-                <Text style={[
-                  styles.workoutListText,
-                  index === currentWorkoutIndex && styles.activeWorkoutText,
-                  index < currentWorkoutIndex && styles.completedWorkoutText,
-                ]}>
-                  {workout}
-                </Text>
-              </View>
-              {index === currentWorkoutIndex && (
-                <Ionicons name="play-circle" size={24} color="#667eea" />
-              )}
-            </TouchableOpacity>
-          ))}
+                {isCurrent && (
+                  <Ionicons name="ellipse" size={8} color="#4cddbb" />
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </Animated.ScrollView>
 
-      {/* Control Panel */}
+      {/* Persistent Static Interactive Workspace Controls Footer Panel */}
       <View style={styles.controlPanel}>
         <TouchableOpacity
           style={[styles.controlButton, styles.secondaryButton]}
           onPress={handlePreviousWorkout}
           disabled={currentWorkoutIndex === 0}
+          activeOpacity={0.7}
         >
           <Ionicons 
             name="chevron-back" 
-            size={24} 
-            color={currentWorkoutIndex === 0 ? '#999' : '#667eea'} 
+            size={18} 
+            color={currentWorkoutIndex === 0 ? 'rgba(255,255,255,0.15)' : '#B0B5B3'} 
           />
-          <Text style={[
-            styles.controlButtonText,
-            { color: currentWorkoutIndex === 0 ? '#999' : '#667eea' }
-          ]}>
-            Previous
-          </Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.controlButton, styles.primaryButton]}
+          style={[styles.controlButton, styles.primaryButton, isActive && styles.primaryButtonActive]}
           onPress={() => setIsActive(!isActive)}
+          activeOpacity={0.9}
         >
           <Ionicons 
-            name={isActive ? "pause" : "play"} 
-            size={28} 
-            color="#FFF" 
+            name={isActive ? "pause-sharp" : "play-sharp"} 
+            size={20} 
+            color="#060708" 
           />
-          <Text style={[styles.controlButtonText, { color: '#FFF' }]}>
-            {isActive ? 'Pause' : 'Resume'}
+          <Text style={styles.primaryButtonText}>
+            {isActive ? 'Halt Session' : 'Resume Pace'}
           </Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.controlButton, styles.secondaryButton]}
+          style={[styles.controlButton, styles.secondaryButton, styles.nextButtonConfig]}
           onPress={handleNextWorkout}
+          activeOpacity={0.7}
         >
-          <Text style={[styles.controlButtonText, { color: '#667eea' }]}>
-            {currentWorkoutIndex === totalWorkouts - 1 ? 'Complete' : 'Next'}
+          <Text style={styles.secondaryButtonText}>
+            {currentWorkoutIndex === totalWorkouts - 1 ? 'Finish' : 'Next'}
           </Text>
           <Ionicons 
             name="chevron-forward" 
-            size={24} 
-            color="#667eea" 
+            size={16} 
+            color="#FFFFFF" 
           />
         </TouchableOpacity>
       </View>
 
-      {/* Congratulations Modal */}
+      {/* Microcycle Completion Modal Frame */}
       <Modal
         visible={showCongrats}
         transparent={true}
         animationType="fade"
+        statusBarTranslucent
       >
         <View style={styles.modalOverlay}>
-          <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
+          <View style={styles.modalContent}>
             <View style={styles.congratsIcon}>
-              <Ionicons name="trophy" size={60} color="#667eea" />
+              <Ionicons name="trophy-sharp" size={36} color="#ffb03a" />
             </View>
             
-            <Text style={styles.congratsTitle}>Workout Complete!</Text>
+            <Text style={styles.congratsTitle}>Routine Concluded</Text>
             <Text style={styles.congratsSubtitle}>
-              You finished {dayData?.day} in {formatTime(timer)}
+              Microcycle tracking target achieved successfully. Block completed safely.
             </Text>
             
             <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{totalWorkouts}</Text>
-                <Text style={styles.statLabel}>Exercises</Text>
+              <View style={styles.statModalBox}>
+                <Text style={styles.statModalValue}>{totalWorkouts}</Text>
+                <Text style={styles.statModalLabel}>Segments</Text>
               </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{formatTime(timer)}</Text>
-                <Text style={styles.statLabel}>Total Time</Text>
+              <View style={styles.statModalDivider} />
+              <View style={styles.statModalBox}>
+                <Text style={styles.statModalValue}>{formatTime(timer)}</Text>
+                <Text style={styles.statModalLabel}>Duration</Text>
               </View>
             </View>
             
             <TouchableOpacity 
               style={styles.doneButton}
+              activeOpacity={0.9}
               onPress={() => {
                 setShowCongrats(false);
                 onClose();
               }}
             >
-              <Text style={styles.doneButtonText}>Awesome! Back to Schedule</Text>
+              <Text style={styles.doneButtonText}>Commit Metrics & Exit</Text>
             </TouchableOpacity>
-          </Animated.View>
+          </View>
         </View>
       </Modal>
     </SafeAreaView>
@@ -312,312 +328,405 @@ const WorkoutSessionScreen: React.FC<WorkoutSessionScreenProps> = ({ dayData, on
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#060708', // True dark design framework baseline anchor
   },
   header: {
-    backgroundColor: '#0f2792ff',
-    padding: 20,
-    paddingTop: 10,
+    backgroundColor: '#060708',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
   backButton: {
-    padding: 8,
+    width: 36,
+    height: 36,
+    borderRadius: 99,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   headerContent: {
     flex: 1,
-    alignItems: 'center',
+    paddingHorizontal: 16,
   },
   dayTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
   },
   focusText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 1,
   },
   timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    gap: 6,
+    backgroundColor: 'rgba(76, 221, 187, 0.05)',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(76, 221, 187, 0.15)',
   },
   timerText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 6,
+    color: '#4cddbb',
+    fontSize: 14,
+    fontWeight: '700',
   },
   progressContainer: {
-    backgroundColor: '#FFF',
-    padding: 16,
+    backgroundColor: '#0c0e12',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
-  progressText: {
-    fontSize: 14,
-    color: '#666',
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
+  progressText: {
+    fontSize: 12,
+    color: '#8E9492',
+    fontWeight: '600',
+  },
+  progressCounterText: {
+    fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
   progressBar: {
-    height: 6,
-    backgroundColor: '#e9ecef',
-    borderRadius: 3,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 99,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#667eea',
-    borderRadius: 3,
+    backgroundColor: '#4cddbb',
+    borderRadius: 99,
   },
   content: {
     flex: 1,
+    backgroundColor: '#0c0e12',
   },
   contentContainer: {
-    padding: 20,
+    padding: 16,
+    paddingBottom: 32,
   },
   currentWorkoutCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  workoutBadge: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#667eea',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 24,
+    padding: 20,
     marginBottom: 16,
   },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  workoutBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: 'rgba(76, 221, 187, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(76, 221, 187, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   workoutBadgeText: {
-    color: '#FFF',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: '#4cddbb',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  activeLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#ffb03a',
+    letterSpacing: 0.5,
+    backgroundColor: 'rgba(255, 176, 58, 0.08)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
   currentWorkoutTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
     marginBottom: 20,
-    lineHeight: 32,
+    lineHeight: 26,
+    letterSpacing: -0.3,
   },
   workoutDetails: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 24,
-    paddingVertical: 16,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    paddingVertical: 14,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#e9ecef',
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
   detailItem: {
     alignItems: 'center',
+    flex: 1,
   },
-  detailText: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
+  detailValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 6,
+  },
+  detailLabel: {
+    fontSize: 10,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 2,
   },
   instructionsContainer: {
-    backgroundColor: '#f8f9ff',
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.01)',
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.02)',
   },
   instructionsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 10,
   },
   instructionItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 8,
     marginBottom: 8,
   },
   instructionText: {
-    fontSize: 14,
-    color: '#555',
-    marginLeft: 8,
+    fontSize: 12,
+    color: '#8E9492',
+    lineHeight: 16,
     flex: 1,
+    fontWeight: '500',
   },
   workoutListContainer: {
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.01)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 24,
+    padding: 16,
   },
   workoutListTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 16,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 12,
+    paddingLeft: 2,
   },
   workoutListItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f1f1',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    marginBottom: 4,
   },
   activeWorkoutItem: {
-    backgroundColor: '#f8f9ff',
-    marginHorizontal: -12,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  completedWorkoutItem: {
-    opacity: 0.8,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
   },
   workoutListContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
     flex: 1,
   },
   workoutListIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f1f1f1',
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+  },
+  activeWorkoutListIcon: {
+    backgroundColor: 'rgba(76, 221, 187, 0.1)',
+    borderColor: 'rgba(76, 221, 187, 0.2)',
+  },
+  pastWorkoutListIcon: {
+    backgroundColor: '#4cddbb',
+    borderColor: '#4cddbb',
   },
   workoutListNumber: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#8E9492',
+  },
+  activeWorkoutListNumber: {
+    color: '#4cddbb',
   },
   workoutListText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 13,
+    color: '#8E9492',
+    fontWeight: '500',
     flex: 1,
   },
-  activeWorkoutText: {
-    color: '#667eea',
-    fontWeight: '600',
+  activeWorkoutListText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   completedWorkoutText: {
-    color: '#48bb78',
+    color: 'rgba(255, 255, 255, 0.2)',
     textDecorationLine: 'line-through',
   },
   controlPanel: {
     flexDirection: 'row',
-    backgroundColor: '#FFF',
-    padding: 20,
+    backgroundColor: '#060708',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 14,
     borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+    gap: 8,
+    alignItems: 'center',
   },
   controlButton: {
-    flex: 1,
-    flexDirection: 'row',
+    height: 48,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginHorizontal: 4,
-  },
-  primaryButton: {
-    backgroundColor: '#667eea',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
   secondaryButton: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
+    width: 52,
   },
-  controlButtonText: {
+  nextButtonConfig: {
+    width: 'auto',
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    gap: 4,
+  },
+  secondaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  primaryButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    gap: 6,
+  },
+  primaryButtonActive: {
+    backgroundColor: '#4cddbb',
+  },
+  primaryButtonText: {
+    color: '#060708',
     fontSize: 14,
-    fontWeight: '600',
-    marginHorizontal: 8,
+    fontWeight: '800',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(3, 4, 5, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
   },
   modalContent: {
-    backgroundColor: '#FFF',
-    borderRadius: 30,
-    padding: 40,
+    backgroundColor: '#0c0e12',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 28,
+    padding: 24,
     alignItems: 'center',
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 360,
   },
   congratsIcon: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#f8f9ff',
+    width: 68,
+    height: 68,
+    borderRadius: 99,
+    backgroundColor: 'rgba(255, 176, 58, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 176, 58, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   congratsTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   congratsSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
+    fontSize: 13,
+    color: '#8E9492',
+    marginBottom: 20,
     textAlign: 'center',
+    lineHeight: 18,
+    fontWeight: '500',
   },
   statsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 30,
+    backgroundColor: 'rgba(255,255,255,0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 16,
+    paddingVertical: 12,
+    width: '100%',
+    marginBottom: 20,
   },
-  statItem: {
+  statModalBox: {
     alignItems: 'center',
-    paddingHorizontal: 20,
+    flex: 1,
   },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#667eea',
-    marginBottom: 4,
+  statModalValue: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FFFFFF',
   },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
+  statModalLabel: {
+    fontSize: 11,
+    color: '#8E9492',
+    fontWeight: '600',
+    marginTop: 2,
   },
-  statDivider: {
+  statModalDivider: {
     width: 1,
-    height: 40,
-    backgroundColor: '#e9ecef',
+    height: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
   doneButton: {
-    backgroundColor: '#667eea',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 25,
+    backgroundColor: '#4cddbb',
+    paddingVertical: 14,
+    borderRadius: 14,
     width: '100%',
     alignItems: 'center',
   },
   doneButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#060708',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
 

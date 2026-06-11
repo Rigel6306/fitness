@@ -1,5 +1,6 @@
 import { LineChartComp } from '@/components/AnalyticsChart';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
+import TabScreenWrapper from '@/components/ui/TabScreenWrapper';
 import { Colors } from '@/constants/Colors';
 import { getAnalyticalData } from '@/services/analyticsService';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -11,7 +12,6 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { SetStateAction, useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { achievementBadges } from '../../data/data';
-
 const { height } = Dimensions.get('screen');
 const { textPimary, textSecondary } = Colors;
 
@@ -49,6 +49,7 @@ const Profile = () => {
   };
 
   return (
+   <TabScreenWrapper >
     <View style={styles.container}>
       <SafeScreenWrapper>
         {/* HEADER AREA */}
@@ -178,6 +179,7 @@ const Profile = () => {
         <BadgeModal badge={badge} isVisible={isModalVisible} close={handleModalVisible} />
       </SafeScreenWrapper>
     </View>
+    </TabScreenWrapper>
   );
 };
 

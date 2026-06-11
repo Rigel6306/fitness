@@ -27,9 +27,9 @@ export const userDataContext:React.Context<any> = createContext(null)
 const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
 
     const [weightData,setWeightData] = useState({
-        startWeight:85,
-        currentWeight:84,
-        targetWeight:75,
+        startWeight:75,
+        currentWeight:74,
+        targetWeight:70,
         weightLoss:false,
         updatedOn:'2026-01-03'
     })

@@ -1,62 +1,68 @@
-import React, { useEffect, useRef } from 'react';
+'use client'
+import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, Vibration, View } from 'react-native';
 
-const RepsCard = ({ id, reps, index, isCompleted }) => {
-  const { width } = Dimensions.get('screen');
+interface RepsCardProps {
+  id: string | number;
+  reps: string | number;
+  index: number;
+  isCompleted: boolean;
+}
 
-  // Animated values
+const RepsCard = ({ id, reps, index, isCompleted }: RepsCardProps) => {
+  const { width } = Dimensions.get('window');
+
+  // Animated state controllers
   const colorAnim = useRef(new Animated.Value(0)).current;
-  const positionAnim = useRef(new Animated.Value(0)).current; // 0 = left, 1 = right
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Animate color
-    Animated.timing(colorAnim, {
-      toValue: isCompleted ? 1 : 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-
-    // Animate horizontal shift
-    Animated.spring(positionAnim, {
-      toValue: isCompleted ? 1 : 0,
-      useNativeDriver: true,
-      friction: 6.8,
-      tension: 60,
-    }).start();
+    // Performance safe: Trigger vibration ONLY once upon completion toggle change
+    
+ if (isCompleted){
+    Vibration.vibrate([0, 10, 150, 10,0, 10, 200, 10])
+  }
+    // Parallel smooth transitions
+    Animated.parallel([
+      Animated.timing(colorAnim, {
+        toValue: isCompleted ? 1 : 0,
+        duration: 250,
+        useNativeDriver: false, // Color interpolations require js thread backing
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: isCompleted ? 0.96 : 1,
+        useNativeDriver: true,
+        friction: 8,
+        tension: 50,
+      })
+    ]).start();
   }, [isCompleted]);
 
-  // Interpolated color
+  // Interpolated crisp color metrics
   const textColor = colorAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#fff', 'rgba(33, 167, 149, 1)'],
+    outputRange: ['#B0B5B3', '#4cddbb'], // Slates over smoothly to the emerald palette
   });
 
-  // Interpolated horizontal translation
-  const translateX = positionAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, width * 0.4], // adjust distance to match "flex-end"
-  });
-
-  if (isCompleted){
-    Vibration.vibrate([0, 10, 150, 10,0, 10, 300, 10])
-  }
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isCompleted && styles.containerCompleted]}>
       <Animated.View
-        style={{
-          flexDirection: 'row',
-          gap: 10,
-          width: width * 0.3,
-          maxWidth: width * 0.3,
-          transform: [{ translateX }],
-        }}
+        style={[
+          styles.rowContent,
+          { transform: [{ scale: scaleAnim }] }
+        ]}
       >
-        <Animated.Text style={[styles.repIndex, { color: textColor }]}>
-          Set {index + 1}
-        </Animated.Text>
-        <Animated.Text style={[styles.repText, { color: textColor }]}>
-          {reps} Reps
-        </Animated.Text>
+        <View style={styles.leftMetrics}>
+          <Animated.Text style={[styles.repIndex, { color: textColor }]}>
+            Set {index + 1}
+          </Animated.Text>
+        </View>
+
+        <View style={[styles.rightMetrics, isCompleted && styles.badgeCompleted]}>
+          <Animated.Text style={[styles.repText, { color: isCompleted ? '#4cddbb' : '#FFFFFF' }]}>
+            {reps} Reps
+          </Animated.Text>
+        </View>
       </Animated.View>
     </View>
   );
@@ -64,19 +70,48 @@ const RepsCard = ({ id, reps, index, isCompleted }) => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginVertical: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.03)',
+  },
+  containerCompleted: {
+    backgroundColor: 'rgba(76, 221, 187, 0.03)',
+    borderColor: 'rgba(76, 221, 187, 0.08)',
+  },
+  rowContent: {
     flexDirection: 'row',
-    gap: 10,
     alignItems: 'center',
-    padding: 5,
-    borderRadius: 20,
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  leftMetrics: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   repIndex: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: -0.1,
+  },
+  rightMetrics: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  badgeCompleted: {
+    backgroundColor: 'rgba(76, 221, 187, 0.08)',
+    borderColor: 'rgba(76, 221, 187, 0.15)',
   },
   repText: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });
 

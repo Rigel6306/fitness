@@ -1,3 +1,4 @@
+'use client'
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
@@ -6,14 +7,15 @@ import {
   Dimensions,
   Easing,
   Modal,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-const {primaryBackground,secondaryBackground,cardBackground,cardBackgroundSecondary,textPimary,textSecondary}= Colors
 
+const { secondaryBackground, cardBackgroundSecondary, textPimary, textSecondary } = Colors;
 const { width, height } = Dimensions.get('window');
 
 interface ChallengeStartModalProps {
@@ -32,7 +34,6 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(height)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -40,26 +41,20 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: 250,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 500,
-          easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 500,
-          easing: Easing.bezier(0.175, 0.885, 0.32, 1.275),
+          duration: 350,
+          easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
         Animated.timing(progressAnim, {
           toValue: 1,
-          duration: 800,
+          duration: 600,
           easing: Easing.out(Easing.cubic),
-          useNativeDriver: false,
+          useNativeDriver: false, // Layout animations on width cannot leverage native drivers
         }),
       ]).start();
     } else {
@@ -71,7 +66,7 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
         }),
         Animated.timing(slideAnim, {
           toValue: height,
-          duration: 300,
+          duration: 250,
           useNativeDriver: true,
         }),
       ]).start();
@@ -93,21 +88,18 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
     return (
       <TouchableOpacity
         key={index}
+        activeOpacity={0.85}
         style={[
           styles.dayOption,
-          isSelected && styles.dayOptionSelected,
+          isSelected ? styles.dayOptionSelected : styles.dayOptionPending,
         ]}
         onPress={() => setSelectedDayIndex(index)}
       >
-        <Animated.View style={[
-          
-          {
-            opacity: isSelected ? fadeAnim : 0,
-          }
-        ]} />
-        
         <View style={styles.dayOptionHeader}>
-          <View style={styles.dayOptionNumber}>
+          <View style={[
+            styles.dayOptionNumber,
+            isSelected && styles.dayOptionNumberSelected
+          ]}>
             <Text style={[
               styles.dayOptionNumberText,
               isSelected && styles.dayOptionNumberTextSelected
@@ -123,29 +115,26 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
             ]}>
               {day.day}
             </Text>
-            <Text style={[
-              styles.dayOptionFocus,
-              isSelected && styles.dayOptionFocusSelected
-            ]}>
+            <Text style={styles.dayOptionFocus} numberOfLines={1}>
               {day.focus}
             </Text>
           </View>
           
           {isSelected ? (
-            <Ionicons name="checkmark-circle" size={24} color="#66eabeff" />
+            <Ionicons name="checkmark-circle" size={22} color="#4cddbb" />
           ) : (
-            <Ionicons name="chevron-forward" size={20} color="#999" />
+            <Ionicons name="chevron-forward" size={18} color="#8E9492" />
           )}
         </View>
         
         <View style={styles.workoutPreview}>
           {day.workouts.slice(0, 2).map((workout: string, i: number) => (
-            <Text key={i} style={styles.workoutPreviewText}>
+            <Text key={i} style={styles.workoutPreviewText} numberOfLines={1}>
               • {workout}
             </Text>
           ))}
           {day.workouts.length > 2 && (
-            <Text style={styles.workoutPreviewText}>• ...and more</Text>
+            <Text style={styles.workoutPreviewText}>• ...and more exercises</Text>
           )}
         </View>
       </TouchableOpacity>
@@ -158,9 +147,9 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
       transparent={true}
       animationType="none"
       onRequestClose={onClose}
+      statusBarTranslucent
     >
       <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-        
         <TouchableOpacity
           style={styles.closeArea}
           activeOpacity={1}
@@ -170,32 +159,22 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
         <Animated.View
           style={[
             styles.modalContainer,
-            {
-              transform: [
-                { translateY: slideAnim },
-                { scale: scaleAnim },
-              ],
-            },
+            { transform: [{ translateY: slideAnim }] },
           ]}
         >
-          <View
-           
-            style={styles.modalGradient}
-          >
-            {/* Close Button */}
+          <View style={styles.modalGradient}>
+            {/* Structural Custom Action Close Layer */}
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={28} color={textPimary} />
+              <Ionicons name="close" size={20} color="#FFFFFF" />
             </TouchableOpacity>
             
-            {/* Modal Header */}
+            {/* Modal Header Panel Area */}
             <View style={styles.modalHeader}>
               <View style={styles.challengeIcon}>
-                <Ionicons name="trophy" size={32} color="#FFF" />
+                <Ionicons name="trophy" size={24} color="#4c75dd" />
               </View>
               
-              <Text style={styles.modalTitle}>
-                Start Challenge
-              </Text>
+              <Text style={styles.modalTitle}>Start Challenge</Text>
               <Text style={styles.modalSubtitle}>
                 Begin your {challengeData.duration}-day journey
               </Text>
@@ -204,50 +183,50 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                 <View style={styles.progressBar}>
                   <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
                 </View>
-                <Text style={styles.progressText}>
-                  Select your starting point
-                </Text>
+                <Text style={styles.progressText}>Select your starting point</Text>
               </View>
             </View>
             
-            {/* Modal Content */}
-            <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Challenge Info Card */}
+            {/* Scrollable Container Elements Layer */}
+            <View style={styles.modalContent}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
+                
+                {/* Challenge Main Overview Card */}
                 <View style={styles.challengeInfoCard}>
                   <Text style={styles.challengeName}>{challengeData.title}</Text>
                   <Text style={styles.challengeDescription}>
                     {challengeData.discription}
                   </Text>
                   
+                  <View style={styles.stylesDivider} />
+                  
                   <View style={styles.statsGrid}>
                     <View style={styles.statBox}>
-                      <Ionicons name="calendar-outline" size={20} color={'rgba(68, 132, 196, 1)'} />
-                      <Text style={styles.statValue}>{challengeData.duration} days</Text>
+                      <Ionicons name="calendar-outline" size={18} color="#4cddbb" />
+                      <Text style={styles.statValue}>{challengeData.duration} Days</Text>
                       <Text style={styles.statLabel}>Duration</Text>
                     </View>
                     
                     <View style={styles.statBox}>
-                      <Ionicons name="fitness-outline" size={20}  color={'rgba(43, 161, 78, 1)'} />
+                      <Ionicons name="fitness-outline" size={18} color="#9d62ff" />
                       <Text style={styles.statValue}>{challengeData.schedule.length}</Text>
                       <Text style={styles.statLabel}>Workouts</Text>
                     </View>
                     
                     <View style={styles.statBox}>
-                      <Ionicons name="flash-outline" size={20}  color={"rgba(177, 174, 43, 1)"}  />
+                      <Ionicons name="flash-outline" size={18} color="#ffb03a" />
                       <Text style={styles.statValue}>{challengeData.level}</Text>
-                      <Text style={styles.statLabel}>Level</Text>
+                      <Text style={styles.statLabel}>Difficulty</Text>
                     </View>
                   </View>
                 </View>
                 
-                {/* Days Selection */}
+                {/* Dynamic List Configuration Layer */}
                 <View style={styles.daysSection}>
                   <View style={styles.sectionHeader}>
-                    <Ionicons name="list-outline" size={20}  color={textPimary} />
+                    <Ionicons name="list" size={18} color="#FFFFFF" />
                     <Text style={styles.sectionTitle}>Select Starting Day</Text>
                   </View>
-                  
                   <Text style={styles.sectionDescription}>
                     Choose where to begin your challenge journey
                   </Text>
@@ -257,34 +236,31 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                   )}
                 </View>
                 
-                {/* Preparation Tips */}
+                {/* Preparation Guide Card Panel */}
                 <View style={styles.tipsCard}>
                   <View style={styles.tipsHeader}>
-                    <Ionicons name="bulb-outline" size={20} color="#FF9800" />
+                    <Ionicons name="bulb" size={18} color="#ffb03a" />
                     <Text style={styles.tipsTitle}>Before You Start</Text>
                   </View>
                   
-                  <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground} />
-                    <Text style={styles.tipText}>Wear comfortable workout clothes</Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
-                    <Text style={styles.tipText}>Have water ready for hydration</Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
-                    <Text style={styles.tipText}>Clear enough space for movement</Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Ionicons name="checkmark-circle" size={16}  color={primaryBackground}  />
-                    <Text style={styles.tipText}>Warm up for 5-10 minutes</Text>
+                  <View style={styles.tipsGrid}>
+                    {[
+                      "Wear comfortable workout clothes",
+                      "Have water ready for hydration",
+                      "Clear enough space for movement",
+                      "Warm up for 5-10 minutes"
+                    ].map((text, idx) => (
+                      <View key={idx} style={styles.tipItem}>
+                        <Ionicons name="checkmark-circle-outline" size={15} color="#ffb03a" />
+                        <Text style={styles.tipText}>{text}</Text>
+                      </View>
+                    ))}
                   </View>
                 </View>
               </ScrollView>
-            </Animated.View>
+            </View>
             
-            {/* Action Buttons */}
+            {/* Fixed Action Button Footer Core */}
             <View style={styles.actionButtons}>
               <TouchableOpacity 
                 style={styles.secondaryAction}
@@ -297,8 +273,7 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
                 style={styles.primaryAction}
                 onPress={handleStartChallenge}
               >
-               
-                <Ionicons name="play-circle" size={24} color="#FFF" />
+                <Ionicons name="play-sharp" size={16} color="#060708" />
                 <Text style={styles.primaryActionText}>
                   Start Day {selectedDayIndex + 1}
                 </Text>
@@ -314,22 +289,20 @@ const ChallengeStartModal: React.FC<ChallengeStartModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
+    backgroundColor: 'rgba(3, 4, 5, 0.7)', // Premium translucent dark mesh backdrop
     justifyContent: 'flex-end',
   },
   closeArea: {
     flex: 1,
   },
   modalContainer: {
-    height: height * 0.95,
-    backgroundColor: 'black',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    height: height * 0.92,
+    backgroundColor: '#060708a4', // Matches master dark skin
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 30,
-    elevation: 30,
   },
   modalGradient: {
     flex: 1,
@@ -338,38 +311,45 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    zIndex: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 99,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   modalHeader: {
-    padding: 30,
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 16,
     alignItems: 'center',
   },
   challengeIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    width: 52,
+    height: 52,
+    borderRadius: 99,
+    backgroundColor: '#243665',
+    borderWidth: 1,
+    borderColor: '#4c75dd',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   modalTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginBottom: 8,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.3,
   },
   modalSubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: 25,
+    fontSize: 14,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 2,
+    marginBottom: 16,
   },
   progressContainer: {
     width: '100%',
@@ -378,221 +358,245 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 2,
-    marginBottom: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 99,
+    marginBottom: 6,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 2,
+    backgroundColor: '#4c75dd',
+    borderRadius: 99,
   },
   progressText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 11,
+    color: '#8E9492',
+    fontWeight: '600',
   },
   modalContent: {
     flex: 1,
-    backgroundColor: secondaryBackground,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    backgroundColor: '#000000', // Slightly deeper content valley backdrop
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
+  },
+  scrollPadding: {
+    paddingBottom: 24,
   },
   challengeInfoCard: {
-    backgroundColor: cardBackgroundSecondary,
+    backgroundColor: 'rgba(24, 50, 98, 0.42)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: 20,
-    padding: 20,
-    margin: 20,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 5,
-  },
-  challengeName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: textPimary,
+    padding: 16,
+    margin: 16,
     marginBottom: 8,
   },
+  challengeName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
   challengeDescription: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-    marginBottom: 20,
+    fontSize: 13,
+    color: '#8E9492',
+    lineHeight: 18,
+    marginTop: 6,
+    fontWeight: '500',
+  },
+  stylesDivider: {
+    height: 1,
+    backgroundColor: 'rgba(36, 117, 164, 0.49)',
+    marginVertical: 14,
   },
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
   },
   statBox: {
     alignItems: 'center',
     flex: 1,
   },
   statValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 6,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
+    fontSize: 11,
+    color: '#8E9492',
+    fontWeight: '600',
+    marginTop: 2,
   },
   daysSection: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    gap: 8,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color:textPimary,
-    marginLeft: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   sectionDescription: {
-    fontSize: 14,
-    color: textSecondary,
-    marginBottom: 20,
+    fontSize: 13,
+    color: '#8E9492',
+    marginTop: 2,
+    marginBottom: 14,
+    fontWeight: '500',
   },
   dayOption: {
-    backgroundColor:'#1b2220',
-    borderRadius: 15,
-    padding: 16,
-    marginBottom: 12,
-   
- 
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+  dayOptionPending: {
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
   dayOptionSelected: {
-    backgroundColor: '#13141fa6',
+    backgroundColor: 'rgba(76, 221, 187, 0.03)',
+    borderColor: 'rgba(76, 221, 187, 0.2)',
   },
-
   dayOptionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
   },
   dayOptionNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor:primaryBackground,
+    width: 28,
+    height: 28,
+    borderRadius: 99,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   dayOptionNumberSelected: {
-    backgroundColor: '#66ea66ff',
+    backgroundColor: 'rgba(76, 221, 187, 0.1)',
+    borderColor: 'rgba(76, 221, 187, 0.25)',
   },
   dayOptionNumberText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#666',
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#8E9492',
   },
   dayOptionNumberTextSelected: {
-    color: '#FFF',
+    color: '#4cddbb',
   },
   dayOptionInfo: {
     flex: 1,
+    paddingRight: 8,
   },
   dayOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#B0B5B3',
   },
   dayOptionTitleSelected: {
-    color: textPimary,
+    color: '#FFFFFF',
   },
   dayOptionFocus: {
-    fontSize: 14,
-    color: textSecondary,
-  },
-  dayOptionFocusSelected: {
-    color: textPimary,
+    fontSize: 12,
+    color: '#8E9492',
+    fontWeight: '500',
+    marginTop: 1,
   },
   workoutPreview: {
-    marginLeft: 48,
+    marginLeft: 40,
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.03)',
+    gap: 2,
   },
   workoutPreviewText: {
-    fontSize: 13,
-    color: '#888',
-    lineHeight: 18,
-    marginBottom: 2,
+    fontSize: 12,
+    color: '#8E9492',
+    fontWeight: '500',
   },
   tipsCard: {
-    backgroundColor: '#222a2eff',
-    borderRadius: 15,
-    padding: 20,
-    margin: 20,
-    marginTop: 10,
+    backgroundColor: 'rgba(255, 176, 58, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 176, 58, 0.1)',
+    borderRadius: 16,
+    padding: 16,
+    margin: 16,
+    marginTop: 8,
   },
   tipsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    gap: 8,
+    marginBottom: 12,
   },
   tipsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FF9800',
-    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffb03a',
+  },
+  tipsGrid: {
+    gap: 8,
   },
   tipItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    gap: 8,
   },
   tipText: {
-    fontSize: 14,
-    color: '#666',
-    marginLeft: 8,
+    fontSize: 12,
+    color: '#B0B5B3',
+    fontWeight: '600',
     flex: 1,
   },
   actionButtons: {
     flexDirection: 'row',
-    padding: 20,
-    paddingTop: 10,
-    backgroundColor: secondaryBackground,
- 
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 16,
+    backgroundColor: '#0c0e12',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.04)',
+    gap: 12,
   },
   primaryAction: {
-    flex: 1,
+    flex: 1.4,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 15,
-    overflow: 'hidden',
-    marginLeft: 12,
-    backgroundColor:cardBackground
+    gap: 6,
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: '#4cddbb',
   },
   primaryActionText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
+    color: '#060708',
+    fontSize: 14,
+    fontWeight: '700',
   },
   secondaryAction: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    backgroundColor: '#c2c0c0ff',
-    borderRadius: 15,
-   
+    paddingVertical: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 14,
   },
   secondaryActionText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#B0B5B3',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
 

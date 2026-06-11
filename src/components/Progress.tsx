@@ -33,10 +33,10 @@ const Progress = () => {
           mainText={"100 KG"}
           subText={"Of 100 KG"}
           actionColor={'#66ead6'}
-          gradientArray={['rgba(110, 104, 122, 0.63)', 'rgba(61, 63, 63, 0.2)']}
+          gradientArray={['  rgba(71, 113, 240, 0.2)', 'rgba(20, 32, 32, 0.2)']}
           details={targetDetails}
         />
-          
+        
         <ProgressIndicator
           title={'Challenge'}
           icon={'barbell'}
@@ -44,7 +44,7 @@ const Progress = () => {
           mainText={"9 Exercises"}
           subText={"Of 10 Exercises"}
           actionColor={'#667eea'}
-          gradientArray={['rgba(61, 63, 63, 0.2)', 'rgba(110, 104, 122, 0.63)']}
+          gradientArray={['rgba(38, 19, 91, 0.63)', 'rgba(15, 14, 16, 0.63)']}
           details={challengeDetails}
         />
       </View>

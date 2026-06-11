@@ -1,3 +1,4 @@
+'use client'
 import { Colors } from "@/constants/Colors"
 import { DailyAnalyticalData, ExerciseRecord } from "@/context/userDataContext"
 import { useUserDataContext } from "@/hooks/useContext"
@@ -211,10 +212,6 @@ const WorkoutsListModal = ({
         {/* Backdrop overlay area for click out */}
         <Pressable style={styles.backdropOverlay} onPress={handleCloseModal} />
 
-        {/* Ambient liquid fluid glow nodes behind the glass sheet */}
-        <View style={styles.liquidGlowOrbOrchid} />
-        <View style={styles.liquidGlowOrbTeal} />
-
         <Animated.View 
           style={[
             styles.modalContainer, 
@@ -225,12 +222,12 @@ const WorkoutsListModal = ({
         >
           <SafeAreaView style={styles.safeAreaWrapper} edges={['bottom']}>
             
-            {/* Interactive Liquid Drag Handle */}
+            {/* Interactive Drag Handle Area */}
             <View style={styles.dragHandleZone}>
               <View style={styles.dragIndicator} />
             </View>
 
-            {/* Glass Frosted Header Panel */}
+            {/* Flat Solid Header Layout Panel */}
             <View style={styles.modalHeader}>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.modalTitle}>BASIC SCHEDULE</Text>
@@ -244,13 +241,13 @@ const WorkoutsListModal = ({
               
               <Pressable 
                 onPress={handleCloseModal}
-                style={({ pressed }) => [pressed && { opacity: 0.7 }, styles.glassCloseButton]}
+                style={({ pressed }) => [pressed && styles.closeButtonPressed, styles.glassCloseButton]}
               >
-                <Ionicons name="close-outline" size={22} color="#ffffff" />
+                <Ionicons name="close" size={20} color="#FFFFFF" />
               </Pressable>
             </View>
 
-            {/* Main Content body */}
+            {/* Main Scroll Content Body */}
             <View style={styles.modalBody}>
               <FlatList
                 data={workoutsList?.list || []}
@@ -271,7 +268,7 @@ const WorkoutsListModal = ({
                 ListEmptyComponent={
                   <View style={styles.emptyContainer}>
                     <View style={styles.emptyIconGlassBubble}>
-                      <Ionicons name="fitness-outline" size={32} color="#0affca" />
+                      <Ionicons name="fitness" size={26} color="#4cddbb" />
                     </View>
                     <Text style={styles.emptyText}>NO EXERCISES SCHEDULED</Text>
                   </View>
@@ -285,57 +282,32 @@ const WorkoutsListModal = ({
   )
 }
 
-// --- LIQUID GLASSY DESIGN THEME SYSTEM ---
-
 const styles = StyleSheet.create({
   modalContentContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgb(0, 0, 0)', // Tinted transparency for natural glassy bleedthrough
+    backgroundColor: 'rgba(3, 4, 5, 0.65)', // Native translucent background backdrop masking
   },
   backdropOverlay: {
     ...StyleSheet.absoluteFill,
   },
-  // Ambient fluid backdrop layers
-  liquidGlowOrbOrchid: {
-    position: 'absolute',
-    bottom: height * 0.5,
-    right: -40,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: 'rgb(157, 0, 255)',
-    opacity: 0.8,
-  },
-  liquidGlowOrbTeal: {
-    position: 'absolute',
-    bottom: 40,
-    left: -60,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: 'rgba(10, 255, 202, 0.56)',
-    opacity: 0.6,
-  },
   modalContainer: {
     width: '100%',
-    // High translucent base simulating fluid back-surface refraction
-    backgroundColor: 'rgba(18, 22, 33, 0.72)', 
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    borderWidth: 1.5,
-    // Specular crisp glass reflection edge
-    borderColor: 'rgba(255, 255, 255, 0.12)', 
-    paddingHorizontal: 22,
+    backgroundColor: '#060708', // Solid master canvas layout layer matching base theme profile
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)', // Specular crisp reflection edge
+    paddingHorizontal: 20,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -10 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: -8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 24,
+        elevation: 16,
       },
     }),
   },
@@ -345,105 +317,108 @@ const styles = StyleSheet.create({
   dragHandleZone: {
     width: '100%',
     alignItems: 'center',
-    paddingTop: 12,
-    paddingBottom: 4,
+    paddingTop: 14,
+    paddingBottom: 6,
   },
   dragIndicator: {
-    width: 48,
-    height: 5,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)', // Glossy liquid bar appearance
-    borderRadius: 10,
+    width: 36,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    borderRadius: 99,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 18,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
-    marginBottom: 16,
+    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    marginBottom: 12,
   },
   headerTextContainer: {
     flex: 1,
-    gap: 4,
   },
   modalTitle: {
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-condensed',
-    fontSize: width < 360 ? 22 : 26,
-    fontWeight: '900',
-    color: '#ffffff',
-    letterSpacing: 0.8,
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.3,
   },
   badgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginTop: 2,
+    marginTop: 4,
   },
   modalSubtitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#8E9492',
     letterSpacing: 0.5,
   },
   counterGlassBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 20,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   highlightCount: {
-    color: '#0affca',
+    color: '#4cddbb',
     fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.3,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
-  // Specular reflection stylized round action button
   glassCloseButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    width: 32,
+    height: 32,
+    borderRadius: 99,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 12,
+  },
+  closeButtonPressed: {
+    opacity: 0.7,
+    scaleX: 0.96,
+    scaleY: 0.96,
   },
   modalBody: {
     flex: 1,
   },
   listContentContainer: {
     flexGrow: 1,
-    paddingBottom: Platform.OS === 'ios' ? 42 : 26,
+    paddingTop: 8,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 16,
   },
   cardGlassWrapper: {
-    marginVertical: 1,
+    marginVertical: 4,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 70,
-    gap: 14,
+    paddingVertical: 64,
+    gap: 12,
   },
   emptyIconGlassBubble: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(10, 255, 202, 0.04)',
+    width: 56,
+    height: 56,
+    borderRadius: 99,
+    backgroundColor: 'rgba(76, 221, 187, 0.04)',
     borderWidth: 1,
-    borderColor: 'rgba(10, 255, 202, 0.15)',
+    borderColor: 'rgba(76, 221, 187, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
-    fontFamily: 'Bebas',
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.3)',
-    letterSpacing: 1.5,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#8E9492',
+    letterSpacing: 0.5,
     textAlign: 'center',
   },
 })

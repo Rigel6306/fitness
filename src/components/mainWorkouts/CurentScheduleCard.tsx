@@ -1,7 +1,7 @@
+'use client'
 import { Colors } from "@/constants/Colors";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const { textPimary, textSecondary } = Colors;
@@ -33,113 +33,144 @@ const CurentScheduleCard = ({
   const remainingCount = workout.schedule.length - maxItems;
 
   const handlePress = () => {
-    selectedDaySchedule(workout); // pass the full workout object (day + exercises)
-    console.log("Workout At Curent Schedule card", workout)
+    selectedDaySchedule(workout); 
+    console.log("Workout At Curent Schedule card", workout);
     setModalVisible(true);
   };
 
   return (
-    <LinearGradient
-      colors={["#1d201fff", "#2d302f35"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.dayCardContainer}
+    <Pressable
+      onPress={handlePress}
+      style={({ pressed }) => [pressed && styles.pressedCard]}
     >
-      <Pressable
-        onPress={handlePress}
-        style={({ pressed }) => [pressed && { opacity: 0.5 }]}
+      <LinearGradient
+        colors={["rgba(255, 255, 255, 0.05)", "rgba(255, 255, 255, 0.01)"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.dayCardContainer}
       >
-        {/* Card Heading */}
+        {/* Card Heading Header System */}
         <View style={styles.dayCardHeading}>
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: 45,
-              width: 45,
-              backgroundColor: "#ffffff3a",
-              borderRadius: 100,
-            }}
-          >
-            <FontAwesome6 name="person-running" size={20} color="black" />
+          <View style={styles.iconBadge}>
+            <FontAwesome6 name="person-running" size={16} color="#4cddbb" />
           </View>
-          <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
-            <Text style={{ fontSize: 20, color: textPimary, fontWeight: "bold" }}>
-              Day - {workout.day}
+          
+          <View style={styles.headerTitlesContainer}>
+            <Text style={styles.dayTitleText}>
+              Day — {workout.day}
             </Text>
-            <Text style={{ color: textSecondary }}>
+            <Text style={styles.exerciseCounterText}>
               {workout.schedule.length} Exercises
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={24} color="black" />
+
+          <Ionicons name="chevron-forward" size={18} color="#8E9492" />
         </View>
 
-        {/* Divider */}
-        <LinearGradient
-          style={{ height: 1, marginTop: 10 }}
-          colors={[
-            "rgba(4, 4, 4, 0)",
-            "rgba(49, 100, 115, 0.68)",
-            "rgba(156, 161, 156, 0)",
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
+        {/* Specular Separator Rule Line */}
+        <View style={styles.dividerLine} />
 
-        {/* Exercise Preview */}
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            marginLeft: 60,
-            marginTop: 20,
-          }}
-        >
+        {/* Dynamic Exercise Preview Slots */}
+        <View style={styles.previewContainer}>
           {itemList.map((item, index) => (
-            <Text
-              key={index}
-              style={{
-                fontWeight: "bold",
-                fontSize: 14,
-                marginBottom: 5,
-                color: "#ffffff92",
-              }}
-            >
-              • {item.name}
-            </Text>
+            <View key={index} style={styles.previewItemRow}>
+              <Text style={styles.bulletPointMarker}>•</Text>
+              <Text style={styles.previewItemText} numberOfLines={1}>
+                {item.name}
+              </Text>
+            </View>
           ))}
+          
           {remainingCount > 0 && (
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 14,
-                marginBottom: 5,
-                color: "#ffffff92",
-              }}
-            >
-              • +{remainingCount} More
-            </Text>
+            <View style={styles.previewItemRow}>
+              <Text style={[styles.bulletPointMarker, styles.accentText]}>•</Text>
+              <Text style={[styles.previewItemText, styles.accentText]}>
+                +{remainingCount} More Exercises
+              </Text>
+            </View>
           )}
         </View>
-      </Pressable>
-    </LinearGradient>
+      </LinearGradient>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
+  pressedCard: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
+  },
   dayCardContainer: {
-    height: 200,
-    borderRadius: 15,
-    padding: 10,
-    marginBottom: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    padding: 16,
+    marginBottom: 12,
+    width: '100%',
   },
   dayCardHeading: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    justifyContent: "space-between",
+  },
+  iconBadge: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 38,
+    width: 38,
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderRadius: 99,
+  },
+  headerTitlesContainer: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: "center",
+  },
+  dayTitleText: {
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    letterSpacing: -0.2,
+  },
+  exerciseCounterText: {
+    fontSize: 13,
+    color: "#8E9492",
+    fontWeight: "500",
+    marginTop: 1,
+  },
+  dividerLine: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    marginTop: 14,
+    marginBottom: 14,
+    width: '100%',
+  },
+  // Exercise Preview Architecture
+  previewContainer: {
+    paddingLeft: 4,
+    gap: 6,
+  },
+  previewItemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  bulletPointMarker: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#4cddbb",
+    marginRight: 8,
+    width: 10,
+  },
+  previewItemText: {
+    fontWeight: "600",
+    fontSize: 13,
+    color: "#B0B5B3",
+    flex: 1,
+  },
+  accentText: {
+    color: "#4cddbb",
+    fontWeight: "700",
   },
 });
 

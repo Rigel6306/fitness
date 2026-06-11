@@ -62,7 +62,7 @@ const Photo = ({
   }));
 
   const levelColor: Record<LevelType, string> = {
-    Beginner:'rgba(44, 101, 157, 0.64)',
+    Beginner:'rgb(44, 101, 157)',
     Intermediate:'rgba(144, 151, 50, 1)',
     Advanced:'rgba(145, 38, 49, 1)'
   };
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
 
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+    backgroundColor: 'rgba(0, 0, 0, 0.56)'
   },
 
   textContainer: {
@@ -165,11 +165,11 @@ const styles = StyleSheet.create({
    
   },
   cardIconContainer: {
-  
+   width:'auto',
    maxWidth:'30%',
-   padding:5,
+   paddingVertical:4,
    borderRadius:21,
-   textAlign:'center',
+   textAlign:'left',
   backgroundColor:'rgba(184, 184, 184, 0.82)'
   },
   cardIconText:{
@@ -178,10 +178,10 @@ const styles = StyleSheet.create({
  
   },
   title: {
-    fontFamily: 'bebas',
-    fontWeight: 'bold',
+    fontFamily: 'sans',
+    fontWeight: 'semibold',
     fontSize: 20,
-    color: textPimary,
+    color: "rgb(255, 255, 255)",
     marginBottom: 6,
 
   },
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     fontWeight: 'bold',
-    color: textSecondary
+    color: "rgba(254, 254, 254, 0.43)"
   }
 });
 
