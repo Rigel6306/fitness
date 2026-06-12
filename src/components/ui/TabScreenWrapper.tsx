@@ -1,74 +1,119 @@
-// TabScreenWrapper.tsx (adjusted)
-import { useNavigation, usePathname } from 'expo-router';
+// TabScreenWrapper.tsx
+import { usePathname } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
-  FadeIn,
-  FadeOut,
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
-  withSpring
+  withSpring,
+  withTiming
 } from 'react-native-reanimated';
 
-interface TabScreenWrapperProps {
+interface Props {
   children: React.ReactNode;
+  routePath: string;
+  showDelay?: number;
 }
 
-export default function TabScreenWrapper({ children }: TabScreenWrapperProps) {
+export default function TabScreenWrapper({ children, routePath, showDelay = 32   }: Props) {
   const pathname = usePathname();
-  const navigation = useNavigation();
+  const isFocused = pathname === routePath || pathname?.startsWith(routePath + '/');
 
+  // Your original individual motion vectors
   const opacity = useSharedValue(0);
-  const translateY = useSharedValue(132);
-  const scale = useSharedValue(0);
+  const translateY = useSharedValue(24);
+  const scale = useSharedValue(0.94);
 
-  // Plain RN initial style to avoid first-frame flash
-  const initialStyle = {
-    opacity: 0,
-    transform: [{ translateY: 132 }, { scale: 0 }],
-  };
+  // A native thread-level rendering mask
+  const isReady = useSharedValue(false);
 
   useEffect(() => {
-    const unsubscribeBlur = navigation.addListener('blur', () => {
+    let mounted = true;
+
+    if (isFocused) {
+      const t = setTimeout(() => {
+        if (!mounted) return;
+
+        // Open the native gate and fire your original spring physics together
+        isReady.value = true;
+
+        // 🚀 YOUR EXACT ORIGINAL MOTION VALUES RESTORED
+        opacity.value = withTiming(1, { duration: 450 });
+        translateY.value = withSpring(0, { 
+          damping: 16, 
+          stiffness: 60,
+          mass: 0.8
+        });
+        
+        scale.value = withSpring(1, {
+          damping: 16,
+          stiffness: 60,
+          mass: 0.8
+        });
+      }, showDelay);
+
+      return () => {
+        mounted = false;
+        clearTimeout(t);
+      };
+    } else {
+      // 🔥 FIX part 1: Synchronously drop values on the UI thread immediately 
+      // without waiting for the next frame tick layout pass to finish evaluation
+      isReady.value = false;
+      cancelAnimation(opacity);
+      cancelAnimation(translateY);
+      cancelAnimation(scale);
+      
       opacity.value = 0;
-      translateY.value = 132;
-      scale.value = 0;
-    });
-    return unsubscribeBlur;
-  }, [navigation, opacity, translateY, scale]);
+      translateY.value = 24;
+      scale.value = 0.94;
+    }
+  }, [isFocused, showDelay]);
 
+  // 🔥 FIX part 2: Force clean-up on unmount/teardown to protect the structural layout cache
   useEffect(() => {
-    // Ensure starting values are locked
-    opacity.value = 0;
-    translateY.value = 132;
-    scale.value = 0;
+    return () => {
+      isReady.value = false;
+      opacity.value = 0;
+      translateY.value = 24;
+      scale.value = 0.94;
+    };
+  }, []);
 
-    // Animate in
-    opacity.value = withSpring(1, { damping: 12, stiffness: 150 });
-    translateY.value = withSpring(0, { damping: 10.5, stiffness: 170, mass: 0.8 });
-    scale.value = withSpring(1, { damping: 16, stiffness: 130, mass: 0.8 });
-  }, [pathname, opacity, translateY, scale]);
+  const animatedStyle = useAnimatedStyle(() => {
+    // If the native gate is closed, force-lock the component to absolute hidden values.
+    // This completely blocks the stale cache frame from displaying before your timeout kicks off.
+    if (!isReady.value) {
+      return {
+        opacity: 0,
+        transform: [ { scale: 0.94 }],
+      };
+    }
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }, { scale: scale.value }],
-  }));
+    // Otherwise, let your original springs calculate their independent physics beautifully
+    return {
+      opacity: opacity.value,
+      transform: [
+        
+        { scale: scale.value }
+      ],
+    };
+  });
 
   return (
-    // initialStyle is applied immediately by RN; animatedStyle will take over smoothly
-  
-      <Animated.View style={[styles.container, initialStyle, animatedStyle]}>
-        
+    <Animated.View
+      style={[styles.container, animatedStyle]}
+      collapsable={false}
+      renderToHardwareTextureAndroid={true}
+      shouldRasterizeIOS={true}
+      pointerEvents="auto"
+    >
       {children}
-      
-      </Animated.View>
-   
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0a0e',
-  },
+  container: { flex: 1, backgroundColor: '#0a0a0e' },
 });

@@ -49,7 +49,7 @@ const Profile = () => {
   };
 
   return (
-   <TabScreenWrapper >
+   <TabScreenWrapper routePath="/profile">
     <View style={styles.container}>
       <SafeScreenWrapper>
         {/* HEADER AREA */}
