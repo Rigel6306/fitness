@@ -38,21 +38,21 @@
           }
         }
       ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "34.0.0",
-            "kotlinVersion": "2.0.20",
-            "gradleVersion": "8.10.2",
-            "extraMavenRepos": [
-              "https://jitpack.io"
-            ]
-          }
-        }
-      ]
+      // [
+      //   "expo-build-properties",
+      //   {
+      //     "android": {
+      //       "compileSdkVersion": 34,
+      //       "targetSdkVersion": 34,
+      //       "buildToolsVersion": "34.0.0",
+      //       "kotlinVersion": "2.0.20",
+      //       "gradleVersion": "8.10.2",
+      //       "extraMavenRepos": [
+      //         "https://jitpack.io"
+      //       ]
+      //     }
+      //   }
+      // ]
     ],
     "experiments": {
       "typedRoutes": true,

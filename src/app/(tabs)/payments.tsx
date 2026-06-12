@@ -5,7 +5,7 @@ import { Colors } from '@/constants/Colors';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 // TypeScript fallback for PayHere package without declaration files
 // @ts-ignore
-import PayHere from '@payhere/payhere-mobilesdk-reactnative';
+// import PayHere from '@payhere/payhere-mobilesdk-reactnative';
 
 const { textPimary, textSecondary, cardBackgroundSecondary } = Colors;
 
