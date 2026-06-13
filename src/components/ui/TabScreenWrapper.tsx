@@ -16,7 +16,7 @@ interface Props {
   showDelay?: number;
 }
 
-export default function TabScreenWrapper({ children, routePath, showDelay = 32   }: Props) {
+export default function TabScreenWrapper({ children, routePath, showDelay =16   }: Props) {
   const pathname = usePathname();
   const isFocused = pathname === routePath || pathname?.startsWith(routePath + '/');
 

@@ -168,7 +168,7 @@ const Login = () => {
                   </Pressable>
                 </Link>
 
-                <Link href={"signup"} asChild>
+                <Link href={"/signup"} asChild>
                   <Pressable style={({ pressed }) => [pressed && { opacity: 0.6 }, styles.secondaryAnchor]}>
                     <Text style={[styles.anchorText, { color: '#0affca' }]}>SIGN UP</Text>
                   </Pressable>

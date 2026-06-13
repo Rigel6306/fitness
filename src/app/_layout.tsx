@@ -2,6 +2,7 @@
 import { ChallangeContextWrapper } from '@/context/challengeContext';
 import UserDataContextWrapper from '@/context/userDataContext';
 import { useFonts } from 'expo-font';
+import { DarkTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
@@ -29,13 +30,15 @@ const _layout = () => {
     return null;
   }
   return (
-   
+      <ThemeProvider value={DarkTheme}>
+
+     
         <UserDataContextWrapper>
           <ChallangeContextWrapper>
             <AuthStack />
           </ChallangeContextWrapper>
         </UserDataContextWrapper>
-  
+   </ThemeProvider>
   );
 };
 

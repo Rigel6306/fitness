@@ -14,9 +14,9 @@ const AuthStack = () => {
   const navigationState = useRootNavigationState();
   const { userData, setUserData } = useUserDataContext();
   const [firebaseUser, setFirebaseUser] = useState(null);
-  
 
-  const targetRef = useRef<View | null>(null);
+
+  const targetRef = useRef < View | null > (null);
   // ✅ Single Firebase Auth Listener
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -26,8 +26,8 @@ const AuthStack = () => {
         (async () => {
           try {
             const fetchedData = await getUser(user.uid);
-         
-       
+
+
             setUserData({ id: user.uid, ...fetchedData });
           } catch (error) {
             console.error("Failed to fetch user database data:", error);
@@ -57,16 +57,33 @@ const AuthStack = () => {
 
   if (initializing || (firebaseUser && !userData)) {
     return (
-      <InitializingLoader/>
+      <InitializingLoader />
     );
   }
 
   // ✅ Stack definition
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-   
-      <Stack.Screen name="(tabs)" />
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'rgb(0,0,0)' } }}>
+      <Stack.Screen name="index" options={{
+        contentStyle: { backgroundColor: 'rgb(0,0,0)' },
+        animation: 'none',
+        headerShown: false
+      }}
+      
+      />
+
+      <Stack.Screen name="meal/index." options={{
+         contentStyle: { backgroundColor: 'rgb(0,0,0)' },
+        animation: 'none',
+        headerShown: false,
+        detachPreviousScreen: false,
+      }} />
+
+      <Stack.Screen name="(tabs)" options={{
+         contentStyle: { backgroundColor: 'rgb(0,0,0)' },
+        animation: 'none',
+        headerShown: false
+      }} />
     </Stack>
   );
 };
@@ -74,7 +91,7 @@ const AuthStack = () => {
 export default AuthStack;
 
 const styles = StyleSheet.create({
- background: {
+  background: {
     flex: 1,
     flexWrap: 'wrap',
     ...StyleSheet.absoluteFill,

@@ -130,7 +130,7 @@ const Schedule = () => {
               style={style.solidCardWrapper}
               onPressIn={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressIn}
               onPressOut={createDynamicTiltHandlers(mealPlanTilt, 'meal').handlePressOut}
-              onPress={() => { router.navigate('/(tabs)/MealPlan') }}
+              onPress={() => { router.navigate('/meal/index.') }}
             >
               <View style={[style.solidBaseCard, style.dietSolidColor]}>
                 <LottieView

@@ -10,17 +10,21 @@ export default function TabLayout() {
 
   return (
 
- 
+  <ThemeProvider value={DarkTheme}>
+   
     <TabContextComp>
-      <ThemeProvider value={DarkTheme}>
-      <Tabs  tabBar={(props) => <TabBar {...props} />}>
+     
+      <Tabs screenOptions={{headerShown:false,freezeOnBlur:true,sceneStyle:{backgroundColor:'black',}}}   tabBar={(props) => <TabBar {...props}  />}>
 
         <Tabs.Screen
           name="index"
           
           options={{
+            freezeOnBlur: true,
+            
             headerShown: false,
             title: 'Home',
+            
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
           }}
         />
@@ -28,6 +32,8 @@ export default function TabLayout() {
         <Tabs.Screen
           name="payments"
           options={{
+            freezeOnBlur: true,
+
             title: 'Payments',
             headerShown: false,
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
@@ -37,6 +43,8 @@ export default function TabLayout() {
         <Tabs.Screen
           name="profile"
           options={{
+            freezeOnBlur: true,
+
               headerShown: false,
             title: 'Profile',
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
@@ -52,13 +60,7 @@ export default function TabLayout() {
 
         />
 
-        <Tabs.Screen
-          name="MealPlan"
-          options={{
-            href: null,
-            headerShown: false,
-          }}
-        />
+      
           <Tabs.Screen
           name="MainWorkoutSchedule"
           options={{
@@ -69,9 +71,11 @@ export default function TabLayout() {
 
 
       </Tabs>
-      </ThemeProvider>
+
        </TabContextComp>
-     
+        </ThemeProvider>
+
+
    
   );
 }

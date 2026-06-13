@@ -1,0 +1,54 @@
+# ----------------------------------------------------
+# 1. Node & Package Managers
+# ----------------------------------------------------
+node_modules/
+.npm/
+.yarn/
+yarn-error.log
+npm-debug.log*
+
+# ----------------------------------------------------
+# 2. Local Native Build Folders
+# ----------------------------------------------------
+# Since EAS builds the binary in the cloud, never upload your local native builds.
+android/
+ios/
+.expo/
+.gradle_home/
+.git/
+
+# ----------------------------------------------------
+# 3. Build Outputs and Cache
+# ----------------------------------------------------
+dist/
+web-build/
+*.gem
+*.apk
+*.aab
+*.bundle
+
+
+# ----------------------------------------------------
+# 4. IDEs, Editors, and OS Files
+# ----------------------------------------------------
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# ----------------------------------------------------
+# 5. Tests and Coverage
+# ----------------------------------------------------
+coverage/
+.nyc_output/
+
+# ----------------------------------------------------
+# 6. Optional: Heavy Assets not needed for production
+# ----------------------------------------------------
+# e.g., design mockups, raw videos, uncompressed promotional material
+# assets/raw-promos/

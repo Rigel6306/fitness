@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors';
+
 import challenges from '@/data/data';
 import {
   Dimensions,
@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import CustomLink from './customLink';
-const {textPimary,textSecondary} = Colors
+
 
 const { width } = Dimensions.get('screen');
 // Subtract 10px on each side so there's a 10px gap to the screen edges

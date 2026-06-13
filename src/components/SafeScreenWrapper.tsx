@@ -13,7 +13,7 @@ const SafeScreenWrapper = ({children}:{children:any}) => {
 const styles = StyleSheet.create({
 container:{
     flex:1,
-    backgroundColor:'rgba(17, 34, 51, 0)'
+    backgroundColor:'rgb(0, 0, 0)'
   
    
 }
