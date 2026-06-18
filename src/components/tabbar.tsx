@@ -1,68 +1,64 @@
-import { useEffect, useRef } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Dimensions, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 import { useTabContext } from "../hooks/useContext";
 import TabBarButton from './tabBarButton';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('screen');
-const TAB_BAR_WIDTH = SCREEN_WIDTH - 20;
+const { width } = Dimensions.get('screen');
 
 const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: any, navigation: any }) => {
   const { isTabOpen } = useTabContext();
   const primaryColor = '#5718a4f7'; // Fluid violet accent
   const inactiveColor = 'rgba(255, 255, 255, 0.4)';
 
-  const hiddenRoutes = [
-    '_sitemap',
-    '+not-found',
-    'articles',
-    'MainWorkoutSchedule',
-    'ChallengeDetails',
-    'MealPlan',
-    'signup',
-  ];
-  
-  const visibleRoutes = state.routes.filter((route: any) => !hiddenRoutes.includes(route.name));
-  const totalTabs = visibleRoutes.length || 3;
-  const buttonWidth = TAB_BAR_WIDTH / totalTabs;
+  const [dimentions, setDimentions] = useState({ height: 20, width: 100 });
+  const buttonWidth = dimentions.width / 3;
 
-  const currentRouteKey = state.routes[state.index].key;
-  const visibleIndex = visibleRoutes.findIndex((r: any) => r.key === currentRouteKey);
-  const normalizedIndex = visibleIndex !== -1 ? visibleIndex : 0;
+  const onTabBarLayout = (e: LayoutChangeEvent) => {
+    setDimentions({
+      height: e.nativeEvent.layout.height,
+      width: e.nativeEvent.layout.width,
+    });
+  };
 
   const tabPositionX = useSharedValue(0);
+  
+  // Dedicated liquid structural nodes
   const bubbleScaleX = useSharedValue(1);
   const bubbleScaleY = useSharedValue(1);
-  const prevIndexRef = useRef(normalizedIndex);
+  const prevIndexRef = useRef(state.index);
 
-  // ✅ YOUR EXACT PHYSICS AND DISTORTION COMPLETELY RESTORED
+  // ✅ EXACT PREVIOUS PHYSICS RESTORED
   useEffect(() => {
-    const targetX = buttonWidth * normalizedIndex + 2;
+    const targetX = buttonWidth * state.index + 2;
 
-    // Original loose, springy travel physics
+    // Your exact spring parameters that give it that loose, springy travel physics
     tabPositionX.value = withSpring(targetX, {
-      damping: 10,
+      damping: 5,
       mass: 1,
       stiffness: 80,
       overshootClamping: false,
     });
 
-    if (normalizedIndex !== prevIndexRef.current) {
-      const travelDistance = Math.abs(normalizedIndex - prevIndexRef.current);
+    // Clean, structured liquid distortion that doesn't ruin the bubble shape
+    if (state.index !== prevIndexRef.current) {
+      const travelDistance = Math.abs(state.index - prevIndexRef.current);
       
+      // Subtly scale up horizontal stretch based on distance without distorting boundaries
       const targetStretchX = 1 + travelDistance * 0.09;
       const targetSquashY = 1 - travelDistance * 0.04;
 
+      // Stretch instantly when movement starts
       bubbleScaleX.value = targetStretchX;
       bubbleScaleY.value = targetSquashY;
 
-      // Original snappy recovery timings
-      bubbleScaleX.value = withDelay(20, withSpring(1, { damping: 15, stiffness: 750 }));
-      bubbleScaleY.value = withDelay(20, withSpring(1, { damping: 15, stiffness: 950 }));
+      // Smoothly snap back to a perfect container shape right as the position spring finishes
+      bubbleScaleX.value = withDelay(20, withSpring(1, { damping: 32, stiffness: 350 }));
+      bubbleScaleY.value = withDelay(20, withSpring(1, { damping:32, stiffness: 950 }));
     }
 
-    prevIndexRef.current = normalizedIndex;
-  }, [normalizedIndex, buttonWidth]);
+    prevIndexRef.current = state.index;
+  }, [state.index, buttonWidth]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -74,65 +70,99 @@ const TabBar = ({ state, descriptors, navigation }: { state: any, descriptors: a
     };
   });
 
-  if (!isTabOpen) return null;
-
   return (
-    <View style={Style.container}>
-      {/* PREMIUM LIQUID GLASS BUBBLE CONTAINER */}
-      <Animated.View
-        style={[
-          animatedStyle,
-          {
-            position: 'absolute',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: 12,
-            margin: 10,
-            left: 2, // Minor alignment nudge
-            height: 58, // Matches original container inner math (70 height - 20 padding)
-            width: buttonWidth - 35, // Your original layout gap width
-            borderWidth: 1,
-            borderTopColor: 'rgba(255, 255, 255, 0.35)',
-            borderLeftColor: 'rgba(255, 255, 255, 0.15)',
-            borderRightColor: 'rgba(255, 255, 255, 0.15)',
-            borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-            shadowColor: '#ffffff',
-            shadowOffset: { width: 0, height: 14 },
-            shadowRadius: 8,
-            shadowOpacity: 0.04,
-          },
-        ]}
-      />
+    isTabOpen && (
+      <View onLayout={onTabBarLayout} style={Style.container}>
+        {/* PREMIUM LIQUID GLASS BUBBLE CONTAINER */}
+        <Animated.View
+          style={[
+            animatedStyle,
+            {
+              position: 'absolute',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)', // Sleek glass tint
+              borderRadius: 12,
+              margin: 10,
+              height: dimentions.height - 20,
+              width: buttonWidth - 25,
+              borderWidth: 1,
+              // Light catching frosted perimeter ridges
+              borderTopColor: 'rgba(255, 255, 255, 0.35)',
+              borderLeftColor: 'rgba(255, 255, 255, 0.15)',
+              borderRightColor: 'rgba(255, 255, 255, 0.15)',
+              borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+              shadowColor: '#ffffff',
+              shadowOffset: { width: 0, height: 14 },
+              shadowRadius: 8,
+              shadowOpacity: 0.04,
+            },
+          ]}
+        />
 
-      {visibleRoutes.map((route: any, index: number) => {
-        const { options } = descriptors[route.key];
-        const label = options.tabBarLabel ?? options.title ?? route.name;
-        const isFocused = normalizedIndex === index;
+        {state.routes.map((route: any, index: number) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
+          const isFocused = state.index === index;
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
-          }
-        };
+          if (
+            [
+              '_sitemap',
+              '+not-found',
+              'articles',
+              'MainWorkoutSchedule',
+              'ChallengeDetails',
+              'MealPlan',
+              'signup',
+            ].includes(route.name)
+          )
+            return null;
 
-        return (
-          <TabBarButton
-            key={route.name}
-            onPress={onPress}
-            onLongPress={() => navigation.emit({ type: 'tabLongPress', target: route.key })}
-            isFocused={isFocused}
-            routeName={route.name}
-            color={isFocused ? primaryColor : inactiveColor}
-            label={label}
-          />
-        );
-      })}
-    </View>
+          const onPress = () => {
+            // Your exact click override properties
+            tabPositionX.value = withSpring(buttonWidth * index + 2, {
+              damping: 45,
+              mass: 1,
+              stiffness: 450,
+              overshootClamping: false,
+            });
+
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
+          };
+
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
+
+          return (
+            <TabBarButton
+              key={route.name}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              isFoucused={isFocused}
+              routeName={route.name}
+              color={isFocused ? primaryColor : inactiveColor}
+              label={label}
+            />
+          );
+        })}
+      </View>
+    )
   );
 };
 
@@ -140,16 +170,17 @@ const Style = StyleSheet.create({
   container: {
     alignSelf: 'center',
     position: 'absolute',
-    bottom: 18,
+    bottom: 2, // Floating glass HUD positioning profile
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgb(0, 0, 0)',
-    borderWidth: 1,
+    marginHorizontal: 20,
+    backgroundColor: 'rgb(0, 0, 0)', // Dark smoked glass base chassis
     borderTopWidth:0,
-    borderColor: 'rgba(122, 22, 215, 0.2)',
-    height: 75, // Explicit layout height back to original
+    borderWidth: 1.5,
+    borderColor: 'rgba(122, 22, 215, 0.2)', // Fine crisp perimeter edge track
+    paddingVertical: 15,
     borderRadius: 16,
-    width: TAB_BAR_WIDTH,
+    width: width - 20,
     overflow: 'hidden',
     shadowColor: 'rgb(122, 22, 215)',
     shadowOffset: { width: 0, height: 12 },
