@@ -41,3 +41,10 @@ app-example
 # generated native folders
 /ios
 /android
+
+.gradle/
+.gradle_home/
+*.apk
+*.aab
+*.jar
+*.keystore
