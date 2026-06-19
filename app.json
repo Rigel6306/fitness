@@ -3,13 +3,15 @@
     "name": "fitness",
     "slug": "fitness",
     "version": "1.0.0",
+    "sdkVersion": "56.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "fitness",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.chari1993.fitness"
+      "bundleIdentifier": "com.chari1993.fitness",
+      "deploymentTarget": "13.4"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,6 +26,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-dev-client",
+      "./plugins/withPayHere",
       "expo-router",
       [
         "expo-splash-screen",
@@ -45,8 +49,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "90186ec8-2c72-41dc-b755-901d479a13de"
+        "projectId": "c629ec48-7fca-4f81-851d-15a0405f2793"
       }
-    }
+    },
+    "owner": "chari1993"
   }
 }
