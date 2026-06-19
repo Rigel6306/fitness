@@ -1,0 +1,22 @@
+diff --git a/node_modules/@payhere/payhere-mobilesdk-reactnative/android/build.gradle b/node_modules/@payhere/payhere-mobilesdk-reactnative/android/build.gradle
+index caf2397..cfb149b 100644
+--- a/node_modules/@payhere/payhere-mobilesdk-reactnative/android/build.gradle
++++ b/node_modules/@payhere/payhere-mobilesdk-reactnative/android/build.gradle
+@@ -30,7 +30,7 @@ buildscript {
+     if (project == rootProject) {
+         repositories {
+             google()
+-            jcenter()
++            mavenCentral()
+             maven {
+                 // PayHere Android
+                 url 'https://jitpack.io'
+@@ -75,7 +75,7 @@ repositories {
+         url 'https://jitpack.io'
+     }
+     google()
+-    jcenter()
++    mavenCentral()
+ }
+ 
+ dependencies {
