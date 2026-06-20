@@ -22,17 +22,12 @@ import { WebView } from 'react-native-webview';
 export default function PaymentPage() {
   const router = useRouter();
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [webViewUri, setWebViewUri] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [err,setError]=useState(null)
-  const [success,setSuccess] = useState(false)
+  const [err, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
   
-  // Card Details States
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
+  
 
   // Fixed Package Details
   const packageName = 'Workout + Treadmill Package';
@@ -61,17 +56,6 @@ export default function PaymentPage() {
 
 
 
-  const handleNavigationStateChange = (navState: any) => {
-    const url = navState.url;
-    if (url.includes('success')) {
-      setModalVisible(false);
-      Alert.alert('Success', 'Payment completed successfully!');
-      router.push('/');
-    } else if (url.includes('cancel')) {
-      setModalVisible(false);
-      Alert.alert('Cancelled', 'Payment was cancelled.');
-    }
-  };
 
   return (
     <TabScreenWrapper routePath="/payments">
@@ -216,30 +200,9 @@ export default function PaymentPage() {
                 </>
               )}
             </TouchableOpacity>
-
-            {/* Back Home Anchor */}
-            <Link href="/" asChild>
-              <TouchableOpacity style={styles.backLink} activeOpacity={0.7}>
-                <Ionicons name="chevron-back" size={14} color="#8E9492" />
-                <Text style={styles.backLinkText}>Return to Dashboard</Text>
-              </TouchableOpacity>
-            </Link>
-
           </View>
         </ScrollView>
 
-        {/* Modal Web Container */}
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <WebView
-            source={{ uri: webViewUri }}
-            style={{ flex: 1, backgroundColor: '#060708' }}
-            onNavigationStateChange={handleNavigationStateChange}
-          />
-        </Modal>
       </SafeAreaView>
     </TabScreenWrapper>
   );
@@ -441,16 +404,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: -0.1,
   },
-  backLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 12,
-  },
-  backLinkText: {
-    color: '#8E9492',
-    fontSize: 13,
-    fontWeight: '600',
-  },
+  
+
 });
