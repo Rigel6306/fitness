@@ -8,7 +8,7 @@ import { ScrollView, StyleSheet, View } from 'react-native'
 
 const Home = () => {
   return (
-    <TabScreenWrapper routePath="/">
+
       <View style={styles.container}>
         <SafeScreenWrapper>
           {/* ✅ FIXED: Added an explicit background style structure to the ScrollView container layers */}
@@ -23,7 +23,7 @@ const Home = () => {
           </ScrollView>
         </SafeScreenWrapper>
       </View>
-    </TabScreenWrapper>
+   
   )
 }
 

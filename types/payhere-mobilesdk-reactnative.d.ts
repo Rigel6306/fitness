@@ -1,4 +1,4 @@
-// types/payhere-mobilesdk-reactnative.d.ts
+
 declare module '@payhere/payhere-mobilesdk-reactnative' {
   export interface PayHerePaymentObject {
     sandbox: boolean;

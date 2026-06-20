@@ -4,211 +4,256 @@ import ScheduleCard from '@/components/mainWorkouts/ScheduleCard';
 import WorkoutsListModal from '@/components/mainWorkouts/WorkoutListModal';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
 import TipsCard from '@/components/ui/TipsCard';
-import { Colors } from '@/constants/Colors';
 import { mainSchedules } from '@/data/data';
 import { useUserDataContext } from '@/hooks/useContext';
 import { getAsyncStorageData, setAsyncStorageData } from '@/services/asynchStorageService';
 import { getScheduleFromUser } from '@/services/workoutService';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Octicons from '@expo/vector-icons/Octicons';
-import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
-const { textPimary, textSecondary } = Colors;
 
-const HeadingProgress = () => (
-  <View style={styles.headingProgressContainer}>
-    <View style={styles.progressItem}>
-      <Text style={styles.progressLabel}>Schedule Progress</Text>
-      <Text style={styles.progressValue}>0%</Text>
+const T = {
+  bg: '#030405',
+  surface1: '#0D1110',
+  surface2: '#141918',
+  border: 'rgba(255,255,255,0.07)',
+  accent: '#4CDDBB',
+  accentDim: 'rgba(76,221,187,0.12)',
+  accentMid: 'rgba(76,221,187,0.25)',
+  textPri: '#FFFFFF',
+  textSec: '#7A8480',
+  textMuted: '#4A5250',
+};
+
+// ─── Types 
+type Exercise = { id: number; name: string; reps: (number | string)[] };
+type Workouts = { day: number; schedule: Exercise[] };
+type ScheduleType = {
+  id: string; title: string; frequency: string;
+  workoutsCount: number; workouts: Workouts[];
+  duration: number; focus: string[];
+};
+
+//  Header stats 
+const ProgressStats = () => {
+  // Animated accent bar — the single motion signature of this screen
+  const barAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(barAnim, {
+      toValue: 1,
+      duration: 900,
+      delay: 200,
+      useNativeDriver: false,
+    }).start();
+  }, []);
+
+  const barWidth = barAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '10%'] });
+
+  return (
+    <View style={s.statsRow}>
+      <View style={s.statBlock}>
+        <Text style={s.statValue}>0%</Text>
+        <Text style={s.statLabel}>Progress</Text>
+        <View style={s.statTrack}>
+          <Animated.View style={[s.statFill, { width: barWidth }]} />
+        </View>
+      </View>
+
+      <View style={s.statDivider} />
+
+      <View style={s.statBlock}>
+        <Text style={s.statValue}>0</Text>
+        <Text style={s.statLabel}>Days done</Text>
+        <View style={s.statTrack}>
+          <View style={[s.statFill, { width: '30%' }]} />
+        </View>
+      </View>
+
+      <View style={s.statDivider} />
+
+      <View style={s.statBlock}>
+        <Text style={s.statValue}>30</Text>
+        <Text style={s.statLabel}>Days total</Text>
+        <View style={s.statTrack}>
+          <View style={[s.statFill, { width: '10%', opacity: 0.2 }]} />
+        </View>
+      </View>
     </View>
-    <View style={styles.progressDivider} />
-    <View style={styles.progressItem}>
-      <Text style={styles.progressLabel}>Days Completed</Text>
-      <Text style={styles.progressValue}>0/30</Text>
+  );
+};
+
+
+const SectionHeading = ({
+  icon, label, action,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  action?: React.ReactNode;
+}) => (
+  <View style={s.sectionHead}>
+    <View style={s.sectionHeadLeft}>
+      {icon}
+      <Text style={s.sectionTitle}>{label}</Text>
     </View>
+    {action}
   </View>
 );
 
-type Exercise = {
-  id: number;
-  name: string;
-  reps: (number | string)[];
-};
-type Workouts = {
-  day: number;
-  schedule: Exercise[];
-};
-type ScheduleType = {
-  id: string;
-  title: string;
-  frequency: string;
-  workoutsCount: number;
-  workouts: Workouts[];
-  duration: number;
-  focus: string[];
-};
-
+//  Main screen 
 const MainWorkoutSchedule = () => {
-  const [modelVisible, setModelVisible] = useState(false);
+  const [modalVisible, setModelVisible] = useState(false);
   const [selectedDaySchedule, setSelectedDaySchedule] = useState<Workouts | null>(null);
   const [schedule, setSchedule] = useState<ScheduleType | null>();
   const [workoutList, setWorkoutList] = useState<any>();
   const today = new Date().toISOString().split('T')[0];
-  
   const { userData } = useUserDataContext();
 
+  // ── data hydration ──────────────────────────────────────────────────────────
   useEffect(() => {
     const loadData = async () => {
       const storedSchedule = await getAsyncStorageData('schedule');
       if (storedSchedule) {
         const storedWorkouts = await getAsyncStorageData('workoutsList');
         setSchedule(storedSchedule);
-        if (storedWorkouts && storedWorkouts.date === today) {
+        if (storedWorkouts?.date === today) {
           setWorkoutList(storedWorkouts);
         } else {
-          const baseList = (storedWorkouts && storedWorkouts.list)
-            ? storedWorkouts.list
-            : (storedSchedule.workouts && storedSchedule.workouts.length > 0
-              ? storedSchedule.workouts[0].schedule
-              : []);
-          const newWorkoutsList = { date: today, list: baseList.map((item: any) => ({ ...item, isComplete: false })) };
-          setWorkoutList(newWorkoutsList);
-          await setAsyncStorageData('workoutsList', newWorkoutsList);
+          const baseList = storedWorkouts?.list
+            ?? storedSchedule.workouts?.[0]?.schedule
+            ?? [];
+          const fresh = { date: today, list: baseList.map((i: any) => ({ ...i, isComplete: false })) };
+          setWorkoutList(fresh);
+          await setAsyncStorageData('workoutsList', fresh);
         }
       } else {
-        const dbSchedule = await getScheduleFromUser(userData.id); 
+        const dbSchedule = await getScheduleFromUser(userData.id);
         setSchedule(dbSchedule);
       }
     };
     loadData();
   }, []);
-  
+
   useEffect(() => {
-    const loadSelectedDayWorkouts = async () => {
-      if (selectedDaySchedule && selectedDaySchedule.schedule) {
-        const today = new Date().toISOString().split('T')[0];
-        const dayKey = `workoutsList_day${selectedDaySchedule.day}`;
-        const storedDayWorkouts = await getAsyncStorageData(dayKey);
-        
-        if (storedDayWorkouts && storedDayWorkouts.date === today) {
-          setWorkoutList(storedDayWorkouts);
-        } else {
-          const newWorkoutsList = {
-            date: today,
-            list: selectedDaySchedule.schedule.map(item => ({
-              ...item,
-              isComplete: false
-            }))
-          };
-          setWorkoutList(newWorkoutsList);
-          await setAsyncStorageData(dayKey, newWorkoutsList);
-        }
+    const loadDayWorkouts = async () => {
+      if (!selectedDaySchedule?.schedule) return;
+      const dayKey = `workoutsList_day${selectedDaySchedule.day}`;
+      const stored = await getAsyncStorageData(dayKey);
+      if (stored?.date === today) {
+        setWorkoutList(stored);
+      } else {
+        const fresh = {
+          date: today,
+          list: selectedDaySchedule.schedule.map(i => ({ ...i, isComplete: false })),
+        };
+        setWorkoutList(fresh);
+        await setAsyncStorageData(dayKey, fresh);
       }
     };
-    loadSelectedDayWorkouts();
+    loadDayWorkouts();
   }, [selectedDaySchedule]);
 
   useEffect(() => {
-    const initializeFirstDay = async () => {
-      if (schedule && schedule.workouts && schedule.workouts.length > 0 && !selectedDaySchedule) {
-        const firstDay = schedule.workouts[0];
-        setSelectedDaySchedule(firstDay)
+    const initFirst = async () => {
+      if (schedule?.workouts?.length && !selectedDaySchedule) {
+        setSelectedDaySchedule(schedule.workouts[0]);
         await setAsyncStorageData('schedule', schedule);
       }
     };
-    initializeFirstDay();
+    initFirst();
   }, [schedule]);
 
-  return (
-    <View style={styles.masterWrapper}>
-      <View style={styles.container}>
-        {/* Glass Header Panel */}
-            <SafeScreenWrapper>
-        <View style={styles.header}>
-      
-            <View style={styles.headerContent}>
 
-              <Text style={styles.headerSubText}>Day after day — 3 Months</Text>
-              <HeadingProgress />
-            </View>
-         
+  return (
+    <View style={s.root}>
+      <SafeScreenWrapper>
+        {/* ── Header ── */}
+        <View style={s.header}>
+          <Text style={s.eyebrow}>3-Month Plan</Text>
+          <Text style={s.headerTitle}>Your Schedule</Text>
+          <ProgressStats />
         </View>
 
-        {/* Workspace Body Elements */}
-        <View style={styles.contentBody}>
-          <ScrollView 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
-          >
-            {/* Section 1: Training Progression Panel */}
-            <View style={styles.sectionContainer}>
-              <View style={styles.sectionHeaderHeading}>
-                <Octicons name="stack" size={16} color="#4cddbb" />
-                <Text style={styles.sectionTitleText}>Training Progression</Text>
-              </View>
-              <Text style={styles.sectionDescriptionText}>
-                Progress through each schedule after completing the duration period
-              </Text>
+        {/* ── Body ── */}
+        <ScrollView
+          style={s.body}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={s.scrollContent}
+        >
+          {/* Training Progression */}
+          <View style={s.section}>
+            <SectionHeading
+              icon={<Octicons name="stack" size={14} color={T.accent} />}
+              label="Training Progression"
+            />
+            <Text style={s.sectionMeta}>
+              Complete each block to unlock the next phase
+            </Text>
+            {schedule && (
+              <ScheduleCard
+                index={0}
+                frequency={schedule.frequency}
+                duration={schedule.duration}
+                title={schedule.title}
+                dayCount={schedule.workouts.length}
+                workoutsCount={schedule.workoutsCount}
+              />
+            )}
+          </View>
 
-              {schedule && (
-                <ScheduleCard
-                  index={0}
-                  frequency={schedule.frequency}
-                  duration={schedule.duration}
-                  title={schedule.title}
-                  dayCount={schedule.workouts.length}
-                  workoutsCount={schedule.workoutsCount}
-                />
-              )}
-            </View>
-
-            {/* Section 2: Current Track Schedule Display Panel */}
-            <View style={styles.sectionContainer}>
-              <View style={styles.curentScheduleHeading}>
-                <View style={styles.sectionHeaderHeading}>
-                  <Ionicons name="calendar-sharp" size={16} color="#4cddbb" />
-                  <Text style={styles.sectionTitleText}>Your Schedule</Text>
-                </View>
-                <Pressable 
-                  style={({ pressed }) => [styles.startNowButton, pressed && styles.buttonPressed]} 
-                  onPress={() => console.log("Pressed")}
+          {/* Current Schedule */}
+          <View style={s.section}>
+            <SectionHeading
+              icon={<Ionicons name="calendar-sharp" size={14} color={T.accent} />}
+              label="Weekly Breakdown"
+              action={
+                <Pressable
+                  style={({ pressed }) => [s.pill, pressed && s.pillPressed]}
+                  onPress={() => console.log('Pressed')}
                 >
-                  <Text style={styles.startNowButtonText}>Start Now</Text>
+                  <Text style={s.pillText}>Start Now</Text>
                 </Pressable>
-              </View>
+              }
+            />
 
-              {/* High-Contrast Target Focus List Tags */}
-              <View style={styles.focusList}>
-                {mainSchedules[2].focus.map((item, index) => (
-                  <View key={index} style={styles.focusListItem}>
-                    <Text style={styles.focusListItemText}>{item}</Text>
-                  </View>
-                ))}
-              </View>
-
-              {/* Nested Iterative Track Workout Node Elements */}
-              {schedule && schedule.workouts.map((workout, index) => (
-                <CurentScheduleCard
-                  setModalVisible={setModelVisible}
-                  selectedDaySchedule={setSelectedDaySchedule}
-                  key={index} 
-                  workout={workout} 
-                />
+            {/* Focus tags */}
+            <View style={s.tagRow}>
+              {mainSchedules[2].focus.map((item, i) => (
+                <View key={i} style={s.tag}>
+                  <Text style={s.tagText}>{item}</Text>
+                </View>
               ))}
             </View>
 
-            <TipsCard />
-          </ScrollView>
-        </View>
-         </SafeScreenWrapper>
-      </View>
+            {/* Day cards */}
+            {schedule?.workouts.map((workout, i) => (
+              <CurentScheduleCard
+                key={i}
+                setModalVisible={setModelVisible}
+                selectedDaySchedule={setSelectedDaySchedule}
+                workout={workout}
+              />
+            ))}
+          </View>
+
+          <TipsCard />
+        </ScrollView>
+      </SafeScreenWrapper>
 
       {workoutList && selectedDaySchedule && (
         <WorkoutsListModal
           setWorkoutsList={setWorkoutList}
           workoutsList={workoutList}
-          modalVisible={modelVisible}
+          modalVisible={modalVisible}
           setModalVisible={setModelVisible}
           selectedDaySchedule={selectedDaySchedule}
         />
@@ -217,145 +262,162 @@ const MainWorkoutSchedule = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  masterWrapper: {
+
+const s = StyleSheet.create({
+  root: {
     flex: 1,
-    backgroundColor: '#030405',
+    backgroundColor: T.bg,
   },
-  container: {
-    flex: 1,
-  },
-  // Header Panel Layout Architecture
+
+  // Header
   header: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
-    backgroundColor: 'rgba(12, 15, 14, 0.35)',
-    paddingBottom: 16,
-  },
-  headerContent: {
     paddingHorizontal: 20,
-  
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: T.border,
   },
-  headerText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-  },
-  headerSubText: {
-    fontSize: 13,
-    color: '#8E9492',
+  eyebrow: {
+    fontSize: 11,
     fontWeight: '600',
-    marginTop: 4,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  contentBody: {
-    flex: 1,
-  },
-  scrollContainer: {
-    paddingTop: 24,
-    paddingBottom: 70,
-  },
-  // Specular Refractive Progress Box
-  headingProgressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginTop: 8,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  progressItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  progressLabel: {
-    fontWeight: '600',
-    fontSize: 12,
-    color: '#8E9492',
+    color: T.accent,
     marginBottom: 4,
   },
-  progressValue: {
-    fontSize: 26,
+  headerTitle: {
+    fontSize: 28,
     fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  progressDivider: {
-    width: 1,
-    height: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-  },
-  // Global Workspace Component Blocks
-  sectionContainer: {
-    marginHorizontal: 16,
-    marginBottom: 28,
-  },
-  sectionHeaderHeading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
-  },
-  sectionTitleText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: -0.2,
-  },
-  sectionDescriptionText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#8E9492',
-    lineHeight: 18,
+    color: T.textPri,
+    letterSpacing: -0.6,
     marginBottom: 16,
   },
-  curentScheduleHeading: {
+
+  // Stats row
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: T.surface1,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: T.border,
+  },
+  statBlock: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 2,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: T.textPri,
+    letterSpacing: -0.4,
+  },
+  statLabel: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: T.textSec,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  statTrack: {
+    width: '60%',
+    height: 2,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 99,
+    overflow: 'hidden',
+  },
+  statFill: {
+    height: '100%',
+    backgroundColor: T.accent,
+    borderRadius: 99,
+  },
+  statDivider: {
+    width: 1,
+    height: 36,
+    backgroundColor: T.border,
+  },
+
+  // Body
+  body: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingTop: 28,
+    paddingBottom: 80,
+    gap: 32,
+  },
+
+  // Sections
+  section: {
+    paddingHorizontal: 20,
+  },
+  sectionHead: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 4,
   },
-  // Action Pill Trigger Nodes
-  startNowButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: 'rgba(76, 221, 187, 0.12)',
+  sectionHeadLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: T.textPri,
+    letterSpacing: -0.2,
+  },
+  sectionMeta: {
+    fontSize: 13,
+    color: T.textSec,
+    lineHeight: 19,
+    marginBottom: 16,
+    marginTop: 2,
+  },
+
+  // Pill CTA
+  pill: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    backgroundColor: T.accentDim,
     borderWidth: 1,
-    borderColor: 'rgba(76, 221, 187, 0.3)',
+    borderColor: T.accentMid,
     borderRadius: 99,
   },
-  startNowButtonText: {
-    color: '#4cddbb',
+  pillPressed: {
+    opacity: 0.65,
+  },
+  pillText: {
+    color: T.accent,
     fontWeight: '700',
-    fontSize: 13,
+    fontSize: 12,
+    letterSpacing: 0.2,
   },
-  buttonPressed: {
-    opacity: 0.7,
-  },
-  // Targets Specification Tag Badges List
-  focusList: {
+
+  // Focus tags
+  tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    marginTop: 12,
     marginBottom: 20,
   },
-  focusListItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+  tag: {
+    paddingVertical: 5,
+    paddingHorizontal: 11,
+    borderRadius: 10,
+    backgroundColor: T.surface2,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: T.border,
   },
-  focusListItemText: {
+  tagText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#B0B5B3',
+    color: T.textSec,
   },
 });
 

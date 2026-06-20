@@ -1,4 +1,4 @@
-// app.config.js
+
 const {
   withAndroidManifest,
   withSettingsGradle,
@@ -8,7 +8,7 @@ const {
 const path = require('path');
 const fs   = require('fs');
 
-// ─── PayHere: add JitPack to settings.gradle ───────────────────────────────
+// PayHere: add JitPack to settings.gradle 
 function withJitpack(config) {
   return withSettingsGradle(config, function (mod) {
     if (mod.modResults.contents.includes('jitpack.io')) return mod;
@@ -20,7 +20,7 @@ function withJitpack(config) {
   });
 }
 
-// ─── PayHere: fix AndroidManifest allowBackup conflict ─────────────────────
+// PayHere: fix AndroidManifest allowBackup conflict 
 function withPayHereManifest(config) {
   return withAndroidManifest(config, function (mod) {
     var manifest    = mod.modResults.manifest;
@@ -35,7 +35,7 @@ function withPayHereManifest(config) {
   });
 }
 
-// ─── PayHere: add pods to iOS Podfile ──────────────────────────────────────
+//PayHere: add pods to iOS Podfile 
 function withPayHerePods(config) {
   return withDangerousMod(config, [
     'ios',
@@ -55,7 +55,7 @@ function withPayHerePods(config) {
   ]);
 }
 
-// ─── Main config export ─────────────────────────────────────────────────────
+
 var baseConfig = {
   expo: {
     name: "fitness",

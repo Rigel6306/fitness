@@ -1,6 +1,5 @@
 import { LineChartComp } from '@/components/AnalyticsChart';
 import SafeScreenWrapper from '@/components/SafeScreenWrapper';
-import TabScreenWrapper from '@/components/ui/TabScreenWrapper';
 import { Colors } from '@/constants/Colors';
 import { getAnalyticalData } from '@/services/analyticsService';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -49,7 +48,7 @@ const Profile = () => {
   };
 
   return (
-   <TabScreenWrapper routePath="/profile">
+  
     <View style={styles.container}>
       <SafeScreenWrapper>
         {/* HEADER AREA */}
@@ -179,7 +178,7 @@ const Profile = () => {
         <BadgeModal badge={badge} isVisible={isModalVisible} close={handleModalVisible} />
       </SafeScreenWrapper>
     </View>
-    </TabScreenWrapper>
+    
   );
 };
 
