@@ -19,7 +19,7 @@ declare module '@payhere/payhere-mobilesdk-reactnative' {
     delivery_city?: string;
     delivery_country?: string;
     custom_1?: string;
-    custom_2?: string;
+    custom_2?: any;
     // Recurring payments
     recurrence?: string;
     duration?: string;

@@ -1,287 +1,253 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withRepeat,
-    withSequence,
-    withTiming
+  Easing,
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
+import Svg, { Path, Defs, LinearGradient, Stop, Mask, Rect } from 'react-native-svg';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const InitializingLoader = () => {
-  const masterRotation = useSharedValue(0);
-  const counterRotation = useSharedValue(0);
-  const corePulse = useSharedValue(1);
-  const trackingOrbit = useSharedValue(0);
-  const systemAlpha = useSharedValue(0.4);
-  const centerPulse = useSharedValue(1); // Extracted out of style logic to prevent unmounted mutations
+// ─── Design tokens ────────────────────────────────────────────────────────────
+const ORANGE = '#FF5A1F';
+const GREEN_ECG = '#22ff88';          
+const GREEN_ECG_D = 'rgba(34,255,136,0.04)';  
+const WHITE = '#FFFFFF';
+const WHITE_DIM = 'rgba(255,255,255,0.35)';
+const BG = '#050505';
+
+// ─── Responsive Layout scaling ────────────────────────────────────────────────
+const ECG_W = SCREEN_WIDTH * 0.85; 
+const ECG_H = ECG_W * 0.6;          
+
+const RESPONSIVE_ECG_PATH = 
+  'M 0,50 L 15,50 L 20,40 L 23,75 L 28,15 L 32,55 L 35,50 L 48,50 ' +
+  'L 53,40 L 56,75 L 61,15 L 65,55 L 68,50 L 80,50 ' +
+  'L 85,40 L 88,75 L 93,15 L 97,55 L 100,50';
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+
+export default function InitializingLoader() {
+  // ─── Shared Values ─────────────────────────────────────────────────────────
+  const dashOffset = useSharedValue(1000);
+  
+  // Sweep X controls the horizontal positioning of the visibility window mask
+  // Moves from completely off-left (-100) to completely off-right (100)
+  const sweepX = useSharedValue(-40); 
+
+  const ringScale = useSharedValue(0.4);
+  const ringOpacity = useSharedValue(0);
+
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.92);
 
   useEffect(() => {
-    // 1. Clockwise Ring Sweep
-    masterRotation.value = withRepeat(
-      withTiming(360, { duration: 6000, easing: Easing.linear }),
+    // ── 1. Natural ECG Line Reveal & Trail Sweep ─────────────────────────────
+    dashOffset.value = withRepeat(
+      withTiming(0, { duration: 2200, easing: Easing.linear }),
       -1,
       false
     );
 
-    // 2. Counter-Clockwise Ring Sweep
-    counterRotation.value = withRepeat(
-      withTiming(-360, { duration: 4000, easing: Easing.linear }),
+    sweepX.value = withRepeat(
+      withTiming(100, { duration: 2200, easing: Easing.linear }),
       -1,
       false
     );
 
-    // 3. Telemetry Breathe Pulse
-    corePulse.value = withRepeat(
+    // ── 2. Pulse ring ────────────────────────────────────────────────────────
+    ringScale.value = withRepeat(
       withSequence(
-        withTiming(1.12, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.95, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+        withTiming(1.5, { duration: 2200, easing: Easing.out(Easing.quad) }),
+        withTiming(0.4, { duration: 0 })
       ),
       -1,
-      true
+      false
+    );
+    ringOpacity.value = withRepeat(
+      withSequence(
+        withTiming(0.4, { duration: 300 }),
+        withTiming(0, { duration: 1900, easing: Easing.linear })
+      ),
+      -1,
+      false
     );
 
-    // 4. Satellite Orbit Displacement
-    trackingOrbit.value = withRepeat(
-      withSequence(
-        withTiming(14, { duration: 2000, easing: Easing.out(Easing.ease) }),
-        withTiming(-6, { duration: 2000, easing: Easing.out(Easing.ease) })
-      ),
-      -1,
-      true
-    );
-
-    // 5. Backlight Glow Oscillation
-    systemAlpha.value = withRepeat(
-      withSequence(
-        withTiming(0.8, { duration: 1000 }),
-        withTiming(0.3, { duration: 1000 })
-      ),
-      -1,
-      true
-    );
-
-    // 6. ✅ Fixed Center Pulse Registration (Safe inside useEffect)
-    centerPulse.value = withRepeat(
-      withSequence(
-        withTiming(0.9, { duration: 800 }),
-        withTiming(1.05, { duration: 800 })
-      ),
-      -1,
-      true
-    );
+    // ── 3. Logo entrance ─────────────────────────────────────────────────────
+    logoOpacity.value = withDelay(200, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    logoScale.value = withDelay(200, withTiming(1, { duration: 800, easing: Easing.out(Easing.back(1.5)) }));
   }, []);
 
-  // --- SAFE ANIMATED STYLE HOOKS ---
-  const rotateMasterStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${masterRotation.value}deg` }, { scale: corePulse.value }],
+  // ─── UI Thread Animated Props ──────────────────────────────────────────────
+  const ecgAnimatedProps = useAnimatedProps(() => ({
+    strokeDashoffset: dashOffset.value,
   }));
 
-  const rotateCounterStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${counterRotation.value}deg` }],
+  const maskRectProps = useAnimatedProps(() => ({
+    x: sweepX.value - 40, // Keeps the trailing gradient window shifting safely
   }));
 
-  const satelliteOrbitStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${masterRotation.value * 1.5}deg` }, { translateY: trackingOrbit.value }],
+  // ─── Animated Styles ──────────────────────────────────────────────────────
+  const ringStyle = useAnimatedStyle(() => ({
+    opacity: ringOpacity.value,
+    transform: [{ scale: ringScale.value }],
   }));
 
-  const ambientBacklightStyle = useAnimatedStyle(() => ({
-    opacity: systemAlpha.value,
-  }));
-
-  const centerCoreStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: centerPulse.value }],
-    opacity: systemAlpha.value,
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ scale: logoScale.value }],
   }));
 
   return (
     <View style={styles.container}>
-      <View style={styles.ambientScannerBackground} />
       
-      <Animated.View style={[styles.ambientBacklightPool, ambientBacklightStyle]} />
-
-      <View style={styles.hudChassis}>
-        <Animated.View style={[styles.outerOrbitTrack, rotateMasterStyle]}>
-          <View style={[styles.orbitNode, { backgroundColor: '#0affca', top: 0 }]} />
-          <View style={[styles.orbitNode, { backgroundColor: '#b17df5', bottom: 0 }]} />
-        </Animated.View>
-
-        <Animated.View style={[styles.innerTelemeterRing, rotateCounterStyle]}>
-          <View style={styles.innerRingSegmentLeft} />
-          <View style={styles.innerRingSegmentRight} />
-        </Animated.View>
-
-        <Animated.View style={[styles.satelliteSystem, satelliteOrbitStyle]}>
-          <View style={styles.quantumSpark} />
-        </Animated.View>
-
-        <Animated.View style={[styles.glowingKernelCore, centerCoreStyle]} />
+      {/* ── Background Aesthetic Layer ────────────────────────────────────── */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <View style={styles.gridOverlay} />
       </View>
 
-      <View style={styles.metaDataBlock}>
-        <Text style={styles.brandTitle}>SUPERBODY</Text>
-        <View style={styles.terminalLoaderRow}>
-          <Text style={styles.telemetryText}>SECURE ENGINE PROTOCOL // ONLINE</Text>
-          <Text style={styles.syncPulseText}>SYS_READY</Text>
-        </View>
+      {/* ── ECG Heartbeat Panel ───────────────────────────────────────────── */}
+      <View style={styles.ecgPanel}>
+        <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <Defs>
+            {/* Horizontal gradient mapping a sharp leading edge and a long faded tail */}
+            <LinearGradient id="fadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <Stop offset="0%" stopColor="black" stopOpacity={0} />
+              <Stop offset="70%" stopColor="white" stopOpacity={0.2} />
+              <Stop offset="100%" stopColor="white" stopOpacity={1} />
+            </LinearGradient>
+            
+            {/* The mask references our animated rectangle moving across the viewport */}
+            <Mask id="ecgMask">
+              <AnimatedRect
+                animatedProps={maskRectProps}
+                y="0"
+                width="40"
+                height="100"
+                fill="url(#fadeGrad)"
+              />
+            </Mask>
+          </Defs>
+
+          {/* Ghost trace (Unmasked) */}
+          <Path
+            d={RESPONSIVE_ECG_PATH}
+            stroke={GREEN_ECG_D}
+            strokeWidth={0.75}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Dynamic organic fading trace */}
+          <AnimatedPath
+            animatedProps={ecgAnimatedProps}
+            d={RESPONSIVE_ECG_PATH}
+            stroke={GREEN_ECG}
+            strokeWidth={1.75}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray={1000}
+            mask="url(#ecgMask)"
+          />
+        </Svg>
+      </View>
+
+      {/* ── Center Block: Pulse Ring + Brand ──────────────────────────────── */}
+      <View style={styles.centerBlock}>
+        <Animated.View style={[styles.pulseRing, ringStyle]} />
+
+        <Animated.View style={[styles.logoBlock, logoStyle]}>
+          <Text style={styles.brandTop}>SUPER</Text>
+          <Text style={styles.brandBot}>BODY</Text>
+          <View style={styles.taglineContainer}>
+            <Text style={styles.tagline}>TRAIN BEYOND YOUR LIMITS</Text>
+          </View>
+        </Animated.View>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#030305',
+    backgroundColor: BG,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  ambientScannerBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
-    borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.01)',
-  },
-  ambientBacklightPool: {
-    position: 'absolute',
-    width: width * 0.7,
-    height: width * 0.7,
-    borderRadius: (width * 0.7) / 2,
-    backgroundColor: 'rgba(177, 125, 245, 0.12)',
-    shadowColor: '#b17df5',
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 100,
-    shadowOpacity: 1,
-  },
-  hudChassis: {
-    width: 220,
-    height: 220,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  outerOrbitTrack: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.04)',
-    borderStyle: 'dashed',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 2,
-  },
-  orbitNode: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 6,
-    shadowOpacity: 1,
-    shadowColor: '#0affca',
-  },
-  innerTelemeterRing: {
-    position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  innerRingSegmentLeft: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderRadius: 70,
-    borderWidth: 2,
-    borderColor: 'rgba(177, 125, 245, 0.35)',
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-  },
-  innerRingSegmentRight: {
-    position: 'absolute',
-    width: '85%',
-    height: '85%',
-    borderRadius: 70,
-    borderWidth: 1.5,
-    borderColor: 'rgba(10, 255, 202, 0.2)',
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-  },
-  satelliteSystem: {
-    position: 'absolute',
-    width: 170,
-    height: 170,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  quantumSpark: {
-    position: 'absolute',
-    right: 0,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: '#0affca',
-    shadowColor: '#0affca',
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    shadowOpacity: 1,
-  },
-  glowingKernelCore: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#030305',
-    borderWidth: 2,
-    borderColor: '#0affca',
-    shadowColor: '#0affca',
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 14,
-    shadowOpacity: 0.8,
-  },
-  metaDataBlock: {
-    position: 'absolute',
-    bottom: 50,
-    alignItems: 'center',
-    gap: 8,
-  },
-  brandTitle: {
-    fontFamily: 'Bebas',
-    fontSize: 28,
-    color: '#ffffff',
-    letterSpacing: 3,
-    textShadowColor: 'rgba(255, 255, 255, 0.15)',
-    textShadowOffset: { width: 0, height: 4 },
-    textShadowRadius: 8,
-  },
-  terminalLoaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+  gridOverlay: {
+    flex: 1,
+    opacity: 0.02,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    borderColor: WHITE,
   },
-  telemetryText: {
-    fontSize: 9,
+  ecgPanel: {
+    width: ECG_W,
+    height: ECG_H,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  centerBlock: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: SCREEN_WIDTH * 0.8,
+    height: SCREEN_WIDTH * 0.8,
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: SCREEN_WIDTH * 0.48,
+    height: SCREEN_WIDTH * 0.48,
+    borderRadius: (SCREEN_WIDTH * 0.48) / 2,
+    borderWidth: 1.5,
+    borderColor: ORANGE,
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  logoBlock: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  brandTop: {
+    fontSize: SCREEN_WIDTH * 0.12, 
+    fontWeight: '900',
+    color: WHITE,
+    letterSpacing: SCREEN_WIDTH * 0.02,
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  brandBot: {
+    fontSize: SCREEN_WIDTH * 0.12,
+    fontWeight: '900',
+    color: ORANGE,
+    letterSpacing: SCREEN_WIDTH * 0.02,
+    textAlign: 'center',
+    includeFontPadding: false,
+    marginTop: -SCREEN_WIDTH * 0.02,
+  },
+  taglineContainer: {
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.08)',
+    paddingTop: 8,
+    width: '80%',
+  },
+  tagline: {
+    fontSize: SCREEN_WIDTH * 0.022,
     fontWeight: '700',
-    color: 'rgba(255, 255, 255, 0.35)',
-    letterSpacing: 1.2,
+    color: WHITE_DIM,
+    letterSpacing: 3,
+    textAlign: 'center',
   },
-  syncPulseText: {
-    fontSize: 9,
-    fontFamily: 'Bebas',
-    color: '#0affca',
-    letterSpacing: 1,
-  }
 });
-
-export default InitializingLoader;

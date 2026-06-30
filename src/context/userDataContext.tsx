@@ -34,7 +34,7 @@ const UserDataContextWrapper = ({children}: {children: React.ReactNode})=>{
         updatedOn:'2026-01-03'
     })
 
-    const [userData, setUserData] = useState()
+    const [userData, setUserData] = useState<any>(null)
   
     useEffect(()=>{
         if(userData?.id){

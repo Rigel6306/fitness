@@ -26,32 +26,34 @@ import * as Yup from 'yup';
 const { textPimary, textSecondary } = Colors;
 
 interface userInfoInterface {
-  membershipNumber: number | undefined;
-  package: { id?: string; name?: string } | undefined;
-  fullName: string | undefined;
-  age: number | undefined;
-  contactNumber: string | undefined;
-  height: number | undefined;
-  weight: number | undefined;
-  gender: string | undefined;
-  email: string | undefined;
-  password: string | undefined;
-  confirmedPwd: string | undefined;
+  membershipNumber: string ;
+  package: { id: string; name: string,price:number };
+  fullName: string ;
+  age: string ;
+  membershipPaid:boolean;
+  contactNumber: string ;
+  height: string ;
+  weight: string ;
+  gender: string ;
+  email: string ;
+  password: string ;
+  confirmedPwd: string ;
 }
 
 const SignUp = () => {
   const [userInfo, setUserInfo] = useState<userInfoInterface>({
-    membershipNumber: undefined,
-    package: undefined,
-    fullName: undefined,
-    age: undefined,
-    contactNumber: undefined,
-    height: undefined,
-    weight: undefined,
-    gender: undefined,
-    email: undefined,
-    password: undefined,
-    confirmedPwd: undefined
+  membershipNumber: '', 
+  package: { id:"", name:"", price: 0 },
+  fullName: "",
+  age: '',
+  membershipPaid: false,
+  contactNumber: "",
+  height: '',
+  weight: '',
+  gender: "",
+  email: "",
+  password: "",
+  confirmedPwd: ""
   });
 
   const [errList, setErrList] = useState({
@@ -82,6 +84,8 @@ const SignUp = () => {
     setErrList((prev) => ({ ...prev, ['package']: false }));
   }, []);
 
+  console.log("user info at signup", userInfo)
+
   useEffect(() => {
     const fetchPackages = async () => {
       const packageData = await getAllDocs('package');
@@ -109,7 +113,7 @@ const SignUp = () => {
     try {
       await validationSchema.validate(userInfo, { abortEarly: false });
       try {
-        const registeredUser = await registerUser(userInfo);
+        const registeredUser = await registerUser( userInfo );
         console.log("Signup Success", registeredUser);
       } catch(err) {
         console.log('User Registration Error at signup', err);

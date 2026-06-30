@@ -7,10 +7,11 @@ const auth = getAuth(app);
 
 
 interface registerUserParams {
-  membershipNumber: number ;
-  package: { id?: string; name?: string };
+  membershipNumber: number|undefined ;
+  package: { id: string, name: string,price:number};
   fullName: string ;
   age: number ;
+  membershipPaid:boolean;
   contactNumber: string ;
   height: number ;
   weight: number ;
@@ -26,14 +27,13 @@ export const registerUser = async (data:registerUserParams) => {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
 
-        const packageRef =  doc(db,'package',data.package.id )
-
+        
         await setDoc(doc(db, "users", user.uid), {
             membershipNumber:data.membershipNumber,
-            packageRef:packageRef,
-            packageName:data.package.name,
-            packageId:data.package.id,
+            id:user.uid,
+            package:data.package,
             name: data.fullName,
+            membershipPaid:data.membershipPaid,
             age:data.age,
             contactNumber:data.contactNumber,
             height:data.height,

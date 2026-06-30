@@ -1,7 +1,7 @@
 import { getUser } from "@/services/userService";
 import { Stack, useRootNavigationState, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet } from "react-native";
 import { useUserDataContext } from "../hooks/useContext";
 import { auth } from "../services/firebase";
 import InitializingLoader from "./ui/initilizingLoader";
@@ -16,8 +16,6 @@ const AuthStack = () => {
   const [firebaseUser, setFirebaseUser] = useState(null);
 
 
-  const targetRef = useRef < View | null > (null);
-  // ✅ Single Firebase Auth Listener
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setFirebaseUser(user);
@@ -25,9 +23,9 @@ const AuthStack = () => {
       if (user) {
         (async () => {
           try {
+            console.log("User ID", user.uid)
             const fetchedData = await getUser(user.uid);
-
-
+            console.log("fetched Data",fetchedData )
             setUserData({ id: user.uid, ...fetchedData });
           } catch (error) {
             console.error("Failed to fetch user database data:", error);
@@ -61,7 +59,7 @@ const AuthStack = () => {
     );
   }
 
-  // ✅ Stack definition
+
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'rgb(0,0,0)' } }}>
       <Stack.Screen name="index" options={{

@@ -1,9 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { useUserDataContext } from '@/hooks/useContext';
-import { db } from '@/services/firebase';
 import { getAllDocs, updateDocument } from '@/services/userService';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { doc } from 'firebase/firestore';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,29 +17,31 @@ import PackageCard from './ui/PackageCard';
 
 const { textPimary, textSecondary } = Colors;
 
-interface PackageSelectionModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-}
+  interface PackageSelectionModalProps {
+    isVisible: boolean;
+    onClose: () => void;
+  }
 
 const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible, onClose }) => {
-  const { userData } = useUserDataContext();
+  const { userData, setUserData } = useUserDataContext();
   const [updatedPackage, setUpdatedPackageName] = useState<{ name?: string; price?: string }>({});
   const [selected, setSelected] = useState<{ id?: string; name?: string; price?: string }>({});
   const [gymPackages, setGymPackages] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
+ 
   const handleSelect = useCallback((data: any) => {
     setSelected(data);
   }, []);
 
   useEffect(() => {
     if (!isVisible) return;
-    
+
     const fetchPackages = async () => {
       try {
         const packageData = await getAllDocs('package');
         setGymPackages(packageData);
+        setSelected(packageData.filter(i => i.id === userData.package.id).map(j => j)[0])
       } catch (err) {
         console.error("Error fetching packages:", err);
       }
@@ -54,19 +54,13 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
     setIsSaving(true);
 
     try {
-      const packageRef = doc(db, "package", selected.id);
-      const newData = {
-        ...userData,
-        packageRef, 
-      };
-
-      await updateDocument(userData.id, newData, "users");
+      await updateDocument(userData.id, { package: selected }, "users");
       setUpdatedPackageName({ name: selected.name, price: selected.price });
-      
-      setTimeout(() => {
-        setIsSaving(false);
-        onClose();
-      }, 400);
+      setUserData((prev: any) => ({ ...prev, package: selected }))
+
+      setIsSaving(false);
+      onClose();
+
     } catch (err) {
       console.error("Error updating user:", err);
       setIsSaving(false);
@@ -79,7 +73,7 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
 
   const currentSelectedName = useMemo(() => {
     return selected.name || userData?.package?.name;
-  }, [selected.name, userData]);
+  }, [selected.name]);
 
   return (
     <Modal
@@ -98,7 +92,7 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
             </View>
           ) : (
             <View style={styles.container}>
-              
+
               {/* Premium Drag Window Tray Handle */}
               <View style={styles.dragHandleContainer}>
                 <View style={styles.dragBarIndicator} />
@@ -108,7 +102,7 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
               <View style={styles.headingBox}>
                 <View style={styles.headerRow}>
                   <Text style={styles.headingText}>MEMBERSHIP PLANS</Text>
-                  <Pressable 
+                  <Pressable
                     onPress={onClose}
                     style={({ pressed }) => [pressed && { opacity: 0.5 }, styles.closeIconButton]}
                   >
@@ -117,7 +111,7 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
                 </View>
 
                 <Text style={styles.currentPackageTitle}>CURRENT SUBSCRIPTION</Text>
-                
+
                 {/* RE-ARCHITECTED STACKED SUBSCRIPTION DISPLAY */}
                 <View style={styles.stackedPackageCard}>
                   {/* Top Row: Name Alone */}
@@ -126,14 +120,14 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
                       {updatedPackage.name ? updatedPackage.name.toUpperCase() : userData.package.name?.toUpperCase()}
                     </Text>
                   </View>
-                  
+
                   {/* Bottom Row: Price and Badge Side-by-Side */}
                   <View style={styles.packageCardBottomRow}>
                     <Text style={styles.packagePriceDisplay} numberOfLines={1}>
                       RS. {updatedPackage.price ? updatedPackage.price : userData.package.price}
                       <Text style={styles.perMonthLabel}> / MO</Text>
                     </Text>
-                    
+
                     <View style={styles.activeBadgeChip}>
                       <Text style={styles.activeBadgeText}>ACTIVE</Text>
                     </View>
@@ -144,22 +138,22 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
               {/* Main Selection Viewport */}
               <View style={styles.contentBody}>
                 <Text style={styles.sectionTitle}>AVAILABLE PACKAGES</Text>
-                
-                <ScrollView 
+
+                <ScrollView
                   style={styles.scrollContainer}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.scrollContentStyle}
                 >
                   {gymPackages?.map((pkg) => (
                     <View style={styles.cardWrapperFrame} key={pkg.id}>
-                      <PackageCard 
-                        id={pkg.id} 
-                        isSelected={currentSelectedName === pkg.name} 
-                        handleSelect={handleSelect} 
-                        name={pkg.name} 
-                        description={pkg.description} 
-                        price={pkg.price} 
-                        icons={pkg.icons} 
+                      <PackageCard
+                        id={pkg.id}
+                        isSelected={currentSelectedName === pkg.name}
+                        handleSelect={handleSelect}
+                        name={pkg.name}
+                        description={pkg.description}
+                        price={pkg.price}
+                        icons={pkg.icons}
                       />
                     </View>
                   ))}
@@ -167,25 +161,25 @@ const PackageSelectionModal: React.FC<PackageSelectionModalProps> = ({ isVisible
 
                 {/* Tactical Actions Dashboard Button Deck */}
                 <View style={styles.actionBtnsContainer}>
-                  <Pressable 
-                    onPress={onClose} 
+                  <Pressable
+                    onPress={onClose}
                     disabled={isSaving}
                     style={({ pressed }) => [
-                      styles.actionBtnBase, 
+                      styles.actionBtnBase,
                       styles.cancelBtnStyle,
                       pressed && { backgroundColor: 'rgba(255, 255, 255, 0.05)' }
                     ]}
                   >
                     <Text style={styles.cancelBtnText}>DISMISS</Text>
                   </Pressable>
-                  
-                  <Pressable 
+
+                  <Pressable
                     onPress={handleSaveChanges}
-                    disabled={isSaving || !selected.id || selected.name === userData.package.name}
+                    disabled={isSaving || selected.id === userData.package.id}
                     style={({ pressed }) => [
                       styles.actionBtnBase,
                       styles.confirmBtnStyle,
-                      (!selected.id || selected.name === userData.package.name) && styles.confirmBtnDisabled,
+                      selected.id === userData.package.id && styles.confirmBtnDisabled,
                       pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] }
                     ]}
                   >
@@ -252,9 +246,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.05)',
     marginBottom: 12,
   },
-  headerRow: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 18,
   },
@@ -265,7 +259,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     flex: 1,
   },
-  
+
   // Redesigned premium circular frosted close button
   closeIconButton: {
     width: 34,
@@ -282,7 +276,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: 8,
   },
-  
+
   // STACKED DESIGN SYSTEM CARD
   stackedPackageCard: {
     backgroundColor: '#030305',
@@ -359,7 +353,7 @@ const styles = StyleSheet.create({
   cardWrapperFrame: {
     width: '100%',
     marginVertical: 4,
-    minHeight: 80, 
+    minHeight: 80,
   },
   actionBtnsContainer: {
     paddingHorizontal: 16,
